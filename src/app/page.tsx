@@ -6,12 +6,16 @@ import {
   Calculator,
   Cpu,
   FileSpreadsheet,
+  Hash,
   KeyRound,
   LayoutDashboard,
+  Plus,
   Server,
   ShieldCheck,
   Sliders,
   Sun,
+  Volume2,
+  Zap,
 } from "lucide-react";
 import { Energia360Logo } from "@/components/brand/Energia360Logo";
 import { AppleLandingAndAuth } from "@/components/landing/AppleLandingAndAuth";
@@ -66,11 +70,9 @@ type NavigationTab =
   | "admin";
 
 export default function Energia360PlatformPage() {
-  // Por defecto mostramos primero la Página Web de Presentación en Blanco y Gris Suave
   const [viewMode, setViewMode] = useState<"landing" | "app">("landing");
   const [activeTab, setActiveTab] = useState<NavigationTab>("dashboard");
 
-  // Bóveda Personal vs Usuario de Prueba Activo
   const [realVault, setRealVault] = useState<LocalVaultPayload>(() =>
     createEmptyVaultPayload()
   );
@@ -81,7 +83,6 @@ export default function Energia360PlatformPage() {
   const [activeTestPreset, setActiveTestPreset] =
     useState<TestAccountPresetId>("hogar_santo_domingo");
 
-  // Estado Criptográfico
   const [activePassphrase, setActivePassphrase] = useState<string | null>(null);
   const [encryptedEnvelope, setEncryptedEnvelope] =
     useState<EncryptedEnvelope | null>(null);
@@ -132,7 +133,7 @@ export default function Energia360PlatformPage() {
     setIsDemoMode(true);
     setViewMode("app");
     setActiveTab("dashboard");
-    notify("Sesión iniciada con Usuario de Prueba precargado.");
+    notify("Conectado al servidor de prueba.");
   }
 
   function handleStartPersonalWorkspace() {
@@ -283,7 +284,7 @@ export default function Energia360PlatformPage() {
       setHasExistingVault(true);
       notify("Espacio privado creado y cifrado con AES-256-GCM.");
     } else {
-      notify("Tu espacio energético está listo.");
+      notify("Tu servidor energético está listo.");
     }
   }
 
@@ -329,7 +330,6 @@ export default function Energia360PlatformPage() {
     notify("Todos los datos locales fueron eliminados de este navegador.");
   }
 
-  // Si estamos en la vista de Portada Web ("landing"), renderizamos primero la página web
   if (viewMode === "landing") {
     return (
       <>
@@ -341,15 +341,13 @@ export default function Energia360PlatformPage() {
         />
 
         {showUnlockModal && (
-          <div className="fixed inset-0 z-50 bg-zinc-900/30 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="w-full max-w-md rounded-3xl bg-white border border-zinc-200 p-7 shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="w-full max-w-md rounded-3xl bg-[#313338] border border-white/10 p-7 shadow-2xl space-y-4 text-white">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-lg text-zinc-900">
-                  Abrir Mi Bóveda Cifrada
-                </h3>
+                <h3 className="font-black text-lg">Abrir Mi Bóveda Cifrada</h3>
                 <button
                   onClick={() => setShowUnlockModal(false)}
-                  className="text-xs font-semibold text-zinc-500 hover:text-zinc-900"
+                  className="text-xs font-bold text-[#B5BAC1] hover:text-white"
                 >
                   Cerrar
                 </button>
@@ -361,14 +359,14 @@ export default function Energia360PlatformPage() {
                   value={unlockPassphraseInput}
                   onChange={(e) => setUnlockPassphraseInput(e.target.value)}
                   placeholder="Contraseña maestra..."
-                  className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-4 py-3 text-sm text-zinc-900"
+                  className="w-full rounded-xl bg-[#1E1F22] border border-white/10 px-4 py-3 text-sm text-white"
                 />
                 {unlockError && (
-                  <div className="text-xs text-zinc-800">{unlockError}</div>
+                  <div className="text-xs text-[#F23F43]">{unlockError}</div>
                 )}
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm transition"
+                  className="w-full py-3 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-extrabold text-sm transition"
                 >
                   Desbloquear
                 </button>
@@ -380,23 +378,79 @@ export default function Energia360PlatformPage() {
     );
   }
 
-  const navItems: Array<{
+  const mainChannels: Array<{
     id: NavigationTab;
-    label: string;
+    channelName: string;
+    description: string;
+    badge?: string;
     icon: React.ComponentType<{ className?: string }>;
   }> = [
-    { id: "dashboard", label: "Resumen", icon: LayoutDashboard },
-    { id: "facturas", label: "Facturas", icon: FileSpreadsheet },
-    { id: "equipos", label: "Mis Equipos", icon: Calculator },
-    { id: "inteligencia", label: "Ahorro e IA", icon: Cpu },
-    { id: "solar_inversores", label: "Solar e Inversor", icon: Sun },
-    { id: "tarifas", label: "Tarifas RD", icon: Sliders },
-    { id: "privacidad", label: "Privacidad", icon: KeyRound },
-    { id: "admin", label: "Estado Sistema", icon: Server },
+    {
+      id: "dashboard",
+      channelName: "resumen-general",
+      description: "Métricas de consumo, subsidio 700 kWh y costos en RD$",
+      icon: LayoutDashboard,
+    },
+    {
+      id: "facturas",
+      channelName: "escaner-facturas",
+      description: "Lector óptico local de recibos en PDF o foto",
+      badge: "OCR",
+      icon: FileSpreadsheet,
+    },
+    {
+      id: "equipos",
+      channelName: "calculadora-equipos",
+      description: "Simula horas de uso de tus aires, nevera y equipos",
+      icon: Calculator,
+    },
+    {
+      id: "inteligencia",
+      channelName: "ahorro-nitro-ia",
+      description: "Recomendaciones inteligentes y simulador de 3 escenarios",
+      badge: "IA",
+      icon: Cpu,
+    },
+    {
+      id: "solar_inversores",
+      channelName: "solar-e-inversor",
+      description: "Dimensionamiento solar por provincia y autonomía en apagón",
+      icon: Sun,
+    },
   ];
 
+  const systemChannels: Array<{
+    id: NavigationTab;
+    channelName: string;
+    description: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }> = [
+    {
+      id: "tarifas",
+      channelName: "tarifas-sie-rd",
+      description: "Pliegos de EDESUR, EDENORTE, EDEESTE y CEPM",
+      icon: Sliders,
+    },
+    {
+      id: "privacidad",
+      channelName: "boveda-aes256",
+      description: "Cifrado local Zero-Access y respaldo en Supabase",
+      icon: KeyRound,
+    },
+    {
+      id: "admin",
+      channelName: "estado-sistema",
+      description: "Salud del sistema y conexión cloud",
+      icon: Server,
+    },
+  ];
+
+  const allChannels = [...mainChannels, ...systemChannels];
+  const currentChannel =
+    allChannels.find((c) => c.id === activeTab) || mainChannels[0];
+
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-zinc-900 flex flex-col">
+    <div className="min-h-screen bg-[#313338] text-[#F2F3F5] flex">
       {showOnboarding && !isDemoMode && (
         <OnboardingModal
           initialProfile={realVault.profile}
@@ -408,98 +462,299 @@ export default function Energia360PlatformPage() {
         />
       )}
 
-      {/* Barra Superior Limpia en Blanco y Gris Suave */}
-      <header className="sticky top-0 z-30 apple-glass border-b border-zinc-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setViewMode("landing")}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-zinc-100 hover:bg-zinc-200 border border-zinc-200/80 text-zinc-800 transition"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Página Web</span>
-            </button>
-            <Energia360Logo size={32} />
+      {/* 1. RIEL IZQUIERDO DE SERVIDORES ESTILO DISCORD (#1E1F22) */}
+      <aside className="hidden sm:flex w-[74px] bg-[#1E1F22] flex-col items-center py-4 gap-3 shrink-0 select-none z-30">
+        {/* Botón Volver a la Página Web */}
+        <button
+          onClick={() => setViewMode("landing")}
+          title="Volver a la Página Web de Presentación"
+          className="w-12 h-12 rounded-[24px] hover:rounded-[16px] bg-[#313338] hover:bg-[#5865F2] text-white flex items-center justify-center transition-all duration-200 group relative cursor-pointer"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+
+        <div className="w-8 h-[2px] bg-[#35363C] rounded-full my-0.5" />
+
+        {/* Servidor Demo 1: Hogar Santo Domingo */}
+        <div className="relative flex items-center">
+          <span
+            className={`absolute -left-3 w-2 rounded-r-full bg-white transition-all ${
+              isDemoMode && activeTestPreset === "hogar_santo_domingo"
+                ? "h-10"
+                : "h-0"
+            }`}
+          />
+          <button
+            onClick={() => handleEnterWithTestAccount("hogar_santo_domingo")}
+            title="Servidor Demo: Hogar Santo Domingo (EDESUR)"
+            className={`w-12 h-12 font-black text-xs flex items-center justify-center transition-all duration-200 cursor-pointer ${
+              isDemoMode && activeTestPreset === "hogar_santo_domingo"
+                ? "rounded-[16px] bg-[#5865F2] text-white shadow-lg shadow-[#5865F2]/30"
+                : "rounded-[24px] hover:rounded-[16px] bg-[#313338] hover:bg-[#5865F2] text-[#B5BAC1] hover:text-white"
+            }`}
+          >
+            SD
+          </button>
+        </div>
+
+        {/* Servidor Demo 2: Apartamento Santiago */}
+        <div className="relative flex items-center">
+          <span
+            className={`absolute -left-3 w-2 rounded-r-full bg-white transition-all ${
+              isDemoMode && activeTestPreset === "apartamento_santiago"
+                ? "h-10"
+                : "h-0"
+            }`}
+          />
+          <button
+            onClick={() => handleEnterWithTestAccount("apartamento_santiago")}
+            title="Servidor Demo: Apartamento Santiago (EDENORTE)"
+            className={`w-12 h-12 font-black text-xs flex items-center justify-center transition-all duration-200 cursor-pointer ${
+              isDemoMode && activeTestPreset === "apartamento_santiago"
+                ? "rounded-[16px] bg-[#23A55A] text-white shadow-lg shadow-[#23A55A]/30"
+                : "rounded-[24px] hover:rounded-[16px] bg-[#313338] hover:bg-[#23A55A] text-[#B5BAC1] hover:text-white"
+            }`}
+          >
+            STI
+          </button>
+        </div>
+
+        {/* Servidor Demo 3: Negocio Punta Cana */}
+        <div className="relative flex items-center">
+          <span
+            className={`absolute -left-3 w-2 rounded-r-full bg-white transition-all ${
+              isDemoMode && activeTestPreset === "negocio_punta_cana"
+                ? "h-10"
+                : "h-0"
+            }`}
+          />
+          <button
+            onClick={() => handleEnterWithTestAccount("negocio_punta_cana")}
+            title="Servidor Demo: Negocio Punta Cana (CEPM)"
+            className={`w-12 h-12 font-black text-xs flex items-center justify-center transition-all duration-200 cursor-pointer ${
+              isDemoMode && activeTestPreset === "negocio_punta_cana"
+                ? "rounded-[16px] bg-[#EB459E] text-white shadow-lg shadow-[#EB459E]/30"
+                : "rounded-[24px] hover:rounded-[16px] bg-[#313338] hover:bg-[#EB459E] text-[#B5BAC1] hover:text-white"
+            }`}
+          >
+            PC
+          </button>
+        </div>
+
+        {/* Botón Mi Espacio Personal */}
+        <div className="relative flex items-center">
+          <span
+            className={`absolute -left-3 w-2 rounded-r-full bg-white transition-all ${
+              !isDemoMode ? "h-10" : "h-0"
+            }`}
+          />
+          <button
+            onClick={handleStartPersonalWorkspace}
+            title="Crear o Abrir Mi Espacio Personal"
+            className={`w-12 h-12 flex items-center justify-center transition-all duration-200 cursor-pointer ${
+              !isDemoMode
+                ? "rounded-[16px] bg-[#23A55A] text-white"
+                : "rounded-[24px] hover:rounded-[16px] bg-[#313338] hover:bg-[#23A55A] text-[#23A55A] hover:text-white"
+            }`}
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+      </aside>
+
+      {/* 2. BARRA DE CANALES ESTILO DISCORD (#2B2D31) */}
+      <aside className="hidden lg:flex w-64 bg-[#2B2D31] flex-col justify-between shrink-0 select-none border-r border-black/20">
+        <div>
+          {/* Cabecera del Servidor */}
+          <div className="h-14 px-4 border-b border-black/25 flex items-center justify-between shadow-2xs">
+            <div className="truncate">
+              <div className="font-extrabold text-sm text-white truncate">
+                {activeVault.profile.spaceName}
+              </div>
+              <div className="text-[11px] font-bold text-[#57F287]">
+                {activeVault.profile.distributor} ·{" "}
+                {activeSchedule.tariff_code}
+              </div>
+            </div>
           </div>
 
-          {/* Selector Rápido de Usuario de Prueba o Espacio Propio */}
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-1.5 bg-zinc-100 border border-zinc-200/80 p-1 rounded-full text-xs font-semibold">
-              <button
-                onClick={() => handleEnterWithTestAccount("hogar_santo_domingo")}
-                className={`px-3 py-1.5 rounded-full transition ${
-                  isDemoMode && activeTestPreset === "hogar_santo_domingo"
-                    ? "bg-white text-zinc-900 shadow-2xs"
-                    : "text-zinc-500 hover:text-zinc-900"
-                }`}
-              >
-                Demo Hogar SD
-              </button>
-              <button
-                onClick={() =>
-                  handleEnterWithTestAccount("apartamento_santiago")
-                }
-                className={`px-3 py-1.5 rounded-full transition ${
-                  isDemoMode && activeTestPreset === "apartamento_santiago"
-                    ? "bg-white text-zinc-900 shadow-2xs"
-                    : "text-zinc-500 hover:text-zinc-900"
-                }`}
-              >
-                Demo Apto Santiago
-              </button>
-              <button
-                onClick={() => handleEnterWithTestAccount("negocio_punta_cana")}
-                className={`px-3 py-1.5 rounded-full transition ${
-                  isDemoMode && activeTestPreset === "negocio_punta_cana"
-                    ? "bg-white text-zinc-900 shadow-2xs"
-                    : "text-zinc-500 hover:text-zinc-900"
-                }`}
-              >
-                Demo Negocio
-              </button>
-              <button
-                onClick={handleStartPersonalWorkspace}
-                className={`px-3 py-1.5 rounded-full transition ${
-                  !isDemoMode
-                    ? "bg-zinc-900 text-white shadow-2xs"
-                    : "text-zinc-500 hover:text-zinc-900"
-                }`}
-              >
-                Mi Espacio
-              </button>
+          {/* Lista de Canales Principales */}
+          <div className="p-3 space-y-5">
+            <div>
+              <div className="px-2 mb-1.5 text-[11px] font-extrabold uppercase tracking-wider text-[#949BA4]">
+                Canales de Energía
+              </div>
+              <div className="space-y-0.5">
+                {mainChannels.map((ch) => {
+                  const isActive = activeTab === ch.id;
+                  return (
+                    <button
+                      key={ch.id}
+                      onClick={() => setActiveTab(ch.id)}
+                      className={`w-full px-2.5 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition cursor-pointer ${
+                        isActive
+                          ? "bg-[#404249] text-white"
+                          : "text-[#949BA4] hover:bg-[#35373C] hover:text-[#DBDEE1]"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 truncate">
+                        <Hash className="w-4 h-4 shrink-0 text-[#80848E]" />
+                        <span className="truncate">{ch.channelName}</span>
+                      </span>
+                      {ch.badge && (
+                        <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-[#5865F2] text-white">
+                          {ch.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <div className="px-2 mb-1.5 text-[11px] font-extrabold uppercase tracking-wider text-[#949BA4]">
+                Configuración &amp; Bóveda
+              </div>
+              <div className="space-y-0.5">
+                {systemChannels.map((ch) => {
+                  const isActive = activeTab === ch.id;
+                  return (
+                    <button
+                      key={ch.id}
+                      onClick={() => setActiveTab(ch.id)}
+                      className={`w-full px-2.5 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition cursor-pointer ${
+                        isActive
+                          ? "bg-[#404249] text-white"
+                          : "text-[#949BA4] hover:bg-[#35373C] hover:text-[#DBDEE1]"
+                      }`}
+                    >
+                      <Hash className="w-4 h-4 shrink-0 text-[#80848E]" />
+                      <span className="truncate">{ch.channelName}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Canal de Voz / Estado Inversor en Vivo */}
+            <div className="p-3 rounded-2xl bg-[#1E1F22] border border-white/5">
+              <div className="flex items-center justify-between text-xs font-extrabold text-[#57F287] mb-1">
+                <span className="flex items-center gap-1.5">
+                  <Volume2 className="w-3.5 h-3.5" /> Red Eléctrica Activa
+                </span>
+                <span className="w-2 h-2 rounded-full bg-[#57F287] animate-ping" />
+              </div>
+              <p className="text-[11px] text-[#B5BAC1]">
+                Pliego SIE sincronizado ({activeSchedule.distributor_code})
+              </p>
             </div>
           </div>
         </div>
-      </header>
 
-      {/* Layout Principal con Sidebar Minimalista */}
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Sidebar de Navegación */}
-        <aside className="lg:col-span-3 xl:col-span-2">
-          <nav className="apple-card p-2.5 flex lg:flex-col gap-1 overflow-x-auto lg:sticky lg:top-22">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2.5 whitespace-nowrap transition ${
-                    isActive
-                      ? "bg-zinc-900 text-white shadow-2xs"
-                      : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100"
-                  }`}
-                >
-                  <Icon className="w-4 h-4 shrink-0" />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </aside>
+        {/* Barra Inferior de Usuario Estilo Discord (#23272A) */}
+        <div className="p-3 bg-[#23272A] flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 truncate">
+            <div className="relative shrink-0">
+              <div className="w-9 h-9 rounded-full bg-[#5865F2] flex items-center justify-center font-black text-xs text-white">
+                {activeVault.profile.distributor.slice(0, 2)}
+              </div>
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#23A55A] border-2 border-[#23272A]" />
+            </div>
+            <div className="truncate">
+              <div className="text-xs font-extrabold text-white truncate">
+                {isDemoMode ? "Usuario Demo" : "Mi Espacio"}
+              </div>
+              <div className="text-[10px] font-bold text-[#57F287] truncate">
+                ● Online · {activeVault.profile.province}
+              </div>
+            </div>
+          </div>
 
-        {/* Área de Contenido */}
-        <main className="lg:col-span-9 xl:col-span-10">
+          <button
+            onClick={() => setViewMode("landing")}
+            title="Salir a la Página Web"
+            className="p-2 rounded-lg bg-[#313338] hover:bg-[#5865F2] text-[#B5BAC1] hover:text-white text-xs font-bold transition cursor-pointer"
+          >
+            Web
+          </button>
+        </div>
+      </aside>
+
+      {/* 3. ESCENARIO CENTRAL (#313338) */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Cabecera Superior del Canal Activo */}
+        <header className="sticky top-0 z-20 h-14 apple-glass border-b border-black/25 px-4 sm:px-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 truncate">
+            <button
+              onClick={() => setViewMode("landing")}
+              className="sm:hidden inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#1E1F22] text-xs font-bold text-white"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Web
+            </button>
+            <Hash className="w-5 h-5 text-[#80848E] shrink-0" />
+            <span className="font-extrabold text-sm sm:text-base text-white truncate">
+              {currentChannel.channelName}
+            </span>
+            <span className="hidden md:inline text-xs text-[#949BA4] truncate border-l border-white/10 pl-3 ml-1">
+              {currentChannel.description}
+            </span>
+          </div>
+
+          {/* Selector rápido de Servidores Demo en la barra superior */}
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => handleEnterWithTestAccount("hogar_santo_domingo")}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold transition cursor-pointer ${
+                isDemoMode && activeTestPreset === "hogar_santo_domingo"
+                  ? "bg-[#5865F2] text-white"
+                  : "bg-[#2B2D31] text-[#B5BAC1] hover:text-white"
+              }`}
+            >
+              Hogar SD
+            </button>
+            <button
+              onClick={() => handleEnterWithTestAccount("apartamento_santiago")}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold transition cursor-pointer ${
+                isDemoMode && activeTestPreset === "apartamento_santiago"
+                  ? "bg-[#23A55A] text-white"
+                  : "bg-[#2B2D31] text-[#B5BAC1] hover:text-white"
+              }`}
+            >
+              Santiago
+            </button>
+            <button
+              onClick={() => handleEnterWithTestAccount("negocio_punta_cana")}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold transition cursor-pointer ${
+                isDemoMode && activeTestPreset === "negocio_punta_cana"
+                  ? "bg-[#EB459E] text-white"
+                  : "bg-[#2B2D31] text-[#B5BAC1] hover:text-white"
+              }`}
+            >
+              Negocio
+            </button>
+          </div>
+        </header>
+
+        {/* Navegación móvil de canales (visible en pantallas pequeñas/medianas) */}
+        <div className="lg:hidden bg-[#2B2D31] px-4 py-2 flex items-center gap-1.5 overflow-x-auto border-b border-black/20">
+          {allChannels.map((ch) => (
+            <button
+              key={ch.id}
+              onClick={() => setActiveTab(ch.id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-extrabold whitespace-nowrap flex items-center gap-1 transition ${
+                activeTab === ch.id
+                  ? "bg-[#5865F2] text-white"
+                  : "bg-[#1E1F22] text-[#B5BAC1]"
+              }`}
+            >
+              <span># {ch.channelName}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Contenido Principal del Canal */}
+        <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8">
           {activeTab === "dashboard" && (
             <DashboardModule
               vault={activeVault}
@@ -523,7 +778,7 @@ export default function Energia360PlatformPage() {
                   ...prev,
                   invoices: [...prev.invoices, inv],
                 }));
-                notify("Factura guardada correctamente.");
+                notify("Factura guardada en tu canal.");
               }}
               onDeleteInvoice={(id: string) => {
                 updateCurrentVault((prev) => ({
@@ -680,10 +935,10 @@ export default function Energia360PlatformPage() {
         </main>
       </div>
 
-      {/* Notificación Flotante */}
+      {/* Notificación Flotante Estilo Discord */}
       {statusToast && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-full bg-zinc-900 text-white px-5 py-3 text-xs font-semibold shadow-xl flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-zinc-300" />
+        <div className="fixed bottom-6 right-6 z-50 rounded-2xl bg-[#5865F2] text-white px-5 py-3 text-xs font-extrabold shadow-2xl flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-[#57F287]" />
           <span>{statusToast}</span>
         </div>
       )}

@@ -2,18 +2,18 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Energia360 — Inteligencia Energética para República Dominicana",
+  title: "ENERGIA360 — Tu Servidor Inteligente de Energía en RD",
   description:
-    "Entiende tu consumo. Controla tu energía. Reduce tus gastos. Plataforma inteligente de análisis eléctrico, paneles solares e inversores para hogares y negocios en RD.",
+    "Plataforma jovial e inteligente para dominar tu recibo de luz en República Dominicana (EDESUR, EDENORTE, EDEESTE y CEPM), calcular equipos, simular paneles solares y medir tu inversor.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/icons/logo.svg",
-    apple: "/icons/logo.svg",
+    icon: "/icons/icon-192.svg",
+    apple: "/icons/icon-192.svg",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FFFFFF",
+  themeColor: "#5865F2",
   width: "device-width",
   initialScale: 1,
 };
@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es-DO">
-      <body className="min-h-screen bg-[#F8F9FA] text-zinc-900 selection:bg-zinc-900 selection:text-white">
+    <html lang="es" className="scroll-smooth">
+      <body className="min-h-screen bg-[#313338] text-[#F2F3F5] antialiased selection:bg-[#5865F2] selection:text-white">
         {children}
       </body>
     </html>

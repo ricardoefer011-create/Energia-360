@@ -145,54 +145,57 @@ export function ApplianceCalculatorModule({
 
   return (
     <div className="space-y-6">
-      {/* Resumen Principal */}
-      <div className="apple-card p-6 sm:p-8 flex flex-wrap items-center justify-between gap-4">
+      {/* Resumen Principal Estilo Discord */}
+      <div className="apple-card p-6 sm:p-8 flex flex-wrap items-center justify-between gap-4 border-l-4 border-[#5865F2]">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
-            Calculadora Interactiva de Equipos
+          <span className="text-xs font-extrabold uppercase tracking-wider text-[#5865F2]">
+            🔌 Simulador Interactivo de Consumo
           </span>
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 mt-1">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mt-1">
             {totalEstimatedKwh.toFixed(0)} kWh/mes &middot;{" "}
-            <span className="text-zinc-600">
+            <span className="text-[#57F287]">
               RD${" "}
               {billResult.totalEstimatedBillDop.toLocaleString("es-DO", {
                 minimumFractionDigits: 2,
               })}
             </span>
           </h2>
-          <p className="text-xs text-zinc-500 mt-1">
-            Desliza las horas de cualquier equipo abajo para ver cómo cambia tu
-            factura mensual en {activeSchedule.distributor_code}.
+          <p className="text-xs text-[#B5BAC1] mt-1">
+            Mueve las barras de horas abajo para ver en vivo cuánto te ahorras
+            en {activeSchedule.distributor_code}.
           </p>
         </div>
 
         {billResult.lostStepSubsidy701 && (
-          <div className="p-4 rounded-2xl bg-zinc-100 border border-zinc-300 text-xs text-zinc-900 max-w-md flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 shrink-0 text-zinc-900" />
+          <div className="p-4 rounded-2xl bg-[#F23F43]/15 border border-[#F23F43]/40 text-xs text-white max-w-md flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 shrink-0 text-[#F23F43]" />
             <span>
-              <strong>Escalón 701 kWh superado:</strong> Estás pagando{" "}
+              <strong className="text-[#FEE75C]">
+                ¡Pasaste los 701 kWh!
+              </strong>{" "}
+              Estás pagando{" "}
               <strong>
                 RD$ {billResult.subsidyLossPenaltyDop.toLocaleString("es-DO")}
               </strong>{" "}
-              extra por pérdida del subsidio escalonado. Reduce horas abajo para
-              bajar de 700 kWh.
+              extra por perder el subsidio escalonado. Baja horas abajo para
+              volver a menos de 700 kWh.
             </span>
           </div>
         )}
       </div>
 
-      {/* Inventario Activo con Sliders en Blanco y Gris Suave */}
+      {/* Inventario Activo */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 apple-card p-6 sm:p-8">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
-              <Sliders className="w-5 h-5 text-zinc-900" />
-              <h3 className="font-bold text-lg text-zinc-900">
-                Mis Equipos ({appliances.length})
+              <Sliders className="w-5 h-5 text-[#5865F2]" />
+              <h3 className="font-black text-lg text-white">
+                Mis Equipos Activos ({appliances.length})
               </h3>
             </div>
-            <span className="text-xs text-zinc-500">
-              Ajusta las horas diarias con la barra
+            <span className="text-xs text-[#B5BAC1]">
+              Desliza para ajustar horas
             </span>
           </div>
 
@@ -206,24 +209,24 @@ export function ApplianceCalculatorModule({
                 return (
                   <div
                     key={app.id}
-                    className="p-5 rounded-3xl bg-zinc-50 border border-zinc-200/80"
+                    className="p-5 rounded-3xl bg-[#1E1F22] border border-white/5"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-bold text-sm sm:text-base text-zinc-900">
+                          <span className="font-extrabold text-sm sm:text-base text-white">
                             {app.name}
                           </span>
-                          <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-white border border-zinc-200 text-zinc-600">
+                          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#2B2D31] text-[#B5BAC1]">
                             {app.category}
                           </span>
                           {app.isCriticalBackupLoad && (
-                            <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-zinc-200/80 text-zinc-800 inline-flex items-center gap-1">
+                            <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#EB459E]/20 text-[#EB459E] inline-flex items-center gap-1">
                               <BatteryCharging className="w-3 h-3" /> En Inversor
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-zinc-500 mt-1">
+                        <div className="text-xs text-[#B5BAC1] mt-1">
                           {app.nominalWatts} W × {app.quantity} und ·{" "}
                           {metrics.monthlyKwh} kWh/mes
                         </div>
@@ -231,27 +234,27 @@ export function ApplianceCalculatorModule({
 
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <div className="text-base font-bold text-zinc-900">
+                          <div className="text-base font-black text-[#FEE75C]">
                             RD${" "}
                             {metrics.estimatedMonthlyCostDop.toLocaleString(
                               "es-DO"
                             )}
-                            <span className="text-xs font-normal text-zinc-500">
+                            <span className="text-xs font-normal text-[#B5BAC1]">
                               /mes
                             </span>
                           </div>
                         </div>
                         <button
                           onClick={() => onDeleteAppliance(app.id)}
-                          className="p-2 rounded-full text-zinc-400 hover:text-zinc-900 hover:bg-zinc-200/60 transition"
+                          className="p-2 rounded-full text-[#B5BAC1] hover:text-[#F23F43] hover:bg-[#F23F43]/15 transition cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-zinc-200/80 flex items-center gap-4">
-                      <span className="text-xs font-semibold text-zinc-900 whitespace-nowrap w-28">
+                    <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-4">
+                      <span className="text-xs font-extrabold text-[#57F287] whitespace-nowrap w-28">
                         Uso: {app.dailyHours} h/día
                       </span>
                       <input
@@ -266,7 +269,7 @@ export function ApplianceCalculatorModule({
                             parseFloat(e.target.value)
                           )
                         }
-                        className="w-full accent-zinc-900"
+                        className="w-full accent-[#5865F2] cursor-pointer"
                       />
                     </div>
                   </div>
@@ -274,9 +277,9 @@ export function ApplianceCalculatorModule({
               })}
             </div>
           ) : (
-            <div className="text-center py-12 text-sm text-zinc-500">
-              Aún no tienes equipos registrados. Elige cualquiera de la
-              biblioteca de abajo o crea uno a la derecha.
+            <div className="text-center py-12 text-sm text-[#B5BAC1]">
+              Aún no tienes equipos registrados. Elige cualquiera del catálogo
+              abajo o crea uno a la derecha.
             </div>
           )}
         </div>
@@ -286,12 +289,12 @@ export function ApplianceCalculatorModule({
           onSubmit={handleCreateCustom}
           className="apple-card p-6 sm:p-7 space-y-4 h-fit"
         >
-          <h3 className="font-bold text-lg text-zinc-900">
-            Agregar Equipo Personalizado
+          <h3 className="font-black text-lg text-white">
+            + Nuevo Equipo Personalizado
           </h3>
 
           <div>
-            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+            <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
               Nombre del equipo
             </label>
             <input
@@ -300,18 +303,18 @@ export function ApplianceCalculatorModule({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ej. Aire Acondicionado Habitación"
-              className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-zinc-900"
+              className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#5865F2]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+            <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
               Categoría
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as ApplianceCategory)}
-              className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-3.5 py-2.5 text-xs text-zinc-900"
+              className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-3.5 py-2.5 text-xs text-white"
             >
               {APPLIANCE_CATEGORIES.map((c) => (
                 <option key={c} value={c}>
@@ -323,7 +326,7 @@ export function ApplianceCalculatorModule({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-zinc-600 mb-1">
+              <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
                 Potencia (Watts)
               </label>
               <input
@@ -334,11 +337,11 @@ export function ApplianceCalculatorModule({
                 onChange={(e) =>
                   setNominalWatts(parseInt(e.target.value, 10) || 0)
                 }
-                className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-3.5 py-2.5 text-xs font-bold text-zinc-900"
+                className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-3.5 py-2.5 text-xs font-black text-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-zinc-600 mb-1">
+              <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
                 Cantidad
               </label>
               <input
@@ -347,14 +350,14 @@ export function ApplianceCalculatorModule({
                 required
                 value={quantity}
                 onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 1)}
-                className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-3.5 py-2.5 text-xs text-zinc-900"
+                className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-3.5 py-2.5 text-xs text-white"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-zinc-600 mb-1">
+              <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
                 Horas al día
               </label>
               <input
@@ -367,11 +370,11 @@ export function ApplianceCalculatorModule({
                 onChange={(e) =>
                   setDailyHours(parseFloat(e.target.value) || 1)
                 }
-                className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-3.5 py-2.5 text-xs text-zinc-900"
+                className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-3.5 py-2.5 text-xs text-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-zinc-600 mb-1">
+              <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
                 Tecnología
               </label>
               <select
@@ -379,7 +382,7 @@ export function ApplianceCalculatorModule({
                 onChange={(e) =>
                   setDutyCycleFactor(parseFloat(e.target.value))
                 }
-                className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-3 py-2.5 text-xs text-zinc-900"
+                className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-3 py-2.5 text-xs text-white"
               >
                 <option value={0.62}>Inverter (Ahorrador)</option>
                 <option value={0.85}>Convencional</option>
@@ -388,40 +391,40 @@ export function ApplianceCalculatorModule({
             </div>
           </div>
 
-          <label className="flex items-center gap-2 text-xs text-zinc-900 cursor-pointer pt-1">
+          <label className="flex items-center gap-2 text-xs text-white cursor-pointer pt-1">
             <input
               type="checkbox"
               checked={isCriticalBackupLoad}
               onChange={(e) => setIsCriticalBackupLoad(e.target.checked)}
-              className="rounded accent-zinc-900"
+              className="rounded accent-[#5865F2]"
             />
             <span>Conectar al inversor en apagones</span>
           </label>
 
           <button
             type="submit"
-            className="w-full py-3 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-xs sm:text-sm transition"
+            className="w-full py-3 rounded-2xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-extrabold text-xs sm:text-sm transition cursor-pointer"
           >
             Guardar Equipo
           </button>
         </form>
       </div>
 
-      {/* Biblioteca de Equipos Habituales en RD */}
+      {/* Catálogo de Equipos Dominicanos */}
       <div className="apple-card p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h3 className="font-bold text-lg text-zinc-900">
-              Catálogo Rápido de Equipos en República Dominicana
+            <h3 className="font-black text-lg text-white">
+              🇩🇴 Catálogo Rápido de Equipos en República Dominicana
             </h3>
-            <p className="text-xs text-zinc-500">
-              Toca cualquier equipo para añadirlo en 1 clic a tu lista
+            <p className="text-xs text-[#B5BAC1]">
+              Toca cualquier equipo para sumarlo en 1 clic a tu servidor
             </p>
           </div>
           <select
             value={selectedCategoryFilter}
             onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-            className="rounded-full bg-zinc-50 border border-zinc-200 px-4 py-2 text-xs font-semibold text-zinc-900"
+            className="rounded-full bg-[#1E1F22] border border-white/10 px-4 py-2 text-xs font-bold text-white"
           >
             <option value="Todas">Todas las categorías</option>
             {APPLIANCE_CATEGORIES.map((c) => (
@@ -436,21 +439,21 @@ export function ApplianceCalculatorModule({
           {filteredTemplates.map((tpl) => (
             <div
               key={tpl.id}
-              className="p-5 rounded-3xl bg-zinc-50 border border-zinc-200/80 flex flex-col justify-between"
+              className="p-5 rounded-3xl bg-[#1E1F22] border border-white/5 flex flex-col justify-between hover:border-[#5865F2]/50 transition"
             >
               <div>
-                <div className="font-bold text-sm text-zinc-900">
+                <div className="font-extrabold text-sm text-white">
                   {tpl.name}
                 </div>
-                <div className="text-xs font-semibold text-zinc-700 mt-1">
+                <div className="text-xs font-bold text-[#57F287] mt-1">
                   {tpl.nominalWatts} W · Uso típico {tpl.defaultDailyHours}h/día
                 </div>
-                <p className="text-xs text-zinc-500 mt-1.5">{tpl.rdNote}</p>
+                <p className="text-xs text-[#B5BAC1] mt-1.5">{tpl.rdNote}</p>
               </div>
               <button
                 type="button"
                 onClick={() => handleAddFromTemplate(tpl)}
-                className="mt-4 w-full py-2.5 rounded-2xl bg-white hover:bg-zinc-900 text-zinc-900 hover:text-white border border-zinc-200 text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition"
+                className="mt-4 w-full py-2.5 rounded-2xl bg-[#2B2D31] hover:bg-[#5865F2] text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 transition cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" /> Agregar a mis equipos
               </button>

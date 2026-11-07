@@ -1125,4 +1125,52 @@ export function createTestUserProfileVault(
   };
 }
 
+export interface TestUserAccountMetadata {
+  id: TestAccountPresetId;
+  title: string;
+  subtitle: string;
+  distributor: string;
+  email: string;
+  password: string;
+  highlightMetric: string;
+  summary: string;
+}
+
+export const TEST_USER_ACCOUNTS: TestUserAccountMetadata[] = [
+  {
+    id: "hogar_santo_domingo",
+    title: "Hogar Familia Rodríguez (Santo Domingo)",
+    subtitle: "EDESUR · Tarifa BTS-1",
+    distributor: "EDESUR",
+    email: "demo.hogar@energia360.do",
+    password: "DemoRD2026!",
+    highlightMetric: "682 kWh/mes · RD$ 7,121",
+    summary:
+      "Residencia en Naco con 2 aires acondicionados, nevera, bomba de agua e inversor Trace de 3.6 kW (4 baterías Trojan). Ideal para probar el termómetro del subsidio de 700 kWh.",
+  },
+  {
+    id: "apartamento_santiago",
+    title: "Apartamento Moderno (Santiago)",
+    subtitle: "EDENORTE · Tarifa BTS-1",
+    distributor: "EDENORTE",
+    email: "demo.santiago@energia360.do",
+    password: "DemoRD2026!",
+    highlightMetric: "332 kWh/mes · RD$ 2,613",
+    summary:
+      "Apartamento eficiente en el Cibao con equipos Inverter, consumo controlado dentro de los primeros bloques subsidiados y respaldo de inversor.",
+  },
+  {
+    id: "negocio_punta_cana",
+    title: "Cafetería & Deli El Coral (Punta Cana)",
+    subtitle: "EDEESTE / CEPM · Tarifa Comercial BTS-2",
+    distributor: "CEPM",
+    email: "demo.negocio@energia360.do",
+    password: "DemoRD2026!",
+    highlightMetric: "1,185 kWh/mes · RD$ 16,248",
+    summary:
+      "Pequeño negocio con exhibidores refrigerados verticales, freezer horizontal, aire comercial de 24,000 BTU e inversor híbrido Deye de 8 kW con litio.",
+  },
+];
+
+
 

@@ -1,47 +1,130 @@
 @import "tailwindcss";
 
 :root {
-  --apple-bg: #f8f9fa;
-  --apple-surface: #ffffff;
-  --apple-surface-subtle: #f3f4f6;
-  --apple-text: #111827;
-  --apple-text-secondary: #6b7280;
-  --apple-border: #e5e7eb;
+  --bg-primary: #313338;
+  --bg-secondary: #2B2D31;
+  --bg-tertiary: #1E1F22;
+  --bg-elevated: #383A40;
+  --text-primary: #F2F3F5;
+  --text-secondary: #B5BAC1;
+  --text-muted: #949BA4;
+  --discord-blurple: #5865F2;
+  --discord-blurple-hover: #4752C4;
+  --discord-hero: #404EED;
+  --discord-green: #23A55A;
+  --discord-neon-green: #57F287;
+  --discord-yellow: #F0B232;
+  --discord-fuchsia: #EB459E;
+  --discord-red: #F23F43;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--apple-bg);
-  color: var(--apple-text);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-    "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #313338;
+  color: #F2F3F5;
+  font-family: -apple-system, BlinkMacSystemFont, "gg sans", "Noto Sans",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.014em;
+  overflow-x: hidden;
 }
 
-input[type="range"] {
-  height: 6px;
-  border-radius: 999px;
-  cursor: pointer;
-  accent-color: #18181b;
-}
-
+/* Tarjetas estilo Discord dentro de la plataforma (#2B2D31 sobre #313338) */
 .apple-card {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 1.5rem;
-  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.025), 0 1px 2px rgba(0, 0, 0, 0.02);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  background: #2B2D31;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  border-radius: 20px;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.apple-card-interactive:hover {
-  transform: translateY(-2px);
-  border-color: #d1d5db;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.02);
+.apple-card:hover {
+  border-color: rgba(88, 101, 242, 0.35);
 }
 
+/* Efecto cristal estilo Discord Nitro */
 .apple-glass {
-  background: rgba(255, 255, 255, 0.86);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: rgba(49, 51, 56, 0.88);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+}
+
+/* Fondo Hero estilo discord.com (#404EED con destellos cósmicos) */
+.discord-hero-bg {
+  background-color: #404EED;
+  background-image: radial-gradient(
+      circle at 15% 20%,
+      rgba(235, 69, 158, 0.28) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(87, 242, 135, 0.2) 0%,
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      #23272A 0%,
+      transparent 65%
+    );
+}
+
+/* Patrón de estrellas sutiles estilo Discord */
+.discord-stars {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+    radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+  background-size: 48px 48px, 96px 96px;
+  background-position: 0 0, 24px 24px;
+}
+
+/* Animación flotante orgánica para elementos no lineales */
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-1deg);
+  }
+}
+
+@keyframes floatSlowReverse {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+.discord-float-left {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.discord-float-right {
+  animation: floatSlowReverse 7s ease-in-out infinite;
+}
+
+/* Scrollbar estilo Discord */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2B2D31;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1A1B1E;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5865F2;
 }
