@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #060D1E;
+  --bg-card: #0F172A;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --accent-electric: #0EA5E9;
+  --accent-green: #10B981;
+}
+
+html.light-theme {
+  filter: invert(0.93) hue-rotate(180deg);
+}
+
+html.light-theme svg,
+html.light-theme img {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+

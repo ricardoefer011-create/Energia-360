@@ -1,0 +1,20 @@
+{
+  "name": "ENERGIA360 — Inteligencia Energética RD",
+  "short_name": "ENERGIA360",
+  "description": "Entiende tu consumo. Controla tu energía. Reduce tus gastos. Plataforma Local-First de gestión energética para República Dominicana.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060D1E",
+  "theme_color": "#0A192F",
+  "orientation": "portrait-primary",
+  "lang": "es-DO",
+  "icons": [
+    {
+      "src": "/icons/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="ringGrad" x1="12" y1="12" x2="108" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0EA5E9" />
+      <stop offset="55%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <linearGradient id="coreGrad" x1="36" y1="28" x2="84" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="28" fill="#060D1E" />
+  <!-- Anillo orbital de 360 grados segmentado con precisión de ingeniería -->
+  <circle cx="60" cy="60" r="42" stroke="url(#ringGrad)" stroke-width="6.5" stroke-dasharray="198 28" stroke-linecap="round" transform="rotate(-45 60 60)" />
+  <circle cx="60" cy="60" r="30" stroke="#1E293B" stroke-width="2" />
+  <!-- Nodos de fase (360°) -->
+  <circle cx="60" cy="18" r="4.5" fill="#38BDF8" />
+  <circle cx="96" cy="81" r="4.5" fill="#10B981" />
+  <!-- Vector central de pulso y flujo energético (no bombilla) -->
+  <path d="M64 31L43 62H59L55 89L77 56H61L64 31Z" fill="url(#coreGrad)" />
+</svg>
+
