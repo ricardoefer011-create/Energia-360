@@ -942,3 +942,187 @@ export function createSyntheticDemoData(): LocalVaultPayload {
   };
 }
 
+export type TestAccountPresetId =
+  | "hogar_santo_domingo"
+  | "apartamento_santiago"
+  | "negocio_punta_cana";
+
+export function createTestUserProfileVault(
+  preset: TestAccountPresetId
+): LocalVaultPayload {
+  const base = createSyntheticDemoData();
+  if (preset === "hogar_santo_domingo") {
+    return base;
+  }
+
+  if (preset === "apartamento_santiago") {
+    return {
+      ...base,
+      profile: {
+        spaceName: "Apartamento Moderno — Santiago (EDENORTE)",
+        propertyType: "apartamento",
+        distributor: "EDENORTE",
+        tariffCode: "BTS-1",
+        customRateDopPerKwh: null,
+        province: "Santiago",
+        monthlySavingsGoalDop: 1200,
+        monthlyBudgetLimitDop: 4200,
+        subscriptionPlan: "hogar",
+        onboardingCompleted: true,
+        telemetryOptIn: false,
+        createdAt: "2026-06-01T10:00:00Z",
+      },
+      invoices: [
+        {
+          ...base.invoices[1],
+          id: "stg-inv-08",
+          distributor: { value: "EDENORTE", status: "confirmado_usuario" },
+          billingPeriodStart: { value: "2026-07-15", status: "confirmado_usuario" },
+          billingPeriodEnd: { value: "2026-08-14", status: "confirmado_usuario" },
+          billedKwh: { value: 385, status: "confirmado_usuario" },
+          totalAmountDop: { value: 3346.2, status: "confirmado_usuario" },
+        },
+        {
+          ...base.invoices[3],
+          id: "stg-inv-09",
+          distributor: { value: "EDENORTE", status: "confirmado_usuario" },
+          billingPeriodStart: { value: "2026-08-15", status: "confirmado_usuario" },
+          billingPeriodEnd: { value: "2026-09-14", status: "confirmado_usuario" },
+          billedKwh: { value: 350, status: "confirmado_usuario" },
+          totalAmountDop: { value: 2862.3, status: "confirmado_usuario" },
+        },
+        {
+          ...base.invoices[4],
+          id: "stg-inv-10",
+          distributor: { value: "EDENORTE", status: "confirmado_usuario" },
+          billingPeriodStart: { value: "2026-09-15", status: "confirmado_usuario" },
+          billingPeriodEnd: { value: "2026-10-15", status: "confirmado_usuario" },
+          billedKwh: { value: 332, status: "confirmado_usuario" },
+          totalAmountDop: { value: 2613.5, status: "confirmado_usuario" },
+        },
+      ],
+      appliances: base.appliances.slice(1, 6),
+    };
+  }
+
+  // Negocio Comercial (Cafetería / Mini Market)
+  return {
+    ...base,
+    profile: {
+      spaceName: "Cafetería & Deli El Coral (Comercial BTS-2)",
+      propertyType: "pequeno_negocio",
+      distributor: "EDEESTE",
+      tariffCode: "BTS-2",
+      customRateDopPerKwh: null,
+      province: "La Altagracia (Punta Cana / Bávaro)",
+      monthlySavingsGoalDop: 4500,
+      monthlyBudgetLimitDop: 14500,
+      subscriptionPlan: "negocios",
+      onboardingCompleted: true,
+      telemetryOptIn: false,
+      createdAt: "2026-06-01T10:00:00Z",
+    },
+    invoices: [
+      {
+        ...base.invoices[2],
+        id: "biz-inv-08",
+        distributor: { value: "EDEESTE", status: "confirmado_usuario" },
+        tariffCode: { value: "BTS-2", status: "confirmado_usuario" },
+        billingPeriodEnd: { value: "2026-08-15", status: "confirmado_usuario" },
+        billedKwh: { value: 1120, status: "confirmado_usuario" },
+        totalAmountDop: { value: 15365.0, status: "confirmado_usuario" },
+      },
+      {
+        ...base.invoices[3],
+        id: "biz-inv-09",
+        distributor: { value: "EDEESTE", status: "confirmado_usuario" },
+        tariffCode: { value: "BTS-2", status: "confirmado_usuario" },
+        billingPeriodEnd: { value: "2026-09-15", status: "confirmado_usuario" },
+        billedKwh: { value: 1240, status: "confirmado_usuario" },
+        totalAmountDop: { value: 16995.8, status: "confirmado_usuario" },
+      },
+      {
+        ...base.invoices[4],
+        id: "biz-inv-10",
+        distributor: { value: "EDEESTE", status: "confirmado_usuario" },
+        tariffCode: { value: "BTS-2", status: "confirmado_usuario" },
+        billingPeriodEnd: { value: "2026-10-15", status: "confirmado_usuario" },
+        billedKwh: { value: 1185, status: "confirmado_usuario" },
+        totalAmountDop: { value: 16248.35, status: "confirmado_usuario" },
+      },
+    ],
+    appliances: [
+      {
+        id: "biz-app-1",
+        name: "2 Exhibidores Refrigerados Verticales (Bebidas y Lácteos)",
+        category: "Equipos comerciales",
+        brand: "Imbera",
+        model: "Doble Puerta Cristal",
+        nominalWatts: 520,
+        dutyCycleFactor: 0.72,
+        quantity: 2,
+        dailyHours: 24,
+        monthlyDays: 30,
+        efficiencyRating: "Comercial",
+        isCriticalBackupLoad: true,
+        isNighttimeHeavy: true,
+        provenance: "biblioteca_orientativa",
+      },
+      {
+        id: "biz-app-2",
+        name: "Aire Acondicionado Split 24,000 BTU Salón Clientes",
+        category: "Aires acondicionados",
+        brand: "Carrier",
+        model: "Inverter 24K",
+        nominalWatts: 2150,
+        dutyCycleFactor: 0.68,
+        quantity: 1,
+        dailyHours: 10,
+        monthlyDays: 28,
+        efficiencyRating: "Alta Eficiencia (Inverter)",
+        isCriticalBackupLoad: false,
+        isNighttimeHeavy: false,
+        provenance: "biblioteca_orientativa",
+      },
+      {
+        id: "biz-app-3",
+        name: "Congelador Horizontal (Freezer Inventario)",
+        category: "Congeladores",
+        brand: "Frigidaire",
+        model: "15 pies³",
+        nominalWatts: 340,
+        dutyCycleFactor: 0.65,
+        quantity: 1,
+        dailyHours: 24,
+        monthlyDays: 30,
+        efficiencyRating: "Estándar",
+        isCriticalBackupLoad: true,
+        isNighttimeHeavy: true,
+        provenance: "biblioteca_orientativa",
+      },
+    ],
+    inverterSystems: [
+      {
+        id: "biz-inv-sys-1",
+        name: "Inversor Híbrido Comercial 8kW + Banco Litio",
+        inverterBrand: "Deye / Sol-Ark",
+        inverterModel: "SUN-8K-SG01LP1 48V",
+        inverterPowerW: 8000,
+        inverterEfficiency: 0.94,
+        batteryBrand: "Banco Litio LiFePO4 10.2 kWh",
+        batteryType: "lifepo4",
+        batteryVoltageV: 48,
+        batteryCapacityAh: 210,
+        batteryCount: 2,
+        totalBatteryCapacityWh: 10080,
+        usableDodFraction: 0.88,
+        currentStateOfChargePercent: 95,
+        installedPanelsCount: 8,
+        installedSolarKw: 4.64,
+        installationDate: "2025-02-15",
+      },
+    ],
+  };
+}
+
+

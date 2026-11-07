@@ -5,8 +5,6 @@ import {
   Building2,
   CheckCircle2,
   Home,
-  KeyRound,
-  Lock,
   ShieldCheck,
   Sparkles,
   Store,
@@ -34,7 +32,6 @@ export function OnboardingModal({
   onCompleteOnboarding,
   onStartDemoInstead,
 }: OnboardingModalProps) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [spaceName, setSpaceName] = useState(
     initialProfile.spaceName || "Mi Hogar en Santo Domingo"
   );
@@ -47,12 +44,12 @@ export function OnboardingModal({
   const [province, setProvince] = useState(
     initialProfile.province || "Santo Domingo"
   );
-  const [monthlySavingsGoalDop, setMonthlySavingsGoalDop] = useState(1500);
   const [passphrase, setPassphrase] = useState("");
   const [loadStarterAppliances, setLoadStarterAppliances] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleFinish() {
+  async function handleFinish(e: React.FormEvent) {
+    e.preventDefault();
     setSubmitting(true);
     const tariffCode =
       distributor === "CEPM"
@@ -68,7 +65,6 @@ export function OnboardingModal({
       distributor,
       tariffCode,
       province,
-      monthlySavingsGoalDop,
       onboardingCompleted: true,
     };
 
@@ -81,277 +77,146 @@ export function OnboardingModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-      <div className="w-full max-w-2xl rounded-3xl border border-slate-800 bg-slate-900 p-6 md:p-8 shadow-2xl">
-        {/* Indicador de pasos */}
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-6">
-          <span className="font-bold text-sky-400 uppercase tracking-wider">
-            Configuración Inicial ENERGIA360 — Paso {step} de 3
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+      <form
+        onSubmit={handleFinish}
+        className="w-full max-w-xl rounded-3xl bg-white border border-black/10 p-6 sm:p-8 shadow-2xl space-y-5"
+      >
+        <div className="flex items-center justify-between">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-[#0071E3]/10 text-[#0071E3]">
+            <ShieldCheck className="w-3.5 h-3.5" /> Configurar Mi Espacio
           </span>
           <button
             type="button"
             onClick={onStartDemoInstead}
-            className="text-amber-400 hover:underline inline-flex items-center gap-1 font-medium"
+            className="text-xs font-semibold text-[#0071E3] hover:underline inline-flex items-center gap-1"
           >
-            <Sparkles className="w-3.5 h-3.5" /> Explorar Modo Demostración
+            <Sparkles className="w-3.5 h-3.5" /> O usar Usuario de Prueba
           </button>
         </div>
 
-        {step === 1 && (
-          <div className="space-y-5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-semibold">
-              <ShieldCheck className="w-4 h-4" /> Filosofía Zero-Access y
-              Privacidad por Diseño
-            </div>
-            <h2 className="text-2xl font-extrabold tracking-tight">
-              Entiende tu consumo. Controla tu energía. Reduce tus gastos.
-            </h2>
-            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-              Bienvenido a <strong>ENERGIA360</strong>. A diferencia de otras
-              plataformas, aquí{" "}
-              <strong className="text-emerald-400">
-                tú eres el único dueño de tus datos
-              </strong>
-              :
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                <div className="font-bold text-slate-100 mb-1">
-                  1. Procesamiento 100% Local
-                </div>
-                <p className="text-slate-400">
-                  Tus facturas se analizan en tu navegador y no se almacenan en
-                  servidores centrales ni se comparten con distribuidoras.
-                </p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                <div className="font-bold text-slate-100 mb-1">
-                  2. Cifrado AES-256-GCM
-                </div>
-                <p className="text-slate-400">
-                  Tu bóveda se guarda en <code>IndexedDB</code> cifrada con tu
-                  contraseña maestra. Funciona incluso sin conexión a internet.
-                </p>
-              </div>
-            </div>
+        <h2 className="text-2xl font-bold tracking-tight text-[#1D1D1F]">
+          Personaliza tu hogar o negocio
+        </h2>
 
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition"
-              >
-                Continuar: Configurar Mi Vivienda o Negocio &rarr;
-              </button>
-            </div>
-          </div>
-        )}
+        <div>
+          <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+            Nombre de tu espacio
+          </label>
+          <input
+            type="text"
+            value={spaceName}
+            onChange={(e) => setSpaceName(e.target.value)}
+            className="w-full rounded-2xl bg-[#F5F5F7] border border-black/10 px-4 py-3 text-sm text-[#1D1D1F]"
+          />
+        </div>
 
-        {step === 2 && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-extrabold">
-              Configura tu Espacio y Distribuidora en República Dominicana
-            </h2>
-            <div>
-              <label className="block text-xs text-slate-300 mb-1">
-                Nombre de tu espacio energético
-              </label>
-              <input
-                type="text"
-                value={spaceName}
-                onChange={(e) => setSpaceName(e.target.value)}
-                className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2.5 text-xs text-slate-100"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs text-slate-300 mb-1.5">
-                Tipo de inmueble o instalación
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
-                {(
-                  [
-                    { id: "hogar", label: "Hogar", icon: Home },
-                    { id: "apartamento", label: "Apartamento", icon: Building2 },
-                    {
-                      id: "pequeno_negocio",
-                      label: "Pequeño Negocio",
-                      icon: Store,
-                    },
-                    { id: "empresa", label: "Empresa", icon: Building2 },
-                    {
-                      id: "instalacion_solar",
-                      label: "Solar / Híbrido",
-                      icon: Sun,
-                    },
-                  ] as const
-                ).map((item) => {
-                  const Icon = item.icon;
-                  const active = propertyType === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setPropertyType(item.id)}
-                      className={`p-3 rounded-xl border text-center flex flex-col items-center gap-1.5 transition ${
-                        active
-                          ? "border-sky-500 bg-sky-500/15 text-sky-300 font-bold"
-                          : "border-slate-800 bg-slate-950 text-slate-400 hover:text-slate-200"
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span className="text-[11px]">{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">
-                  Distribuidora Eléctrica
-                </label>
-                <select
-                  value={distributor}
-                  onChange={(e) =>
-                    setDistributor(e.target.value as DistributorCode)
-                  }
-                  className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3 py-2.5 text-xs text-slate-100 font-semibold"
+        <div>
+          <label className="block text-xs font-semibold text-[#6E6E73] mb-1.5">
+            Tipo de propiedad
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+            {(
+              [
+                { id: "hogar", label: "Hogar", icon: Home },
+                { id: "apartamento", label: "Apartamento", icon: Building2 },
+                { id: "pequeno_negocio", label: "Negocio", icon: Store },
+                { id: "empresa", label: "Empresa", icon: Building2 },
+                { id: "instalacion_solar", label: "Solar", icon: Sun },
+              ] as const
+            ).map((item) => {
+              const Icon = item.icon;
+              const active = propertyType === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setPropertyType(item.id)}
+                  className={`p-3 rounded-2xl border flex flex-col items-center gap-1.5 transition ${
+                    active
+                      ? "border-[#0071E3] bg-[#0071E3]/10 text-[#0071E3] font-bold"
+                      : "border-black/10 bg-[#F5F5F7] text-[#6E6E73]"
+                  }`}
                 >
-                  <option value="EDESUR">EDESUR</option>
-                  <option value="EDENORTE">EDENORTE</option>
-                  <option value="EDEESTE">EDEESTE</option>
-                  <option value="CEPM">CEPM (Bávaro / Punta Cana)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">
-                  Provincia (Para Horas Solares Pico)
-                </label>
-                <select
-                  value={province}
-                  onChange={(e) => setProvince(e.target.value)}
-                  className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3 py-2.5 text-xs text-slate-100"
-                >
-                  {Object.keys(RD_PROVINCES_SOLAR_HSP).map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex justify-between pt-2">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="px-4 py-2 rounded-xl border border-slate-700 text-xs text-slate-300"
-              >
-                &larr; Atrás
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep(3)}
-                className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition"
-              >
-                Continuar: Bóveda Privada y Equipos &rarr;
-              </button>
-            </div>
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
           </div>
-        )}
+        </div>
 
-        {step === 3 && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-extrabold">
-              Protege tu Espacio Privado (Sin obligación de subir factura)
-            </h2>
-            <p className="text-xs text-slate-400">
-              Puedes usar la calculadora de equipos desde el primer momento sin
-              subir ninguna factura. Si defines una contraseña maestra ahora,
-              tus datos quedarán cifrados con <strong>AES-256-GCM</strong> en{" "}
-              <code>IndexedDB</code>.
-            </p>
-
-            <div>
-              <label className="block text-xs text-slate-300 mb-1">
-                Contraseña Maestra Local (Opcional ahora, recomendada — mín. 8
-                caracteres)
-              </label>
-              <input
-                type="password"
-                value={passphrase}
-                onChange={(e) => setPassphrase(e.target.value)}
-                placeholder="Ej. MiClaveEnergiaRD2026! (Dejar en blanco si prefieres configurarla luego)"
-                className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2.5 text-xs text-slate-100"
-              />
-              <span className="text-[11px] text-amber-400/90 block mt-1">
-                Importante: No existe recuperación administrativa de esta clave.
-              </span>
-            </div>
-
-            <div>
-              <label className="block text-xs text-slate-300 mb-1">
-                Objetivo mensual de ahorro (RD$)
-              </label>
-              <input
-                type="number"
-                min={200}
-                step={100}
-                value={monthlySavingsGoalDop}
-                onChange={(e) =>
-                  setMonthlySavingsGoalDop(parseInt(e.target.value, 10) || 1000)
-                }
-                className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2 text-xs text-slate-100"
-              />
-            </div>
-
-            <label className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer text-xs">
-              <input
-                type="checkbox"
-                checked={loadStarterAppliances}
-                onChange={(e) => setLoadStarterAppliances(e.target.checked)}
-                className="mt-0.5 rounded accent-emerald-500"
-              />
-              <div>
-                <span className="font-semibold text-slate-200 block">
-                  Pre-cargar 4 equipos básicos orientativos (Nevera, A/C,
-                  Abanico e Iluminación LED)
-                </span>
-                <span className="text-slate-400 text-[11px]">
-                  Te permite usar la calculadora inmediatamente sin tener una
-                  factura a mano. Puedes editarlos o borrarlos en cualquier
-                  momento.
-                </span>
-              </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+              Distribuidora Eléctrica
             </label>
-
-            <div className="flex justify-between pt-3">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="px-4 py-2 rounded-xl border border-slate-700 text-xs text-slate-300"
-              >
-                &larr; Atrás
-              </button>
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={handleFinish}
-                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-1.5 transition"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                {submitting
-                  ? "Creando espacio..."
-                  : "Acceder a Mi Plataforma ENERGIA360"}
-              </button>
-            </div>
+            <select
+              value={distributor}
+              onChange={(e) =>
+                setDistributor(e.target.value as DistributorCode)
+              }
+              className="w-full rounded-2xl bg-[#F5F5F7] border border-black/10 px-3.5 py-2.5 text-xs font-semibold text-[#1D1D1F]"
+            >
+              <option value="EDESUR">EDESUR</option>
+              <option value="EDENORTE">EDENORTE</option>
+              <option value="EDEESTE">EDEESTE</option>
+              <option value="CEPM">CEPM (Punta Cana / Bávaro)</option>
+            </select>
           </div>
-        )}
-      </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+              Provincia
+            </label>
+            <select
+              value={province}
+              onChange={(e) => setProvince(e.target.value)}
+              className="w-full rounded-2xl bg-[#F5F5F7] border border-black/10 px-3.5 py-2.5 text-xs text-[#1D1D1F]"
+            >
+              {Object.keys(RD_PROVINCES_SOLAR_HSP).map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+            Contraseña Maestra Local Opcional (mín. 8 caracteres)
+          </label>
+          <input
+            type="password"
+            value={passphrase}
+            onChange={(e) => setPassphrase(e.target.value)}
+            placeholder="Dejar en blanco si prefieres configurarla más tarde"
+            className="w-full rounded-2xl bg-[#F5F5F7] border border-black/10 px-4 py-2.5 text-xs text-[#1D1D1F]"
+          />
+        </div>
+
+        <label className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-[#F5F5F7] cursor-pointer text-xs text-[#1D1D1F]">
+          <input
+            type="checkbox"
+            checked={loadStarterAppliances}
+            onChange={(e) => setLoadStarterAppliances(e.target.checked)}
+            className="rounded accent-[#0071E3]"
+          />
+          <span>
+            Incluir 4 equipos básicos de ejemplo (Nevera, Aire, Abanico y Luces
+            LED) para empezar sin necesidad de factura.
+          </span>
+        </label>
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full py-3.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm inline-flex items-center justify-center gap-2 transition"
+        >
+          <CheckCircle2 className="w-4 h-4" />
+          <span>{submitting ? "Preparando..." : "Comenzar Ahora"}</span>
+        </button>
+      </form>
     </div>
   );
 }
-

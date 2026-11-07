@@ -4,16 +4,11 @@ import React, { useState } from "react";
 import {
   CheckCircle2,
   CloudUpload,
-  Database,
   Download,
   EyeOff,
   KeyRound,
-  Layers,
-  Lock,
-  RefreshCw,
   Server,
   ShieldAlert,
-  ShieldCheck,
   Trash2,
   Upload,
 } from "lucide-react";
@@ -21,7 +16,6 @@ import {
   DistributorCode,
   LocalVaultPayload,
   SubscriptionPlan,
-  TariffSchedule,
 } from "@/types/energia360";
 import { EncryptedEnvelope } from "@/lib/crypto/vault-crypto";
 import {
@@ -59,45 +53,41 @@ const PLANS_CATALOG: Array<{
   {
     id: "gratuito",
     name: "Plan Gratuito",
-    target: "Inicio rápido para cualquier ciudadano",
+    target: "Inicio rápido",
     features: [
-      "Registro básico de equipos y calculadora de consumo",
-      "Analizador local de facturas PDF/Imagen",
-      "Dashboard básico con pliego SIE",
-      "Bóveda cifrada local AES-256-GCM",
+      "Calculadora de consumo por equipos",
+      "Analizador local de facturas",
+      "Dashboard con tarifas SIE",
     ],
   },
   {
     id: "hogar",
     name: "Plan Hogar",
-    target: "Familias y apartamentos residenciales",
+    target: "Familias y apartamentos",
     features: [
-      "Historial ilimitado de facturas y comparaciones",
-      "Simulador de ahorro multi-escenario (hasta 3)",
-      "Motor completo de Inteligencia Energética",
-      "Simulador Solar y cálculo de autonomía de inversor",
+      "Historial completo de facturas",
+      "Simulador de ahorro en 3 escenarios",
+      "Simulador Solar y autonomía de inversor",
     ],
   },
   {
     id: "negocios",
     name: "Plan Negocios",
-    target: "Colmados, cafeterías, consultorios y PyMEs",
+    target: "Comercios y PyMEs",
     features: [
-      "Soporte para tarifas comerciales BTS-2 y CEPM",
-      "Análisis de equipos de refrigeración comercial",
-      "Alertas de presupuesto y saltos tarifarios",
-      "Respaldo cifrado E2EE opcional en Supabase",
+      "Tarifas comerciales BTS-2 y CEPM",
+      "Equipos de refrigeración comercial",
+      "Respaldo cifrado E2EE en Supabase",
     ],
   },
   {
     id: "empresarial",
     name: "Plan Empresarial",
-    target: "Múltiples sucursales y gestión centralizada",
+    target: "Múltiples sucursales",
     features: [
-      "Múltiples instalaciones y perfiles",
-      "Auditoría tarifaria y reportes ejecutivos",
-      "Dimensionamiento solar comercial e híbrido",
-      "Arquitectura preparada para medidores inteligentes",
+      "Gestión multi-instalación",
+      "Auditoría tarifaria ejecutiva",
+      "Dimensionamiento solar comercial",
     ],
   },
 ];
@@ -129,13 +119,11 @@ export function TariffsAndAdminModule({
   async function handlePassphraseSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (passphraseInput.length < 8) {
-      setCryptoStatusMessage(
-        "Error: La contraseña maestra debe tener al menos 8 caracteres."
-      );
+      setCryptoStatusMessage("La contraseña debe tener al menos 8 caracteres.");
       return;
     }
     if (passphraseInput !== passphraseConfirm) {
-      setCryptoStatusMessage("Error: Las contraseñas no coinciden.");
+      setCryptoStatusMessage("Las contraseñas no coinciden.");
       return;
     }
     try {
@@ -143,11 +131,11 @@ export function TariffsAndAdminModule({
       setPassphraseInput("");
       setPassphraseConfirm("");
       setCryptoStatusMessage(
-        "Bóveda cifrada con AES-256-GCM + PBKDF2 (310,000 iteraciones) y guardada en IndexedDB."
+        "Bóveda cifrada con éxito con AES-256-GCM en tu dispositivo."
       );
     } catch (err) {
       setCryptoStatusMessage(
-        err instanceof Error ? err.message : "Error al cifrar bóveda."
+        err instanceof Error ? err.message : "Error al cifrar."
       );
     }
   }
@@ -155,7 +143,7 @@ export function TariffsAndAdminModule({
   async function handleSyncE2eeToSupabase() {
     if (!encryptedEnvelope) {
       setSupabaseSyncMessage(
-        "Primero debes cifrar tu bóveda con una contraseña maestra local antes de sincronizar el blob E2EE."
+        "Configura primero tu contraseña maestra a la izquierda antes de sincronizar."
       );
       return;
     }
@@ -179,22 +167,19 @@ export function TariffsAndAdminModule({
   if (activeSection === "tarifas") {
     return (
       <div className="space-y-6">
-        {/* Selector de Distribuidora y Tarifa Activa */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-6">
-          <h3 className="font-bold text-lg mb-1">
-            Configuración de Tarifas del Mercado Eléctrico Dominicano (SIE)
-          </h3>
-          <p className="text-xs text-slate-400 mb-5">
-            Selecciona tu distribuidora (EDESUR, EDENORTE, EDEESTE o CEPM) y
-            categoría tarifaria. Puedes actualizar los bloques tarifarios sin
-            modificar el código cuando la Superintendencia de Electricidad (SIE)
-            publique un nuevo pliego trimestral.
+        <div className="apple-card p-6 sm:p-8">
+          <h2 className="font-bold text-xl sm:text-2xl text-[#1D1D1F] mb-1">
+            Tarifas Eléctricas de República Dominicana (SIE)
+          </h2>
+          <p className="text-xs text-[#6E6E73] mb-6">
+            Elige tu distribuidora o ajusta el precio de cualquier escalón sin
+            tocar código.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 rounded-xl bg-slate-950/75 border border-slate-800">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-5 rounded-3xl bg-[#F5F5F7]">
             <div>
-              <label className="block text-xs text-slate-300 mb-1">
-                Distribuidora Eléctrica Activa
+              <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                Distribuidora
               </label>
               <select
                 value={vault.profile.distributor}
@@ -207,19 +192,17 @@ export function TariffsAndAdminModule({
                     vault.profile.customRateDopPerKwh
                   );
                 }}
-                className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100 font-bold"
+                className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs font-bold text-[#1D1D1F]"
               >
-                <option value="EDESUR">EDESUR Dominicana</option>
-                <option value="EDENORTE">EDENORTE Dominicana</option>
-                <option value="EDEESTE">EDEESTE Dominicana</option>
-                <option value="CEPM">
-                  CEPM (Consorcio Energético Punta Cana - Macao)
-                </option>
+                <option value="EDESUR">EDESUR</option>
+                <option value="EDENORTE">EDENORTE</option>
+                <option value="EDEESTE">EDEESTE</option>
+                <option value="CEPM">CEPM (Bávaro / Punta Cana)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
                 Categoría Tarifaria
               </label>
               <select
@@ -231,109 +214,67 @@ export function TariffsAndAdminModule({
                     vault.profile.customRateDopPerKwh
                   )
                 }
-                className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
+                className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs text-[#1D1D1F]"
               >
                 {vault.profile.distributor === "CEPM" ? (
-                  <option value="RES-CEPM">
-                    RES-CEPM (Residencial / Prepago Orientativa)
-                  </option>
+                  <option value="RES-CEPM">RES-CEPM</option>
                 ) : (
                   <>
-                    <option value="BTS-1">
-                      BTS-1 (Baja Tensión Simple Residencial)
-                    </option>
-                    <option value="BTS-2">
-                      BTS-2 (Baja Tensión Simple Comercial)
-                    </option>
+                    <option value="BTS-1">BTS-1 (Residencial)</option>
+                    <option value="BTS-2">BTS-2 (Comercial)</option>
                   </>
                 )}
               </select>
             </div>
 
             <div>
-              <label className="block text-xs text-slate-300 mb-1">
-                Tarifa Fija Personalizada Opcional (RD$/kWh)
+              <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                Tarifa Personalizada Opcional (RD$/kWh)
               </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  step="0.01"
-                  placeholder="Usar pliego oficial por bloques"
-                  value={vault.profile.customRateDopPerKwh ?? ""}
-                  onChange={(e) => {
-                    const val = e.target.value
-                      ? parseFloat(e.target.value)
-                      : null;
-                    onUpdateDistributorAndTariff(
-                      vault.profile.distributor,
-                      vault.profile.tariffCode,
-                      val
-                    );
-                  }}
-                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
-                />
-                {vault.profile.customRateDopPerKwh !== null && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onUpdateDistributorAndTariff(
-                        vault.profile.distributor,
-                        vault.profile.tariffCode,
-                        null
-                      )
-                    }
-                    className="px-2.5 py-2 rounded-lg bg-slate-800 text-xs text-slate-300 hover:text-white"
-                  >
-                    Restaurar SIE
-                  </button>
-                )}
-              </div>
+              <input
+                type="number"
+                step="0.01"
+                placeholder="Usar bloques oficiales SIE"
+                value={vault.profile.customRateDopPerKwh ?? ""}
+                onChange={(e) => {
+                  const val = e.target.value
+                    ? parseFloat(e.target.value)
+                    : null;
+                  onUpdateDistributorAndTariff(
+                    vault.profile.distributor,
+                    vault.profile.tariffCode,
+                    val
+                  );
+                }}
+                className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs text-[#1D1D1F]"
+              />
             </div>
           </div>
 
-          {/* Tabla editable de pliegos tarifarios */}
           <div className="space-y-4">
             {vault.customTariffs.map((sched) => (
-              <div
-                key={sched.id}
-                className="p-4 rounded-xl border border-slate-800 bg-slate-950/75"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-slate-100">
-                      {sched.distributor_code} — {sched.category_name}
-                    </span>
-                    <span
-                      className={`text-[10px] px-2 py-0.5 rounded font-semibold ${
-                        sched.is_official_sie
-                          ? "bg-sky-500/15 text-sky-300 border border-sky-500/30"
-                          : "bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                      }`}
-                    >
-                      {sched.is_official_sie
-                        ? "Pliego Oficial SIE"
-                        : "Valor Ilustrativo Configurable"}
-                    </span>
-                  </div>
-                  <span className="text-[11px] text-slate-400">
-                    Vigencia desde: {sched.effective_from}
+              <div key={sched.id} className="p-5 rounded-3xl bg-[#F5F5F7]">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                  <span className="font-bold text-sm text-[#1D1D1F]">
+                    {sched.distributor_code} — {sched.category_name}
+                  </span>
+                  <span className="text-xs font-semibold px-3 py-0.5 rounded-full bg-white text-[#0071E3]">
+                    {sched.is_official_sie ? "Oficial SIE" : "Orientativa"}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mb-3">{sched.notes}</p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   {sched.energy_blocks.map((blk, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between text-xs"
+                      className="p-3 rounded-2xl bg-white flex items-center justify-between text-xs"
                     >
-                      <span className="text-slate-300">
+                      <span className="text-[#6E6E73]">
                         {blk.max_kwh
                           ? `${blk.min_kwh}–${blk.max_kwh} kWh`
                           : `>= ${blk.min_kwh} kWh`}
                       </span>
                       <div className="flex items-center gap-1">
-                        <span className="text-slate-400">RD$</span>
+                        <span className="text-[#6E6E73]">RD$</span>
                         <input
                           type="number"
                           step="0.01"
@@ -345,7 +286,7 @@ export function TariffsAndAdminModule({
                               parseFloat(e.target.value) || 0
                             )
                           }
-                          className="w-16 rounded bg-slate-950 border border-slate-700 px-1.5 py-1 text-right font-bold text-emerald-400"
+                          className="w-16 rounded-lg bg-[#F5F5F7] px-2 py-1 text-right font-bold text-[#0071E3]"
                         />
                       </div>
                     </div>
@@ -356,62 +297,47 @@ export function TariffsAndAdminModule({
           </div>
         </div>
 
-        {/* Planes Comerciales Freemium */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-bold text-base">
-                Arquitectura de Planes Comerciales (Modelo Freemium)
-              </h3>
-              <p className="text-xs text-slate-400">
-                Activa o simula cualquier plan para verificar los permisos de
-                funcionalidades (sin cobros reales activos en este MVP).
-              </p>
-            </div>
-            <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold uppercase">
-              Plan Actual: {vault.profile.subscriptionPlan}
-            </span>
-          </div>
-
+        {/* Planes */}
+        <div className="apple-card p-6 sm:p-8">
+          <h3 className="font-bold text-xl text-[#1D1D1F] mb-4">
+            Planes de Suscripción
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {PLANS_CATALOG.map((plan) => {
               const isCurrent = vault.profile.subscriptionPlan === plan.id;
               return (
                 <div
                   key={plan.id}
-                  className={`rounded-xl border p-4 flex flex-col justify-between ${
+                  className={`p-5 rounded-3xl flex flex-col justify-between ${
                     isCurrent
-                      ? "border-sky-500 bg-slate-950"
-                      : "border-slate-800 bg-slate-950/60"
+                      ? "bg-white border-2 border-[#0071E3]"
+                      : "bg-[#F5F5F7]"
                   }`}
                 >
                   <div>
-                    <div className="font-bold text-sm text-slate-100">
+                    <div className="font-bold text-base text-[#1D1D1F]">
                       {plan.name}
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-0.5 mb-3">
-                      {plan.target}
-                    </p>
-                    <ul className="space-y-1.5 text-xs text-slate-300">
+                    <p className="text-xs text-[#6E6E73] mb-3">{plan.target}</p>
+                    <ul className="space-y-1.5 text-xs text-[#1D1D1F]">
                       {plan.features.map((f, i) => (
                         <li key={i} className="flex items-start gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#28CD41] shrink-0 mt-0.5" />
                           <span>{f}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
-
                   <button
                     type="button"
                     onClick={() => onChangeSubscriptionPlan(plan.id)}
-                    className={`mt-4 w-full py-2 rounded-lg text-xs font-semibold transition ${
+                    className={`mt-5 w-full py-2.5 rounded-full text-xs font-semibold transition ${
                       isCurrent
-                        ? "bg-sky-600/20 text-sky-300 border border-sky-500/40"
-                        : "bg-slate-800 hover:bg-sky-600 text-slate-200 hover:text-white"
+                        ? "bg-[#0071E3] text-white"
+                        : "bg-white text-[#1D1D1F] hover:bg-black/5"
                     }`}
                   >
-                    {isCurrent ? "Plan Activo" : `Cambiar a ${plan.name}`}
+                    {isCurrent ? "Plan Activo" : "Activar Plan"}
                   </button>
                 </div>
               );
@@ -425,173 +351,114 @@ export function TariffsAndAdminModule({
   if (activeSection === "privacidad") {
     return (
       <div className="space-y-6">
-        {/* Cifrado Local AES-256-GCM y Gestión de Clave Maestra */}
-        <div className="rounded-2xl border border-emerald-500/30 bg-slate-900/80 p-6">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="p-2.5 rounded-xl bg-emerald-500/15 text-emerald-400">
+        <div className="apple-card p-6 sm:p-8">
+          <div className="flex items-start gap-3 mb-5">
+            <div className="w-12 h-12 rounded-2xl bg-[#28CD41]/15 text-[#1D832D] flex items-center justify-center shrink-0">
               <KeyRound className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-bold text-lg">
-                Bóveda Criptográfica Local-First (Web Crypto API AES-256-GCM)
-              </h3>
-              <p className="text-xs text-slate-300 mt-0.5">
-                Tu información se cifra en el navegador utilizando derivación{" "}
-                <strong>PBKDF2-HMAC-SHA256 (310,000 iteraciones)</strong> y
-                cifrado autenticado <strong>AES-256-GCM</strong>. Ni los
-                servidores de Supabase ni los administradores de ENERGIA360
-                reciben jamás tu contraseña maestra.
+              <h2 className="font-bold text-xl sm:text-2xl text-[#1D1D1F]">
+                Privacidad Zero-Access y Cifrado AES-256-GCM
+              </h2>
+              <p className="text-xs text-[#6E6E73] mt-1">
+                Protege tus datos locales con una contraseña maestra y
+                sincroniza un respaldo cifrado en Supabase.
               </p>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 mb-5 flex items-start gap-2.5">
-            <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-            <div>
-              <strong>Advertencia de No-Recuperación (Zero-Access):</strong> Por
-              diseño de seguridad, no existe ningún mecanismo para que un
-              administrador restablezca o descifre tu contraseña maestra. Si
-              olvidas tu contraseña maestra y no conservas un archivo exportado,
-              tus datos cifrados serán matemáticamente irrecuperables.
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <form onSubmit={handlePassphraseSubmit} className="space-y-3">
-              <h4 className="font-bold text-sm text-slate-100">
-                Configurar o Actualizar Contraseña Maestra de Cifrado
+            <form
+              onSubmit={handlePassphraseSubmit}
+              className="p-6 rounded-3xl bg-[#F5F5F7] space-y-3.5"
+            >
+              <h4 className="font-bold text-sm text-[#1D1D1F]">
+                Definir Contraseña Maestra Local
               </h4>
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">
-                  Nueva Contraseña Maestra (mínimo 8 caracteres)
-                </label>
-                <input
-                  type="password"
-                  required
-                  minLength={8}
-                  value={passphraseInput}
-                  onChange={(e) => setPassphraseInput(e.target.value)}
-                  placeholder="Introduce una frase o contraseña robusta..."
-                  className="w-full rounded-lg bg-slate-950 border border-slate-800 px-3 py-2 text-xs text-slate-100"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">
-                  Confirmar Contraseña Maestra
-                </label>
-                <input
-                  type="password"
-                  required
-                  minLength={8}
-                  value={passphraseConfirm}
-                  onChange={(e) => setPassphraseConfirm(e.target.value)}
-                  placeholder="Repite la contraseña maestra..."
-                  className="w-full rounded-lg bg-slate-950 border border-slate-800 px-3 py-2 text-xs text-slate-100"
-                />
-              </div>
+              <input
+                type="password"
+                required
+                minLength={8}
+                value={passphraseInput}
+                onChange={(e) => setPassphraseInput(e.target.value)}
+                placeholder="Nueva contraseña (mínimo 8 caracteres)"
+                className="w-full rounded-2xl bg-white border border-black/10 px-4 py-2.5 text-xs text-[#1D1D1F]"
+              />
+              <input
+                type="password"
+                required
+                minLength={8}
+                value={passphraseConfirm}
+                onChange={(e) => setPassphraseConfirm(e.target.value)}
+                placeholder="Confirmar contraseña"
+                className="w-full rounded-2xl bg-white border border-black/10 px-4 py-2.5 text-xs text-[#1D1D1F]"
+              />
               <button
                 type="submit"
-                className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition"
+                className="w-full py-3 rounded-2xl bg-[#0071E3] text-white font-semibold text-xs transition"
               >
-                Cifrar Bóveda Local con AES-256-GCM Ahora
+                Cifrar Mi Bóveda con AES-256-GCM
               </button>
               {cryptoStatusMessage && (
-                <div className="p-3 rounded-lg bg-slate-950 border border-emerald-500/40 text-xs text-emerald-300">
+                <div className="text-xs text-[#1D832D] font-medium">
                   {cryptoStatusMessage}
                 </div>
               )}
             </form>
 
-            {/* Inspector técnico en vivo del bloque cifrado */}
-            <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 flex flex-col justify-between">
+            <div className="p-6 rounded-3xl bg-[#F5F5F7] flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-bold text-xs text-sky-400">
-                    Inspector de Verificación Criptográfica (Zero-Access Proof)
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300">
-                    {encryptedEnvelope
-                      ? "Cifrado Activo en IndexedDB"
-                      : "Sesión en Memoria"}
-                  </span>
-                </div>
-
-                {encryptedEnvelope ? (
-                  <div className="space-y-1.5 text-[11px] font-mono text-slate-300">
-                    <div>
-                      <span className="text-slate-500">Algoritmo:</span>{" "}
-                      {encryptedEnvelope.cipher} + {encryptedEnvelope.kdf} (
-                      {encryptedEnvelope.iterations} iteraciones)
-                    </div>
-                    <div className="truncate">
-                      <span className="text-slate-500">Salt (Base64):</span>{" "}
-                      {encryptedEnvelope.saltBase64}
-                    </div>
-                    <div className="truncate">
-                      <span className="text-slate-500">IV 96-bit:</span>{" "}
-                      {encryptedEnvelope.ivBase64}
-                    </div>
-                    <div className="truncate text-emerald-400">
-                      <span className="text-slate-500">SHA-256:</span>{" "}
-                      {encryptedEnvelope.ciphertextSha256}
-                    </div>
-                    <div className="p-2 rounded bg-slate-900 text-[10px] text-slate-400 break-all max-h-20 overflow-hidden">
-                      Ciphertext:{" "}
-                      {encryptedEnvelope.ciphertextBase64.slice(0, 180)}...
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-xs text-slate-400 py-6">
-                    Establece tu contraseña maestra a la izquierda para generar
-                    el sobre cifrado AES-256-GCM en IndexedDB y ver aquí la
-                    prueba criptográfica en vivo.
-                  </p>
-                )}
+                <h4 className="font-bold text-sm text-[#1D1D1F] mb-2">
+                  Estado Criptográfico y Respaldo en Supabase
+                </h4>
+                <p className="text-xs text-[#6E6E73] mb-4">
+                  {encryptedEnvelope
+                    ? `Cifrado activo (${encryptedEnvelope.cipher}, SHA-256: ${encryptedEnvelope.ciphertextSha256.slice(
+                        0,
+                        18
+                      )}...)`
+                    : "Aún no has activado una contraseña maestra para esta sesión."}
+                </p>
               </div>
-
-              <div className="mt-4 pt-3 border-t border-slate-800">
-                <button
-                  type="button"
-                  onClick={handleSyncE2eeToSupabase}
-                  className="w-full py-2 rounded-lg bg-sky-600/20 hover:bg-sky-600/30 border border-sky-500/40 text-sky-300 font-semibold text-xs inline-flex items-center justify-center gap-1.5 transition"
-                >
-                  <CloudUpload className="w-4 h-4" />
-                  Sincronizar Solo Ciphertext E2EE en Supabase
-                </button>
-                {supabaseSyncMessage && (
-                  <p className="text-[11px] text-slate-400 mt-2">
-                    {supabaseSyncMessage}
-                  </p>
-                )}
-              </div>
+              <button
+                type="button"
+                onClick={handleSyncE2eeToSupabase}
+                className="w-full py-3 rounded-2xl bg-white border border-black/10 hover:bg-[#0071E3] text-[#1D1D1F] hover:text-white font-semibold text-xs inline-flex items-center justify-center gap-2 transition"
+              >
+                <CloudUpload className="w-4 h-4" />
+                Sincronizar Respaldo Cifrado en Supabase
+              </button>
+              {supabaseSyncMessage && (
+                <p className="text-xs text-[#6E6E73] mt-2">
+                  {supabaseSyncMessage}
+                </p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Exportación, Restauración y Eliminación Verificable */}
+        {/* Exportar y Eliminar */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-6 flex flex-col justify-between">
+          <div className="apple-card p-6 flex flex-col justify-between">
             <div>
-              <h4 className="font-bold text-base mb-1">
-                Portabilidad Total: Exportar y Restaurar tus Datos
+              <h4 className="font-bold text-base text-[#1D1D1F] mb-1">
+                Exportar o Restaurar Copia (.json)
               </h4>
-              <p className="text-xs text-slate-400 mb-4">
-                Eres dueño absoluto de tu información energética. Descarga una
-                copia completa en formato JSON para respaldarla o restaurarla en
-                cualquier otro dispositivo sin depender de la nube.
+              <p className="text-xs text-[#6E6E73] mb-4">
+                Descarga todos tus datos en un archivo o restáuralos cuando
+                quieras.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap gap-3">
               <button
                 type="button"
                 onClick={onExportVaultJson}
-                className="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs inline-flex items-center gap-1.5 transition"
+                className="px-5 py-2.5 rounded-full bg-[#0071E3] text-white font-semibold text-xs inline-flex items-center gap-1.5"
               >
-                <Download className="w-4 h-4" /> Exportar Mis Datos (.json)
+                <Download className="w-4 h-4" /> Descargar JSON
               </button>
-
-              <label className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs inline-flex items-center gap-1.5 cursor-pointer transition">
-                <Upload className="w-4 h-4" /> Restaurar desde Archivo (.json)
+              <label className="px-5 py-2.5 rounded-full bg-[#F5F5F7] text-[#1D1D1F] font-semibold text-xs inline-flex items-center gap-1.5 cursor-pointer">
+                <Upload className="w-4 h-4" /> Restaurar JSON
                 <input
                   type="file"
                   accept=".json,application/json"
@@ -602,23 +469,21 @@ export function TariffsAndAdminModule({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-6 flex flex-col justify-between">
+          <div className="apple-card p-6 flex flex-col justify-between">
             <div>
-              <h4 className="font-bold text-base text-rose-300 mb-1">
-                Eliminación Verificable de Datos Locales
+              <h4 className="font-bold text-base text-[#C92A2A] mb-1">
+                Borrar Datos Locales
               </h4>
-              <p className="text-xs text-slate-300 mb-3">
-                Destruye de manera inmediata y verificable la base de datos{" "}
-                <code>IndexedDB</code>, sobrescribe el estado en memoria y
-                elimina todas las facturas, equipos y configuraciones de este
-                navegador.
+              <p className="text-xs text-[#6E6E73] mb-3">
+                Escribe <strong>ELIMINAR</strong> para limpiar completamente tu
+                bóveda de este navegador.
               </p>
               <input
                 type="text"
                 value={confirmWipeText}
                 onChange={(e) => setConfirmWipeText(e.target.value)}
-                placeholder='Escribe "ELIMINAR" para habilitar el borrado'
-                className="w-full rounded-lg bg-slate-950 border border-rose-500/40 px-3 py-2 text-xs text-slate-100 mb-3"
+                placeholder='Escribe "ELIMINAR"'
+                className="w-full rounded-xl bg-[#F5F5F7] border border-black/10 px-3 py-2 text-xs text-[#1D1D1F] mb-3"
               />
             </div>
             <button
@@ -628,9 +493,9 @@ export function TariffsAndAdminModule({
                 await onWipeAllLocalData();
                 setConfirmWipeText("");
               }}
-              className="w-full py-2.5 rounded-xl bg-rose-600 disabled:bg-slate-800 disabled:text-slate-500 hover:bg-rose-500 text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 transition"
+              className="w-full py-2.5 rounded-full bg-[#FF3B30] disabled:bg-black/10 disabled:text-[#6E6E73] text-white font-semibold text-xs transition"
             >
-              <Trash2 className="w-4 h-4" /> Eliminar Toda Mi Información Ahora
+              Eliminar Mis Datos Locales
             </button>
           </div>
         </div>
@@ -638,127 +503,45 @@ export function TariffsAndAdminModule({
     );
   }
 
-  // SECCIÓN: PANEL ADMINISTRATIVO ZERO-ACCESS (MÓDULO 13)
   return (
-    <div className="space-y-6">
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-sky-500/15 text-sky-400">
-              <Server className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-lg">
-                Panel Administrativo de Plataforma (Arquitectura Zero-Access)
-              </h3>
-              <p className="text-xs text-slate-400">
-                Supervisión técnica de catálogos públicos, pliegos SIE, estado
-                de Supabase y métricas agregadas sin acceso a datos privados.
-              </p>
-            </div>
-          </div>
-          <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold">
-            Versión v1.0.0-RD · Operativo
-          </span>
+    <div className="apple-card p-6 sm:p-8 space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-[#0071E3]/10 text-[#0071E3] flex items-center justify-center">
+          <Server className="w-6 h-6" />
         </div>
+        <div>
+          <h2 className="font-bold text-xl text-[#1D1D1F]">
+            Panel Administrativo (Zero-Access)
+          </h2>
+          <p className="text-xs text-[#6E6E73]">
+            Estado de la plataforma, conexión con Supabase y auditoría de
+            privacidad
+          </p>
+        </div>
+      </div>
 
-        {/* Estado de Servicios y Base de Datos Supabase */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-            <div className="text-xs text-slate-400">Conexión Supabase API</div>
-            <div className="text-base font-bold mt-1 text-slate-100">
-              {supabaseConfig.isConfigured
-                ? "Conectado (Remoto)"
-                : "Modo Local-First Activo"}
-            </div>
-            <div className="text-[11px] text-slate-500 mt-1">
-              Esquema SQL + Políticas RLS listas en{" "}
-              <code>supabase/migrations/</code>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-            <div className="text-xs text-slate-400">
-              Pliegos Tarifarios Públicos
-            </div>
-            <div className="text-base font-bold mt-1 text-sky-400">
-              {vault.customTariffs.length} Pliegos Activos
-            </div>
-            <div className="text-[11px] text-slate-500 mt-1">
-              EDESUR, EDENORTE, EDEESTE (SIE) + CEPM
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-            <div className="text-xs text-slate-400">
-              Motor OCR & Cálculos Locales
-            </div>
-            <div className="text-base font-bold mt-1 text-emerald-400">
-              100% En Cliente (WebWorker)
-            </div>
-            <div className="text-[11px] text-slate-500 mt-1">
-              Tesseract.js + PDF Stream + WebCrypto
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-            <div className="text-xs text-slate-400">
-              Provincias con Radiación HSP
-            </div>
-            <div className="text-base font-bold mt-1 text-amber-400">
-              12 Zonas Solares RD
-            </div>
-            <div className="text-[11px] text-slate-500 mt-1">
-              Rango: 5.15 a 5.95 kWh/m²/día
-            </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="p-5 rounded-3xl bg-[#F5F5F7]">
+          <div className="text-xs text-[#6E6E73]">Estado Supabase Cloud</div>
+          <div className="text-lg font-bold text-[#1D832D] mt-1">
+            {supabaseConfig.isConfigured
+              ? "Conectado (esqbscqrtkxxqkuvgcmw)"
+              : "Local"}
           </div>
         </div>
-
-        {/* Matriz de Restricciones Técnicas del Administrador (Garantía Zero-Access) */}
-        <div className="rounded-xl border border-slate-800 bg-slate-950/90 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <EyeOff className="w-4 h-4 text-emerald-400" />
-            <h4 className="font-bold text-sm text-slate-100">
-              Auditoría de Restricciones de Acceso Administrativo (Cumplimiento
-              Sección 13)
-            </h4>
+        <div className="p-5 rounded-3xl bg-[#F5F5F7]">
+          <div className="text-xs text-[#6E6E73]">Pliegos SIE Activos</div>
+          <div className="text-lg font-bold text-[#1D1D1F] mt-1">
+            {vault.customTariffs.length} Pliegos Oficiales
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-              <div className="font-semibold text-emerald-400 mb-1">
-                Lo que el Administrador PUEDE gestionar:
-              </div>
-              <ul className="space-y-1 text-slate-300">
-                <li>• Actualizar pliegos tarifarios públicos de la SIE</li>
-                <li>• Ampliar el catálogo público de equipos e inversores</li>
-                <li>• Ajustar parámetros provinciales de radiación solar (HSP)</li>
-                <li>
-                  • Consultar métricas agregadas anónimas (opt-in voluntario)
-                </li>
-              </ul>
-            </div>
-            <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-              <div className="font-semibold text-rose-400 mb-1">
-                Lo que el Administrador TIENE BLOQUEADO por Arquitectura:
-              </div>
-              <ul className="space-y-1 text-slate-300">
-                <li>
-                  ✗ Leer facturas PDF/JPG (se descartan localmente tras el OCR)
-                </li>
-                <li>
-                  ✗ Consultar consumos individuales o números de contrato (NIC)
-                </li>
-                <li>
-                  ✗ Descifrar respaldos E2EE (la clave derivada PBKDF2 jamás sale
-                  del navegador)
-                </li>
-                <li>✗ Accesos ocultos de soporte o llaves maestras traseras</li>
-              </ul>
-            </div>
+        </div>
+        <div className="p-5 rounded-3xl bg-[#F5F5F7]">
+          <div className="text-xs text-[#6E6E73]">Acceso a Facturas Privadas</div>
+          <div className="text-lg font-bold text-[#0071E3] mt-1">
+            Bloqueado por Diseño
           </div>
         </div>
       </div>
     </div>
   );
 }
-

@@ -1,18 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import {
-  AlertTriangle,
-  BatteryCharging,
-  CheckCircle2,
-  Compass,
-  Info,
-  Plus,
-  ShieldAlert,
-  Sun,
-  Trash2,
-  Zap,
-} from "lucide-react";
+import { BatteryCharging, Plus, Sun, Trash2 } from "lucide-react";
 import {
   InverterBatterySystem,
   PropertyType,
@@ -49,7 +38,6 @@ export function SolarAndInverterModule({
   onAddInverterSystem,
   onDeleteInverterSystem,
 }: SolarAndInverterModuleProps) {
-  // Estado para MÓDULO F: Simulador Solar
   const [solarInput, setSolarInput] = useState<SolarSimulationInput>({
     monthlyKwh: Math.max(250, Math.round(defaultMonthlyKwh || 580)),
     averageMonthlyBillDop: Math.max(
@@ -67,11 +55,13 @@ export function SolarAndInverterModule({
     systemLossFactor: 0.22,
   });
 
-  // Estado para MÓDULO G: Inversores y Baterías
   const criticalAppliancesLoadW = useMemo(() => {
     const sum = appliances
       .filter((a) => a.isCriticalBackupLoad)
-      .reduce((acc, a) => acc + a.nominalWatts * a.quantity * a.dutyCycleFactor, 0);
+      .reduce(
+        (acc, a) => acc + a.nominalWatts * a.quantity * a.dutyCycleFactor,
+        0
+      );
     return Math.round(sum);
   }, [appliances]);
 
@@ -79,10 +69,8 @@ export function SolarAndInverterModule({
     criticalAppliancesLoadW > 0 ? criticalAppliancesLoadW : 480
   );
 
-  // Formulario nuevo inversor
   const [invName, setInvName] = useState("Inversor Principal Residencial");
   const [invBrand, setInvBrand] = useState("Trace / Xantrex");
-  const [invModel, setInvModel] = useState("SW 3.6kW 24V");
   const [invPowerW, setInvPowerW] = useState(3600);
   const [batType, setBatType] =
     useState<InverterBatterySystem["batteryType"]>("lead_acid_flooded");
@@ -101,7 +89,9 @@ export function SolarAndInverterModule({
   ) {
     const totalWh =
       preset.batteryType === "lifepo4"
-        ? preset.batteryVoltageV * preset.batteryCapacityAh * preset.batteryCount
+        ? preset.batteryVoltageV *
+          preset.batteryCapacityAh *
+          preset.batteryCount
         : preset.batteryVoltageV * preset.batteryCapacityAh;
 
     const newSys: InverterBatterySystem = {
@@ -137,7 +127,7 @@ export function SolarAndInverterModule({
       id: `inv-${Date.now()}`,
       name: invName.trim() || "Sistema de Respaldo",
       inverterBrand: invBrand.trim() || "Genérico",
-      inverterModel: invModel.trim() || "Estándar",
+      inverterModel: "Estándar",
       inverterPowerW: Number(invPowerW),
       inverterEfficiency: batType === "lifepo4" ? 0.92 : 0.86,
       batteryBrand:
@@ -158,41 +148,33 @@ export function SolarAndInverterModule({
 
   return (
     <div className="space-y-8">
-      {/* =====================================================================
-          MÓDULO F: SIMULADOR SOLAR FOTOVOLTAICO (REPÚBLICA DOMINICANA)
-         ===================================================================== */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+      {/* SIMULADOR SOLAR */}
+      <div className="apple-card p-6 sm:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-amber-500/15 text-amber-400">
+            <div className="w-12 h-12 rounded-2xl bg-[#FF9500]/15 text-[#C97400] flex items-center justify-center">
               <Sun className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-bold text-lg">
-                Simulador Solar Fotovoltaico para República Dominicana
-              </h3>
-              <p className="text-xs text-slate-400">
-                Evalúa potencia recomendada (kWp), paneles, área de techo,
-                inversión y retorno utilizando Horas Solares Pico (HSP) por
-                provincia.
+              <h2 className="font-bold text-xl sm:text-2xl text-[#1D1D1F]">
+                Simulador de Paneles Solares
+              </h2>
+              <p className="text-xs text-[#6E6E73]">
+                Calculado con la radiación solar real de {solarInput.province} (
+                {solarReport.provinceHsp} Horas Solares Pico)
               </p>
             </div>
           </div>
-          <span className="text-xs px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold">
-            HSP {solarInput.province}: {solarReport.provinceHsp} h/día
-          </span>
         </div>
 
-        {/* Parámetros de entrada del Simulador Solar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-5 rounded-3xl bg-[#F5F5F7]">
           <div>
-            <label className="block text-xs text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
               Consumo Mensual (kWh)
             </label>
             <input
               type="number"
               min={50}
-              max={50000}
               value={solarInput.monthlyKwh}
               onChange={(e) =>
                 setSolarInput({
@@ -200,13 +182,13 @@ export function SolarAndInverterModule({
                   monthlyKwh: parseFloat(e.target.value) || 100,
                 })
               }
-              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100 font-bold"
+              className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs font-bold text-[#1D1D1F]"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-slate-300 mb-1">
-              Factura Promedio Mensual (RD$)
+            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+              Factura Promedio (RD$)
             </label>
             <input
               type="number"
@@ -218,20 +200,20 @@ export function SolarAndInverterModule({
                   averageMonthlyBillDop: parseFloat(e.target.value) || 1000,
                 })
               }
-              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-emerald-400 font-bold"
+              className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs font-bold text-[#0071E3]"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-slate-300 mb-1">
-              Provincia / Zona Climática RD
+            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+              Provincia en RD
             </label>
             <select
               value={solarInput.province}
               onChange={(e) =>
                 setSolarInput({ ...solarInput, province: e.target.value })
               }
-              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
+              className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs text-[#1D1D1F]"
             >
               {Object.keys(RD_PROVINCES_SOLAR_HSP).map((prov) => (
                 <option key={prov} value={prov}>
@@ -242,8 +224,8 @@ export function SolarAndInverterModule({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-300 mb-1">
-              Tipo de Instalación Solar
+            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+              Tipo de Sistema
             </label>
             <select
               value={solarInput.installationType}
@@ -254,486 +236,252 @@ export function SolarAndInverterModule({
                     e.target.value as SolarSimulationInput["installationType"],
                 })
               }
-              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
+              className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs text-[#1D1D1F]"
             >
               <option value="on_grid_net_metering">
-                Interconectado a Red (Medición Neta SIE sin baterías)
+                Medición Neta (Sin baterías)
               </option>
               <option value="hibrido_con_baterias">
-                Híbrido (Medición Neta + Baterías de Litio para Apagones)
-              </option>
-              <option value="off_grid_aislado">
-                Aislado de la Red (Off-Grid Autónomo)
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs text-slate-300 mb-1">
-              Área de Techo Disponible (m²)
-            </label>
-            <input
-              type="number"
-              min={5}
-              max={5000}
-              value={solarInput.availableRoofAreaM2}
-              onChange={(e) =>
-                setSolarInput({
-                  ...solarInput,
-                  availableRoofAreaM2: parseFloat(e.target.value) || 10,
-                })
-              }
-              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-slate-300 mb-1">
-              Orientación del Techo
-            </label>
-            <select
-              value={solarInput.roofOrientation}
-              onChange={(e) =>
-                setSolarInput({
-                  ...solarInput,
-                  roofOrientation:
-                    e.target.value as SolarSimulationInput["roofOrientation"],
-                })
-              }
-              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
-            >
-              <option value="Sur">Sur (Óptima en República Dominicana)</option>
-              <option value="Techo Plano">
-                Losa de Hormigón Plana (Estructura inclinada)
-              </option>
-              <option value="Sureste/Suroeste">Sureste / Suroeste</option>
-              <option value="Este/Oeste">Este / Oeste</option>
-              <option value="No conocida">No conocida</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs text-slate-300 mb-1">
-              Cobertura Energética Deseada ({solarInput.targetCoveragePercent}%)
-            </label>
-            <input
-              type="range"
-              min={40}
-              max={100}
-              step={5}
-              value={solarInput.targetCoveragePercent}
-              onChange={(e) =>
-                setSolarInput({
-                  ...solarInput,
-                  targetCoveragePercent: parseInt(e.target.value, 10),
-                })
-              }
-              className="w-full accent-amber-400 cursor-pointer mt-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-slate-300 mb-1">
-              Pérdidas del Sistema ({Math.round(solarInput.systemLossFactor * 100)}
-              %)
-            </label>
-            <select
-              value={solarInput.systemLossFactor}
-              onChange={(e) =>
-                setSolarInput({
-                  ...solarInput,
-                  systemLossFactor: parseFloat(e.target.value),
-                })
-              }
-              className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-100"
-            >
-              <option value={0.18}>18% (Techo ventilado sin sombras)</option>
-              <option value={0.22}>
-                22% (Estándar térmico tropical RD recomendado)
-              </option>
-              <option value={0.27}>
-                27% (Sombras parciales o polvo urbano elevado)
+                Híbrido (Con baterías de Litio)
               </option>
             </select>
           </div>
         </div>
 
-        {/* 3 Escenarios Solares: Conservador, Intermedio, Optimista */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {solarReport.scenarios.map((sc) => (
             <div
               key={sc.scenarioLabel}
-              className={`rounded-2xl border p-5 flex flex-col justify-between ${
+              className={`p-6 rounded-3xl flex flex-col justify-between ${
                 sc.scenarioLabel === "Intermedio"
-                  ? "border-amber-500/60 bg-slate-950/95 shadow-lg"
-                  : "border-slate-800 bg-slate-950/70"
+                  ? "bg-white border-2 border-[#0071E3] shadow-md"
+                  : "bg-[#F5F5F7]"
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-extrabold text-sm text-amber-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#0071E3]">
                     Escenario {sc.scenarioLabel}
                   </span>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300">
-                    PR: {(sc.performanceRatio * 100).toFixed(0)}%
+                  <span className="text-xs font-semibold text-[#6E6E73]">
+                    Cubre {sc.coveragePercent}%
                   </span>
                 </div>
 
-                <div className="text-2xl font-extrabold text-slate-100 mb-1">
-                  {sc.recommendedKwPeak} kWp{" "}
-                  <span className="text-sm font-medium text-sky-400">
-                    ({sc.estimatedPanelsCount} paneles de {sc.panelWattsEach}W)
-                  </span>
+                <div className="text-3xl font-bold text-[#1D1D1F]">
+                  {sc.recommendedKwPeak} kWp
                 </div>
-                <p className="text-xs text-slate-400 mb-4">
-                  Generación estimada:{" "}
-                  <strong className="text-slate-200">
-                    {sc.monthlyGenerationKwh} kWh/mes
-                  </strong>{" "}
-                  ({sc.coveragePercent}% de tu consumo)
-                </p>
+                <div className="text-xs font-medium text-[#6E6E73] mb-4">
+                  {sc.estimatedPanelsCount} paneles solares de{" "}
+                  {sc.panelWattsEach}W · Techo: {sc.requiredRoofAreaM2} m²
+                </div>
 
-                <div className="space-y-2 text-xs border-t border-slate-800/80 pt-3">
+                <div className="space-y-2 text-xs pt-3 border-t border-black/[0.06]">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Área de techo requerida:</span>
-                    <span
-                      className={`font-semibold ${
-                        sc.roofSpaceSufficient
-                          ? "text-emerald-400"
-                          : "text-rose-400"
-                      }`}
-                    >
-                      {sc.requiredRoofAreaM2} m²{" "}
-                      {sc.roofSpaceSufficient
-                        ? "(Espacio suficiente)"
-                        : "(Supera tu techo)"}
-                    </span>
+                    <span className="text-[#6E6E73]">Producción mensual:</span>
+                    <strong className="text-[#1D1D1F]">
+                      {sc.monthlyGenerationKwh} kWh/mes
+                    </strong>
                   </div>
-                  {sc.recommendedBatteryKwh > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">
-                        Banco de Litio sugerido:
-                      </span>
-                      <span className="font-semibold text-indigo-300">
-                        {sc.recommendedBatteryKwh} kWh LiFePO4
-                      </span>
-                    </div>
-                  )}
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Inversión estimada RD$:</span>
-                    <span className="font-bold text-slate-100">
+                    <span className="text-[#6E6E73]">Inversión estimada:</span>
+                    <strong className="text-[#1D1D1F]">
                       RD$ {sc.estimatedInvestmentDop.toLocaleString("es-DO")}
-                    </span>
+                    </strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Ahorro mensual estimado:</span>
-                    <span className="font-bold text-emerald-400">
+                    <span className="text-[#6E6E73]">Ahorro mensual:</span>
+                    <strong className="text-[#1D832D]">
                       RD$ {sc.monthlySavingsDop.toLocaleString("es-DO")}/mes
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Ahorro anual estimado:</span>
-                    <span className="font-bold text-emerald-300">
-                      RD$ {sc.annualSavingsDop.toLocaleString("es-DO")}/año
-                    </span>
+                    </strong>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-                <span>
-                  Recuperación:{" "}
-                  <strong className="text-amber-300">
+              <div className="mt-5 pt-3 border-t border-black/[0.06] flex items-center justify-between text-xs">
+                <span className="text-[#6E6E73]">
+                  Retorno:{" "}
+                  <strong className="text-[#1D1D1F]">
                     {sc.paybackYears} años
                   </strong>
                 </span>
-                <span>
-                  ROI a 10 años:{" "}
-                  <strong className="text-emerald-400">
-                    +{sc.roi10YearsPercent}%
-                  </strong>
+                <span className="font-bold text-[#0071E3]">
+                  ROI 10 años: +{sc.roi10YearsPercent}%
                 </span>
               </div>
             </div>
           ))}
         </div>
-
-        {/* Nota de ingeniería obligatoria */}
-        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 space-y-1">
-          <div className="font-semibold text-slate-300">
-            Fórmula científica aplicada: {solarReport.formulaExplanation}
-          </div>
-          <div>
-            <strong>Contexto climático ({solarReport.regionName}):</strong>{" "}
-            {solarReport.climateNote}
-          </div>
-          <div className="text-[11px] text-amber-300/90">
-            {solarReport.engineeringDisclaimer}
-          </div>
-        </div>
       </div>
 
-      {/* =====================================================================
-          MÓDULO G: INVERSORES Y BATERÍAS (AUTONOMÍA EN APAGONES)
-         ===================================================================== */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-indigo-500/15 text-indigo-400">
-              <BatteryCharging className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-lg">
-                Gestión de Inversores, Baterías y Autonomía ante Apagones
-              </h3>
-              <p className="text-xs text-slate-400">
-                Calcula el tiempo real de respaldo según la química de tus
-                baterías (Plomo-Ácido vs Litio LiFePO4), Profundidad de Descarga
-                (DoD) y demanda en Watts. Sin conexiones simuladas falsas.
-              </p>
-            </div>
+      {/* INVERSORES Y BATERÍAS */}
+      <div className="apple-card p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-2xl bg-[#5856D6]/12 text-[#5856D6] flex items-center justify-center">
+            <BatteryCharging className="w-6 h-6" />
+          </div>
+          <div>
+            <h2 className="font-bold text-xl sm:text-2xl text-[#1D1D1F]">
+              Inversores y Respaldo en Apagones
+            </h2>
+            <p className="text-xs text-[#6E6E73]">
+              Simula cuántas horas duran tus baterías según los equipos que
+              dejes encendidos
+            </p>
           </div>
         </div>
 
-        {/* Simulador de Demanda durante el Apagón */}
-        <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-semibold text-slate-200">
-                Demanda Eléctrica Conectada Durante el Apagón:{" "}
-                <strong className="text-sky-400">
-                  {simulatedBlackoutWatts} Watts
-                </strong>
-              </span>
-              {criticalAppliancesLoadW > 0 && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSimulatedBlackoutWatts(criticalAppliancesLoadW)
-                  }
-                  className="text-sky-400 hover:underline"
-                >
-                  Usar suma de mis equipos críticos ({criticalAppliancesLoadW} W)
-                </button>
-              )}
-            </div>
-            <input
-              type="range"
-              min={100}
-              max={4500}
-              step={25}
-              value={simulatedBlackoutWatts}
-              onChange={(e) =>
-                setSimulatedBlackoutWatts(parseInt(e.target.value, 10))
-              }
-              className="w-full accent-indigo-500 cursor-pointer"
-            />
-            <div className="flex justify-between text-[11px] text-slate-500 mt-1">
-              <span>150W (Router + Bombillos LED + 1 Abanico)</span>
-              <span>550W (+ Nevera + TV + Laptop)</span>
-              <span>1,800W (+ 1 Aire Inverter)</span>
-            </div>
+        <div className="p-5 rounded-3xl bg-[#F5F5F7] mb-6">
+          <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
+            <span className="font-semibold text-[#1D1D1F]">
+              Consumo conectado durante el apagón:{" "}
+              <strong className="text-[#5856D6]">
+                {simulatedBlackoutWatts} Watts
+              </strong>
+            </span>
+            {criticalAppliancesLoadW > 0 && (
+              <button
+                type="button"
+                onClick={() =>
+                  setSimulatedBlackoutWatts(criticalAppliancesLoadW)
+                }
+                className="text-xs font-semibold text-[#0071E3] hover:underline"
+              >
+                Usar mis equipos críticos ({criticalAppliancesLoadW} W)
+              </button>
+            )}
           </div>
+          <input
+            type="range"
+            min={100}
+            max={4000}
+            step={25}
+            value={simulatedBlackoutWatts}
+            onChange={(e) =>
+              setSimulatedBlackoutWatts(parseInt(e.target.value, 10))
+            }
+            className="w-full accent-[#5856D6]"
+          />
         </div>
 
-        {/* Lista de Sistemas de Inversor Registrados */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            <h4 className="font-bold text-sm text-slate-200">
-              Sistemas de Respaldo Registrados ({inverterSystems.length})
-            </h4>
-
-            {inverterSystems.length > 0 ? (
-              inverterSystems.map((sys) => {
-                const aut = calculateInverterAutonomy(
-                  sys,
-                  simulatedBlackoutWatts
-                );
-                return (
-                  <div
-                    key={sys.id}
-                    className="p-5 rounded-xl border border-slate-800 bg-slate-950/85 space-y-3"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-base text-slate-100">
-                            {sys.name}
-                          </span>
-                          <span
-                            className={`text-[11px] font-semibold px-2 py-0.5 rounded ${
-                              aut.compatibilityStatus === "Óptimo"
-                                ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
-                                : aut.compatibilityStatus === "Carga Elevada"
-                                ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                                : "bg-rose-500/15 text-rose-300 border border-rose-500/30"
-                            }`}
-                          >
-                            {aut.compatibilityStatus} ({aut.inverterLoadPercent}%
-                            del inversor)
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          Inversor: {sys.inverterBrand} {sys.inverterModel} (
-                          {sys.inverterPowerW} W) · Banco: {sys.batteryBrand} (
-                          {sys.batteryVoltageV}V / {sys.batteryCapacityAh}Ah · DoD{" "}
-                          {(sys.usableDodFraction * 100).toFixed(0)}%)
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <div className="text-right">
-                          <div className="text-xs text-slate-400">
-                            Tiempo Estimado de Respaldo
-                          </div>
-                          <div className="text-2xl font-extrabold text-indigo-400">
-                            {aut.estimatedAutonomyFormatted}
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => onDeleteInverterSystem(sys.id)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10"
-                          title="Eliminar sistema"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs pt-2 border-t border-slate-800/80">
-                      <div className="p-2.5 rounded-lg bg-slate-900/80">
-                        <span className="text-slate-400 block text-[11px]">
-                          Capacidad Nominal Total
-                        </span>
-                        <strong className="text-slate-200">
-                          {aut.nominalCapacityWh.toLocaleString("es-DO")} Wh
-                        </strong>
-                      </div>
-                      <div className="p-2.5 rounded-lg bg-slate-900/80">
-                        <span className="text-slate-400 block text-[11px]">
-                          Energía Útil Segura (AC)
-                        </span>
-                        <strong className="text-emerald-400">
-                          {aut.usableCapacityWh.toLocaleString("es-DO")} Wh
-                        </strong>
-                      </div>
-                      <div className="p-2.5 rounded-lg bg-slate-900/80">
-                        <span className="text-slate-400 block text-[11px]">
-                          Extracción desde Baterías (DC)
-                        </span>
-                        <strong className="text-sky-400">
-                          {aut.dcPowerDrawWatts} W (
-                          {(aut.dcPowerDrawWatts / sys.batteryVoltageV).toFixed(
-                            1
-                          )}{" "}
-                          Amperios)
-                        </strong>
-                      </div>
-                    </div>
-
-                    <p className="text-[11px] text-slate-500">
-                      {aut.explanation}
-                    </p>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="p-6 rounded-xl border border-slate-800 bg-slate-950/60 text-xs text-slate-400 text-center">
-                No has registrado un inversor todavía. Elige un modelo habitual
-                del catálogo de República Dominicana abajo o regístralo a la
-                derecha.
-              </div>
-            )}
-
-            {/* Biblioteca de Inversores comunes en RD */}
-            <div className="pt-2">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-slate-400 mb-3">
-                Biblioteca de Inversores y Bancos de Baterías Comunes en RD
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {RD_INVERTER_BATTERY_LIBRARY.map((preset) => (
-                  <div
-                    key={preset.id}
-                    className="p-3.5 rounded-xl border border-slate-800 bg-slate-950/70 flex flex-col justify-between"
-                  >
+            {inverterSystems.map((sys) => {
+              const aut = calculateInverterAutonomy(
+                sys,
+                simulatedBlackoutWatts
+              );
+              return (
+                <div key={sys.id} className="p-6 rounded-3xl bg-[#F5F5F7]">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <div className="font-bold text-xs text-slate-100">
-                        {preset.brand} — {preset.model}
-                      </div>
-                      <div className="text-[11px] text-indigo-400 mt-0.5">
-                        {preset.inverterPowerW}W · {preset.batteryBrand} (
-                        {preset.batteryVoltageV}V)
-                      </div>
-                      <p className="text-[11px] text-slate-400 mt-1">
-                        {preset.note}
+                      <span className="font-bold text-base text-[#1D1D1F]">
+                        {sys.name}
+                      </span>
+                      <p className="text-xs text-[#6E6E73] mt-0.5">
+                        {sys.inverterBrand} ({sys.inverterPowerW}W) ·{" "}
+                        {sys.batteryBrand} ({sys.batteryVoltageV}V)
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleAddFromCatalog(preset)}
-                      className="mt-3 py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-200 hover:text-white text-xs font-medium inline-flex items-center justify-center gap-1 transition"
-                    >
-                      <Plus className="w-3.5 h-3.5" /> Usar esta configuración
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <div className="text-xs text-[#6E6E73]">
+                          Autonomía estimada
+                        </div>
+                        <div className="text-2xl font-bold text-[#5856D6]">
+                          {aut.estimatedAutonomyFormatted}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => onDeleteInverterSystem(sys.id)}
+                        className="p-2 rounded-full text-[#6E6E73] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              );
+            })}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              {RD_INVERTER_BATTERY_LIBRARY.map((preset) => (
+                <div
+                  key={preset.id}
+                  className="p-4 rounded-2xl bg-[#F5F5F7] flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="font-bold text-xs text-[#1D1D1F]">
+                      {preset.brand} — {preset.model}
+                    </div>
+                    <p className="text-[11px] text-[#6E6E73] mt-1">
+                      {preset.note}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAddFromCatalog(preset)}
+                    className="mt-3 py-2 rounded-xl bg-white hover:bg-[#0071E3] text-[#1D1D1F] hover:text-white text-xs font-semibold inline-flex items-center justify-center gap-1 transition"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Cargar este sistema
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Formulario Personalizado de Inversor y Baterías */}
           <form
             onSubmit={handleCreateCustomInverter}
-            className="rounded-xl border border-slate-800 bg-slate-950/85 p-5 space-y-3 h-fit"
+            className="p-6 rounded-3xl bg-[#F5F5F7] space-y-3.5 h-fit"
           >
-            <h4 className="font-bold text-sm text-slate-100">
-              Registrar Mi Propio Inversor / Baterías
+            <h4 className="font-bold text-base text-[#1D1D1F]">
+              Registrar Mi Inversor
             </h4>
-
             <div>
-              <label className="block text-xs text-slate-300 mb-1">
-                Nombre de la instalación
+              <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                Nombre
               </label>
               <input
                 type="text"
                 value={invName}
                 onChange={(e) => setInvName(e.target.value)}
-                className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3 py-2 text-xs text-slate-100"
+                className="w-full rounded-xl bg-white border border-black/10 px-3 py-2 text-xs text-[#1D1D1F]"
               />
             </div>
-
             <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-xs text-slate-300 mb-1">
-                  Marca Inversor
-                </label>
-                <input
-                  type="text"
-                  value={invBrand}
-                  onChange={(e) => setInvBrand(e.target.value)}
-                  className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3 py-2 text-xs text-slate-100"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">
-                  Potencia (Watts)
+                <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                  Potencia (W)
                 </label>
                 <input
                   type="number"
-                  min={500}
-                  max={30000}
                   value={invPowerW}
                   onChange={(e) =>
                     setInvPowerW(parseInt(e.target.value, 10) || 1500)
                   }
-                  className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3 py-2 text-xs text-slate-100 font-bold"
+                  className="w-full rounded-xl bg-white border border-black/10 px-3 py-2 text-xs font-bold text-[#1D1D1F]"
                 />
               </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                  Voltaje
+                </label>
+                <select
+                  value={batVoltageV}
+                  onChange={(e) =>
+                    setBatVoltageV(parseInt(e.target.value, 10))
+                  }
+                  className="w-full rounded-xl bg-white border border-black/10 px-3 py-2 text-xs text-[#1D1D1F]"
+                >
+                  <option value={12}>12 V</option>
+                  <option value={24}>24 V</option>
+                  <option value={48}>48 V</option>
+                </select>
+              </div>
             </div>
-
             <div>
-              <label className="block text-xs text-slate-300 mb-1">
-                Tecnología del Banco de Baterías
+              <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                Tipo de Baterías
               </label>
               <select
                 value={batType}
@@ -742,89 +490,20 @@ export function SolarAndInverterModule({
                     e.target.value as InverterBatterySystem["batteryType"]
                   )
                 }
-                className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3 py-2 text-xs text-slate-100"
+                className="w-full rounded-xl bg-white border border-black/10 px-3 py-2 text-xs text-[#1D1D1F]"
               >
                 <option value="lead_acid_flooded">
-                  Plomo-Ácido Ciclo Profundo (Trojan / US Battery - DoD 50%)
+                  Plomo-Ácido (Trojan / Ciclo Profundo)
                 </option>
-                <option value="agm_gel">
-                  Selladas AGM / Gel Libre Mantenimiento (DoD 60%)
-                </option>
-                <option value="lifepo4">
-                  Litio Ferrofosfato LiFePO4 (DoD 85%+)
-                </option>
+                <option value="agm_gel">AGM / Gel Selladas</option>
+                <option value="lifepo4">Litio LiFePO4</option>
               </select>
             </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">
-                  Voltaje Banco
-                </label>
-                <select
-                  value={batVoltageV}
-                  onChange={(e) =>
-                    setBatVoltageV(parseInt(e.target.value, 10))
-                  }
-                  className="w-full rounded-lg bg-slate-900 border border-slate-800 px-2 py-2 text-xs text-slate-100"
-                >
-                  <option value={12}>12 V</option>
-                  <option value={24}>24 V</option>
-                  <option value={48}>48 V</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">
-                  Capacidad (Ah)
-                </label>
-                <input
-                  type="number"
-                  min={20}
-                  max={2000}
-                  value={batCapacityAh}
-                  onChange={(e) =>
-                    setBatCapacityAh(parseInt(e.target.value, 10) || 100)
-                  }
-                  className="w-full rounded-lg bg-slate-900 border border-slate-800 px-2 py-2 text-xs text-slate-100"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">
-                  N.º Baterías
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  max={32}
-                  value={batCount}
-                  onChange={(e) =>
-                    setBatCount(parseInt(e.target.value, 10) || 2)
-                  }
-                  className="w-full rounded-lg bg-slate-900 border border-slate-800 px-2 py-2 text-xs text-slate-100"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs text-slate-300 mb-1">
-                Estado de Carga Actual Estimado ({socPercent}%)
-              </label>
-              <input
-                type="range"
-                min={20}
-                max={100}
-                step={5}
-                value={socPercent}
-                onChange={(e) => setSocPercent(parseInt(e.target.value, 10))}
-                className="w-full accent-indigo-500 cursor-pointer"
-              />
-            </div>
-
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition"
+              className="w-full py-2.5 rounded-xl bg-[#0071E3] text-white font-semibold text-xs transition"
             >
-              Guardar Sistema de Respaldo
+              Guardar Inversor
             </button>
           </form>
         </div>
@@ -832,4 +511,3 @@ export function SolarAndInverterModule({
     </div>
   );
 }
-

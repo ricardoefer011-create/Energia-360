@@ -8,12 +8,9 @@ import {
   ArrowUpRight,
   BatteryCharging,
   Calculator,
-  CheckCircle2,
-  Cpu,
   FileSpreadsheet,
   ShieldCheck,
   Sparkles,
-  Sun,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -51,21 +48,20 @@ interface DashboardModuleProps {
   onLoadDemoMode: () => void;
 }
 
-const CHART_COLORS = [
-  "#0EA5E9",
-  "#10B981",
-  "#6366F1",
-  "#F59E0B",
-  "#EC4899",
-  "#14B8A6",
-  "#8B5CF6",
+const APPLE_CHART_COLORS = [
+  "#0071E3",
+  "#28CD41",
+  "#FF9500",
+  "#5856D6",
+  "#AF52DE",
+  "#00C7BE",
+  "#FF2D55",
 ];
 
 export function DashboardModule({
   vault,
   activeSchedule,
   triggeredAlerts,
-  isDemoMode,
   onNavigateTab,
   onLoadDemoMode,
 }: DashboardModuleProps) {
@@ -92,7 +88,6 @@ export function DashboardModule({
       ? sortedInvoices[sortedInvoices.length - 2]
       : undefined;
 
-  // Cálculo real a partir de equipos registrados
   const preliminaryBill = calculateDominicanTariffBill(
     latestInvoice?.billedKwh.value || 350,
     activeSchedule,
@@ -152,9 +147,11 @@ export function DashboardModule({
         ) / 10
       : null;
 
-  // Distribución por categoría de equipos
   const categoryDistribution = useMemo(() => {
-    const map = new Map<string, { name: string; kwh: number; costDop: number }>();
+    const map = new Map<
+      string,
+      { name: string; kwh: number; costDop: number }
+    >();
     for (const item of applianceBreakdown) {
       const existing = map.get(item.category) || {
         name: item.category,
@@ -169,10 +166,9 @@ export function DashboardModule({
     return Array.from(map.values()).sort((a, b) => b.kwh - a.kwh);
   }, [applianceBreakdown]);
 
-  // Índice de Eficiencia Energética (0 - 100)
   const efficiencyScore = useMemo(() => {
     if (currentReferenceKwh === 0) return null;
-    let score = 82;
+    let score = 84;
     if (billSimulation.lostStepSubsidy701) score -= 22;
     else if (currentReferenceKwh > 600) score -= 10;
     else if (currentReferenceKwh <= 300) score += 10;
@@ -184,69 +180,63 @@ export function DashboardModule({
     return Math.max(25, Math.min(98, score));
   }, [currentReferenceKwh, billSimulation.lostStepSubsidy701, vault.appliances]);
 
-  // Estado vacío real si el usuario no ha introducido ni facturas ni equipos
   const hasAnyRealData =
     vault.invoices.length > 0 || vault.appliances.length > 0;
 
   if (!hasAnyRealData) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 md:p-12 text-center max-w-4xl mx-auto my-4">
-        <div className="w-16 h-16 rounded-2xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center mx-auto mb-5">
-          <Zap className="w-8 h-8 text-sky-400" />
+      <div className="apple-card p-8 sm:p-12 text-center max-w-3xl mx-auto my-6">
+        <div className="w-16 h-16 rounded-3xl bg-[#0071E3]/10 flex items-center justify-center mx-auto mb-5">
+          <Zap className="w-8 h-8 text-[#0071E3]" />
         </div>
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
-          Tu Centro de Control Energético está listo para comenzar
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1D1D1F] mb-3">
+          Bienvenido a tu resumen energético
         </h2>
-        <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base mb-8">
-          ENERGIA360 nunca inventa ni rellena tus gráficos con cifras falsas.
-          Para calcular tu consumo real, proyecciones y oportunidades de ahorro
-          con las tarifas de{" "}
-          <strong className="text-slate-200">
+        <p className="text-[#6E6E73] max-w-xl mx-auto text-base mb-8">
+          Para mostrar tus métricas reales con la tarifa de{" "}
+          <strong className="text-[#1D1D1F]">
             {vault.profile.distributor} ({vault.profile.tariffCode})
           </strong>
-          , elige cómo deseas empezar:
+          , elige cómo deseas comenzar:
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
           <button
             onClick={() => onNavigateTab("equipos")}
-            className="p-5 rounded-xl border border-slate-800 bg-slate-950/70 hover:border-sky-500/60 transition group"
+            className="p-6 rounded-3xl bg-[#F5F5F7] hover:bg-[#0071E3]/[0.06] border border-black/[0.05] transition"
           >
-            <Calculator className="w-6 h-6 text-sky-400 mb-3 group-hover:scale-110 transition" />
-            <div className="font-semibold text-base mb-1">
-              1. Registrar Equipos (Sin Factura)
+            <Calculator className="w-6 h-6 text-[#0071E3] mb-3" />
+            <div className="font-bold text-base text-[#1D1D1F] mb-1">
+              Agregar Equipos
             </div>
-            <p className="text-xs text-slate-400">
-              Usa nuestra biblioteca de equipos de República Dominicana para
-              estimar tu consumo desde el primer minuto.
+            <p className="text-xs text-[#6E6E73]">
+              Selecciona tus aires, nevera y abanicos en segundos.
             </p>
           </button>
 
           <button
             onClick={() => onNavigateTab("facturas")}
-            className="p-5 rounded-xl border border-slate-800 bg-slate-950/70 hover:border-emerald-500/60 transition group"
+            className="p-6 rounded-3xl bg-[#F5F5F7] hover:bg-[#28CD41]/[0.08] border border-black/[0.05] transition"
           >
-            <FileSpreadsheet className="w-6 h-6 text-emerald-400 mb-3 group-hover:scale-110 transition" />
-            <div className="font-semibold text-base mb-1">
-              2. Analizar una Factura Localmente
+            <FileSpreadsheet className="w-6 h-6 text-[#1D832D] mb-3" />
+            <div className="font-bold text-base text-[#1D1D1F] mb-1">
+              Subir una Factura
             </div>
-            <p className="text-xs text-slate-400">
-              Carga tu recibo de EDESUR, EDENORTE, EDEESTE o CEPM (PDF o foto).
-              Se procesa 100% en tu navegador.
+            <p className="text-xs text-[#6E6E73]">
+              Analiza tu recibo en PDF o foto localmente en tu navegador.
             </p>
           </button>
 
           <button
             onClick={onLoadDemoMode}
-            className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition group"
+            className="p-6 rounded-3xl bg-[#0071E3]/10 hover:bg-[#0071E3]/15 border border-[#0071E3]/20 transition"
           >
-            <Sparkles className="w-6 h-6 text-amber-400 mb-3 group-hover:scale-110 transition" />
-            <div className="font-semibold text-base mb-1 text-amber-300">
-              3. Explorar Modo Demostración
+            <Sparkles className="w-6 h-6 text-[#0071E3] mb-3" />
+            <div className="font-bold text-base text-[#0071E3] mb-1">
+              Cargar Usuario Demo
             </div>
-            <p className="text-xs text-slate-400">
-              Carga un hogar dominicano sintético con 5 meses de historial,
-              inversor y simulaciones (aislado de tus datos).
+            <p className="text-xs text-[#6E6E73]">
+              Explora un hogar completo con facturas e inversor precargados.
             </p>
           </button>
         </div>
@@ -265,37 +255,37 @@ export function DashboardModule({
 
   return (
     <div className="space-y-6">
-      {/* Cinta de Origen de Datos y Contexto Tarifario */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800/90 bg-slate-900/70 px-4 py-3">
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="inline-flex items-center gap-1.5 font-medium px-2.5 py-1 rounded-full bg-sky-500/15 text-sky-300 border border-sky-500/30">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            Distribuidora: {vault.profile.distributor} ({activeSchedule.tariff_code})
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">
-            Base de cálculo:{" "}
-            {latestInvoice
-              ? "Factura Confirmada + Inventario de Equipos"
-              : "Estimación por Inventario de Equipos"}
-          </span>
-          {billSimulation.lostStepSubsidy701 && (
-            <span className="inline-flex items-center gap-1.5 font-semibold px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30">
-              <AlertTriangle className="w-3.5 h-3.5" />
-              Escalón &ge; 701 kWh Activo (Sin subsidio escalonado SIE)
+      {/* Cabecera amigable del espacio y controles */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-[#0071E3]/10 text-[#0071E3]">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              {vault.profile.distributor} · {activeSchedule.tariff_code}
             </span>
-          )}
+            {billSimulation.lostStepSubsidy701 && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-[#FF3B30]/12 text-[#C92A2A]">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                Escalón &ge; 701 kWh (Sin subsidio escalonado)
+              </span>
+            )}
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1D1D1F]">
+            {vault.profile.spaceName}
+          </h1>
         </div>
 
+        {/* Controles tipo Segmented Control de Apple */}
         <div className="flex items-center gap-2">
-          <div className="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs">
+          <div className="inline-flex rounded-full bg-black/[0.05] p-1 text-xs font-semibold">
             {(["3m", "6m", "all"] as const).map((period) => (
               <button
                 key={period}
                 onClick={() => setPeriodFilter(period)}
-                className={`px-2.5 py-1 rounded-md font-medium transition ${
+                className={`px-3.5 py-1.5 rounded-full transition ${
                   periodFilter === period
-                    ? "bg-sky-600 text-white"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-white text-[#1D1D1F] shadow-2xs"
+                    : "text-[#6E6E73] hover:text-[#1D1D1F]"
                 }`}
               >
                 {period === "3m"
@@ -306,23 +296,24 @@ export function DashboardModule({
               </button>
             ))}
           </div>
-          <div className="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs">
+
+          <div className="inline-flex rounded-full bg-black/[0.05] p-1 text-xs font-semibold">
             <button
               onClick={() => setViewUnit("kwh")}
-              className={`px-2.5 py-1 rounded-md font-medium transition ${
+              className={`px-3.5 py-1.5 rounded-full transition ${
                 viewUnit === "kwh"
-                  ? "bg-emerald-600 text-white"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-white text-[#1D1D1F] shadow-2xs"
+                  : "text-[#6E6E73]"
               }`}
             >
               kWh
             </button>
             <button
               onClick={() => setViewUnit("dop")}
-              className={`px-2.5 py-1 rounded-md font-medium transition ${
+              className={`px-3.5 py-1.5 rounded-full transition ${
                 viewUnit === "dop"
-                  ? "bg-emerald-600 text-white"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-white text-[#1D1D1F] shadow-2xs"
+                  : "text-[#6E6E73]"
               }`}
             >
               RD$
@@ -331,35 +322,31 @@ export function DashboardModule({
         </div>
       </div>
 
-      {/* KPIs Principales */}
+      {/* 4 Tarjetas Bento Principales */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI 1: Consumo del Mes */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-5">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-medium mb-2">
-            <span>
-              {latestInvoice
-                ? "CONSUMO ÚLTIMA FACTURA"
-                : "CONSUMO MENSUAL ESTIMADO"}
-            </span>
-            <Zap className="w-4 h-4 text-sky-400" />
+        {/* Card 1: Consumo Mensual */}
+        <div className="apple-card p-6">
+          <div className="flex items-center justify-between text-xs font-semibold text-[#6E6E73] mb-3">
+            <span>Consumo Mensual</span>
+            <div className="w-8 h-8 rounded-full bg-[#0071E3]/10 text-[#0071E3] flex items-center justify-center">
+              <Zap className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl md:text-3xl font-extrabold tracking-tight">
+          <div className="text-3xl font-bold tracking-tight text-[#1D1D1F]">
             {currentReferenceKwh.toLocaleString("es-DO")}{" "}
-            <span className="text-base font-semibold text-slate-400">kWh</span>
+            <span className="text-base font-medium text-[#6E6E73]">kWh</span>
           </div>
-          <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-slate-400">
-              Promedio diario:{" "}
-              <strong className="text-slate-200">
-                {dailyAverageKwh} kWh/día
-              </strong>
+          <div className="mt-3 flex items-center justify-between text-xs">
+            <span className="text-[#6E6E73]">
+              Promedio:{" "}
+              <strong className="text-[#1D1D1F]">{dailyAverageKwh} kWh/día</strong>
             </span>
             {monthOverMonthVariationPct !== null && (
               <span
-                className={`inline-flex items-center gap-0.5 font-semibold ${
+                className={`inline-flex items-center gap-0.5 font-semibold px-2 py-0.5 rounded-full ${
                   monthOverMonthVariationPct > 0
-                    ? "text-rose-400"
-                    : "text-emerald-400"
+                    ? "bg-[#FF3B30]/10 text-[#C92A2A]"
+                    : "bg-[#28CD41]/15 text-[#1D832D]"
                 }`}
               >
                 {monthOverMonthVariationPct > 0 ? (
@@ -373,172 +360,118 @@ export function DashboardModule({
           </div>
         </div>
 
-        {/* KPI 2: Costo / Proyección de Factura */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-5">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-medium mb-2">
-            <span>
-              {latestInvoice
-                ? "IMPORTE FACTURADO / PROYECCIÓN"
-                : "FACTURA MENSUAL ESTIMADA"}
-            </span>
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
+        {/* Card 2: Factura Estimada / Importe */}
+        <div className="apple-card p-6">
+          <div className="flex items-center justify-between text-xs font-semibold text-[#6E6E73] mb-3">
+            <span>Factura Mensual</span>
+            <div className="w-8 h-8 rounded-full bg-[#28CD41]/15 text-[#1D832D] flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl md:text-3xl font-extrabold tracking-tight text-emerald-400">
+          <div className="text-3xl font-bold tracking-tight text-[#1D1D1F]">
             RD${" "}
             {(
               latestInvoice?.totalAmountDop.value ||
               billSimulation.totalEstimatedBillDop
             ).toLocaleString("es-DO", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
             })}
           </div>
-          <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
+          <div className="mt-3 flex items-center justify-between text-xs text-[#6E6E73]">
             <span>
-              Costo medio:{" "}
-              <strong className="text-slate-200">
+              Tarifa media:{" "}
+              <strong className="text-[#1D1D1F]">
                 RD$ {billSimulation.averageRateDopPerKwh.toFixed(2)}/kWh
               </strong>
             </span>
-            <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[11px]">
-              {latestInvoice ? "Medido" : "Estimado SIE"}
+            <span className="px-2 py-0.5 rounded-full bg-[#F5F5F7] text-[#1D1D1F] font-medium">
+              {latestInvoice ? "Medido" : "Estimado"}
             </span>
           </div>
         </div>
 
-        {/* KPI 3: Objetivo de Ahorro y Escalón 700 kWh */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-5">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-medium mb-2">
-            <span>MARGEN ESCALÓN 700 kWh (SIE)</span>
-            <Activity className="w-4 h-4 text-amber-400" />
+        {/* Card 3: Termómetro del Subsidio 700 kWh */}
+        <div className="apple-card p-6">
+          <div className="flex items-center justify-between text-xs font-semibold text-[#6E6E73] mb-3">
+            <span>Límite Subsidio (700 kWh)</span>
+            <div className="w-8 h-8 rounded-full bg-[#FF9500]/15 text-[#C97400] flex items-center justify-center">
+              <Activity className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl md:text-3xl font-extrabold tracking-tight">
+          <div className="text-3xl font-bold tracking-tight">
             {currentReferenceKwh >= 701 ? (
-              <span className="text-rose-400">
-                +{(currentReferenceKwh - 700).toFixed(0)} kWh
+              <span className="text-[#FF3B30]">
+                +{(currentReferenceKwh - 700).toFixed(0)}{" "}
+                <span className="text-sm font-medium">kWh sobre límite</span>
               </span>
             ) : (
-              <span className="text-sky-400">
-                {(700 - currentReferenceKwh).toFixed(0)} kWh libres
+              <span className="text-[#0071E3]">
+                {(700 - currentReferenceKwh).toFixed(0)}{" "}
+                <span className="text-sm font-medium text-[#6E6E73]">
+                  kWh disponibles
+                </span>
               </span>
             )}
           </div>
-          <div className="mt-2.5 w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+          <div className="mt-3 w-full bg-[#F5F5F7] h-2.5 rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${
                 currentReferenceKwh >= 701
-                  ? "bg-rose-500"
+                  ? "bg-[#FF3B30]"
                   : currentReferenceKwh >= 600
-                  ? "bg-amber-400"
-                  : "bg-emerald-500"
+                  ? "bg-[#FF9500]"
+                  : "bg-[#28CD41]"
               }`}
               style={{
                 width: `${Math.min(100, (currentReferenceKwh / 700) * 100)}%`,
               }}
             />
           </div>
-          <div className="mt-1.5 text-[11px] text-slate-400">
-            Meta de ahorro mensual: RD${" "}
-            {vault.profile.monthlySavingsGoalDop.toLocaleString("es-DO")}
-          </div>
         </div>
 
-        {/* KPI 4: Eficiencia y Respaldo Inversor */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-5">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-medium mb-2">
-            <span>ÍNDICE EFICIENCIA Y RESPALDO</span>
-            <BatteryCharging className="w-4 h-4 text-indigo-400" />
+        {/* Card 4: Eficiencia y Respaldo Inversor */}
+        <div className="apple-card p-6">
+          <div className="flex items-center justify-between text-xs font-semibold text-[#6E6E73] mb-3">
+            <span>Eficiencia y Respaldo</span>
+            <div className="w-8 h-8 rounded-full bg-[#5856D6]/12 text-[#5856D6] flex items-center justify-center">
+              <BatteryCharging className="w-4 h-4" />
+            </div>
           </div>
-          <div className="flex items-baseline gap-3">
-            <div className="text-2xl md:text-3xl font-extrabold tracking-tight">
-              {efficiencyScore !== null ? `${efficiencyScore}/100` : "N/D"}
+          <div className="flex items-baseline gap-2.5">
+            <div className="text-3xl font-bold tracking-tight text-[#1D1D1F]">
+              {efficiencyScore !== null ? `${efficiencyScore}%` : "N/D"}
             </div>
             {inverterAutonomy && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
-                Respaldo: {inverterAutonomy.estimatedAutonomyFormatted}
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#5856D6]/10 text-[#5856D6]">
+                {inverterAutonomy.estimatedAutonomyFormatted} en apagón
               </span>
             )}
           </div>
-          <div className="mt-2 text-xs text-slate-400">
+          <div className="mt-3 text-xs text-[#6E6E73] truncate">
             {primaryInverter
-              ? `${primaryInverter.inverterBrand} (${
-                  primaryInverter.installedSolarKw > 0
-                    ? `${primaryInverter.installedSolarKw} kWp Solar`
-                    : "Solo Baterías"
-                })`
-              : "Sin inversor registrado — configurar en módulo Respaldo"}
+              ? `${primaryInverter.inverterBrand} (${primaryInverter.batteryBrand})`
+              : "Configurar inversor en pestaña Solar"}
           </div>
         </div>
       </div>
 
-      {/* Alertas Inteligentes Activas */}
-      {triggeredAlerts.length > 0 && (
-        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-amber-300">
-              <AlertTriangle className="w-4 h-4" />
-              Alertas Inteligentes Detectadas ({triggeredAlerts.length})
-            </div>
-            <button
-              onClick={() => onNavigateTab("inteligencia")}
-              className="text-xs text-sky-400 hover:underline font-medium"
-            >
-              Configurar umbrales &rarr;
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {triggeredAlerts.slice(0, 4).map((alert) => (
-              <div
-                key={alert.id}
-                className="rounded-xl border border-slate-800 bg-slate-950/80 p-3.5 flex items-start justify-between gap-3"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        alert.severity === "critica"
-                          ? "bg-rose-500"
-                          : "bg-amber-400"
-                      }`}
-                    />
-                    <span className="font-semibold text-xs text-slate-100">
-                      {alert.title}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-1">{alert.message}</p>
-                  <p className="text-[11px] text-emerald-400 mt-1">
-                    Sugerencia: {alert.recommendedAction}
-                  </p>
-                </div>
-                <span className="text-xs font-bold px-2 py-1 rounded bg-slate-900 border border-slate-800 whitespace-nowrap">
-                  {alert.metricValue}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Gráficos Principales */}
+      {/* Gráficos Limpios Estilo Apple Health */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Gráfico 1: Evolución Histórica de Facturas o Desglose por Bloques */}
-        <div className="lg:col-span-2 rounded-2xl border border-slate-800 bg-slate-900/75 p-5">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <div className="lg:col-span-2 apple-card p-6 sm:p-7">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
             <div>
-              <h3 className="font-bold text-base">
+              <h3 className="font-bold text-lg text-[#1D1D1F]">
                 {filteredInvoices.length > 0
-                  ? "Evolución Histórica de Consumo y Facturación"
-                  : "Desglose por Escalones Tarifarios SIE"}
+                  ? "Tendencia Histórica de Consumo"
+                  : "Escalones Tarifarios Aplicados"}
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[#6E6E73]">
                 {filteredInvoices.length > 0
-                  ? "Datos reales procedentes de las facturas confirmadas por el usuario"
+                  ? "Evolución mensual de tus facturas confirmadas"
                   : activeSchedule.notes}
               </p>
             </div>
-            <span className="text-xs px-2.5 py-1 rounded-md bg-slate-800 text-slate-300">
-              Moneda: RD$ | Unidad: kWh
-            </span>
           </div>
 
           <div className="h-72 w-full">
@@ -549,72 +482,65 @@ export function DashboardModule({
                     periodo: inv.billingPeriodEnd.value.slice(0, 7),
                     kwh: inv.billedKwh.value,
                     dop: inv.totalAmountDop.value,
-                    limiteSubsidio: 700,
                   }))}
                   margin={{ top: 10, right: 16, left: 0, bottom: 0 }}
                 >
                   <defs>
-                    <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id="appleGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop
                         offset="5%"
-                        stopColor={viewUnit === "kwh" ? "#0EA5E9" : "#10B981"}
-                        stopOpacity={0.45}
+                        stopColor={viewUnit === "kwh" ? "#0071E3" : "#28CD41"}
+                        stopOpacity={0.28}
                       />
                       <stop
                         offset="95%"
-                        stopColor={viewUnit === "kwh" ? "#0EA5E9" : "#10B981"}
-                        stopOpacity={0.02}
+                        stopColor={viewUnit === "kwh" ? "#0071E3" : "#28CD41"}
+                        stopOpacity={0.0}
                       />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" />
-                  <XAxis dataKey="periodo" stroke="#94A3B8" fontSize={12} />
-                  <YAxis stroke="#94A3B8" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" />
+                  <XAxis dataKey="periodo" stroke="#8E8E93" fontSize={12} />
+                  <YAxis stroke="#8E8E93" fontSize={12} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#0F172A",
-                      borderColor: "#1E293B",
-                      borderRadius: "12px",
+                      backgroundColor: "#FFFFFF",
+                      borderColor: "rgba(0,0,0,0.08)",
+                      borderRadius: "16px",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
                       fontSize: "12px",
+                      color: "#1D1D1F",
                     }}
                   />
                   <Area
                     type="monotone"
                     dataKey={viewUnit}
                     name={viewUnit === "kwh" ? "Consumo (kWh)" : "Total (RD$)"}
-                    stroke={viewUnit === "kwh" ? "#0EA5E9" : "#10B981"}
-                    strokeWidth={2.5}
+                    stroke={viewUnit === "kwh" ? "#0071E3" : "#28CD41"}
+                    strokeWidth={3}
                     fillOpacity={1}
-                    fill="url(#colorMetric)"
+                    fill="url(#appleGrad)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={billSimulation.blocksBreakdown}
-                  margin={{ top: 10, right: 16, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" />
-                  <XAxis dataKey="label" stroke="#94A3B8" fontSize={11} />
-                  <YAxis stroke="#94A3B8" fontSize={12} />
+                <BarChart data={billSimulation.blocksBreakdown}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" />
+                  <XAxis dataKey="label" stroke="#8E8E93" fontSize={11} />
+                  <YAxis stroke="#8E8E93" fontSize={12} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#0F172A",
-                      borderColor: "#1E293B",
-                      borderRadius: "12px",
+                      backgroundColor: "#FFFFFF",
+                      borderColor: "rgba(0,0,0,0.08)",
+                      borderRadius: "16px",
                       fontSize: "12px",
                     }}
                   />
                   <Bar
                     dataKey={viewUnit === "kwh" ? "kwhInBlock" : "subtotalDop"}
-                    name={
-                      viewUnit === "kwh"
-                        ? "Energía en bloque (kWh)"
-                        : "Costo bloque (RD$)"
-                    }
-                    fill="#0EA5E9"
-                    radius={[6, 6, 0, 0]}
+                    fill="#0071E3"
+                    radius={[10, 10, 0, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -622,15 +548,15 @@ export function DashboardModule({
           </div>
         </div>
 
-        {/* Gráfico 2: Distribución por Categoría de Equipos */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-5 flex flex-col justify-between">
+        {/* Distribución por Categoría */}
+        <div className="apple-card p-6 sm:p-7 flex flex-col justify-between">
           <div>
-            <h3 className="font-bold text-base">
-              Distribución por Categoría de Equipos
+            <h3 className="font-bold text-lg text-[#1D1D1F]">
+              ¿En qué se va tu energía?
             </h3>
-            <p className="text-xs text-slate-400 mb-3">
-              Total estimado por equipos:{" "}
-              <strong className="text-slate-200">
+            <p className="text-xs text-[#6E6E73] mb-3">
+              Suma de equipos:{" "}
+              <strong className="text-[#1D1D1F]">
                 {totalAppliancesMonthlyKwh} kWh/mes
               </strong>
             </p>
@@ -638,7 +564,7 @@ export function DashboardModule({
 
           {categoryDistribution.length > 0 ? (
             <>
-              <div className="h-52 w-full">
+              <div className="h-48 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -648,28 +574,32 @@ export function DashboardModule({
                       cx="50%"
                       cy="50%"
                       innerRadius={48}
-                      outerRadius={78}
+                      outerRadius={76}
                       paddingAngle={3}
                     >
                       {categoryDistribution.map((entry, index) => (
                         <Cell
                           key={entry.name}
-                          fill={CHART_COLORS[index % CHART_COLORS.length]}
+                          fill={
+                            APPLE_CHART_COLORS[
+                              index % APPLE_CHART_COLORS.length
+                            ]
+                          }
                         />
                       ))}
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "#0F172A",
-                        borderColor: "#1E293B",
-                        borderRadius: "12px",
+                        backgroundColor: "#FFFFFF",
+                        borderColor: "rgba(0,0,0,0.08)",
+                        borderRadius: "14px",
                         fontSize: "12px",
                       }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="space-y-1.5 mt-2">
+              <div className="space-y-2 mt-3">
                 {categoryDistribution.slice(0, 4).map((cat, idx) => (
                   <div
                     key={cat.name}
@@ -677,148 +607,123 @@ export function DashboardModule({
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span
-                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        className="w-3 h-3 rounded-full shrink-0"
                         style={{
                           backgroundColor:
-                            CHART_COLORS[idx % CHART_COLORS.length],
+                            APPLE_CHART_COLORS[idx % APPLE_CHART_COLORS.length],
                         }}
                       />
-                      <span className="truncate text-slate-300">{cat.name}</span>
+                      <span className="truncate font-medium text-[#1D1D1F]">
+                        {cat.name}
+                      </span>
                     </div>
-                    <span className="font-semibold text-slate-200">
-                      {cat.kwh} kWh (RD$ {cat.costDop.toLocaleString("es-DO")})
+                    <span className="font-semibold text-[#6E6E73]">
+                      RD$ {cat.costDop.toLocaleString("es-DO")}
                     </span>
                   </div>
                 ))}
               </div>
             </>
           ) : (
-            <div className="text-center py-12 text-xs text-slate-400">
-              Aún no has registrado equipos en la calculadora.
-              <div className="mt-3">
-                <button
-                  onClick={() => onNavigateTab("equipos")}
-                  className="px-3 py-1.5 rounded-lg bg-sky-600 text-white font-medium"
-                >
-                  Agregar equipos
-                </button>
-              </div>
+            <div className="text-center py-10 text-xs text-[#6E6E73]">
+              Agrega tus equipos para ver el desglose.
             </div>
           )}
         </div>
       </div>
 
-      {/* Tabla de Equipos de Mayor Impacto y Desglose Tarifario Explicado */}
+      {/* Equipos de Mayor Gasto y Alertas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-5">
+        <div className="apple-card p-6 sm:p-7">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-bold text-base">
-                Equipos de Mayor Impacto en tu Factura
+              <h3 className="font-bold text-lg text-[#1D1D1F]">
+                Equipos de Mayor Costo Mensual
               </h3>
-              <p className="text-xs text-slate-400">
-                Estimación basada en potencia nominal, factor de ciclo y horas de
-                uso
+              <p className="text-xs text-[#6E6E73]">
+                Tus aparatos ordenados por su impacto en pesos dominicanos
               </p>
             </div>
             <button
               onClick={() => onNavigateTab("equipos")}
-              className="text-xs font-medium text-sky-400 hover:underline"
+              className="text-xs font-semibold text-[#0071E3] hover:underline"
             >
-              Simular horas &rarr;
+              Ajustar horas &rarr;
             </button>
           </div>
 
-          {applianceBreakdown.length > 0 ? (
-            <div className="space-y-3">
-              {applianceBreakdown.slice(0, 5).map((item) => {
-                const pct =
-                  totalAppliancesMonthlyKwh > 0
-                    ? Math.round(
-                        (item.monthlyKwh / totalAppliancesMonthlyKwh) * 100
-                      )
-                    : 0;
-                return (
-                  <div
-                    key={item.id}
-                    className="p-3 rounded-xl border border-slate-800/80 bg-slate-950/60"
-                  >
-                    <div className="flex items-center justify-between text-xs font-semibold">
-                      <span className="text-slate-100">{item.name}</span>
-                      <span className="text-emerald-400">
-                        RD${" "}
-                        {item.estimatedMonthlyCostDop.toLocaleString("es-DO")}/mes
-                      </span>
+          <div className="space-y-3">
+            {applianceBreakdown.slice(0, 5).map((item) => {
+              const pct =
+                totalAppliancesMonthlyKwh > 0
+                  ? Math.round(
+                      (item.monthlyKwh / totalAppliancesMonthlyKwh) * 100
+                    )
+                  : 0;
+              return (
+                <div
+                  key={item.id}
+                  className="p-4 rounded-2xl bg-[#F5F5F7] flex items-center justify-between gap-4"
+                >
+                  <div>
+                    <div className="font-semibold text-sm text-[#1D1D1F]">
+                      {item.name}
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1">
-                      <span>
-                        {item.nominalWatts}W × {item.quantity} und ·{" "}
-                        {item.dailyHours}h/día
-                      </span>
-                      <span>
-                        {item.monthlyKwh} kWh ({pct}%)
-                      </span>
+                    <div className="text-xs text-[#6E6E73] mt-0.5">
+                      {item.dailyHours}h al día · {item.monthlyKwh} kWh/mes (
+                      {pct}%)
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-xs text-slate-400">
-              Registra tus equipos eléctricos para identificar cuáles generan los
-              mayores costos.
-            </p>
-          )}
+                  <div className="text-right">
+                    <div className="font-bold text-sm text-[#1D1D1F]">
+                      RD${" "}
+                      {item.estimatedMonthlyCostDop.toLocaleString("es-DO")}
+                    </div>
+                    <div className="text-[11px] text-[#6E6E73]">al mes</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Explicación Transparente de la Factura según Pliego SIE */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/75 p-5 flex flex-col justify-between">
+        {/* Alertas y Desglose de Bloques SIE */}
+        <div className="apple-card p-6 sm:p-7 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-bold text-base">
-                Auditoría Matemática del Pliego Tarifario ({activeSchedule.distributor_code})
-              </h3>
-              <span className="text-[11px] px-2 py-0.5 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30">
-                {activeSchedule.is_official_sie
-                  ? "Tarifa Oficial SIE"
-                  : "Tarifa Orientativa"}
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 mb-4">
+            <h3 className="font-bold text-lg text-[#1D1D1F] mb-1">
+              Avisos Inteligentes y Escalones SIE
+            </h3>
+            <p className="text-xs text-[#6E6E73] mb-4">
               {billSimulation.explanation}
             </p>
 
-            <div className="space-y-2">
-              {billSimulation.blocksBreakdown.map((b) => (
-                <div
-                  key={b.label}
-                  className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-slate-950/70 border border-slate-800/80"
-                >
-                  <div>
-                    <div className="font-medium text-slate-200">{b.label}</div>
-                    <div className="text-[11px] text-slate-400">
-                      {b.kwhInBlock} kWh × RD$ {b.rateDop.toFixed(2)}/kWh
+            {triggeredAlerts.length > 0 ? (
+              <div className="space-y-2.5 mb-4">
+                {triggeredAlerts.slice(0, 3).map((al) => (
+                  <div
+                    key={al.id}
+                    className="p-3.5 rounded-2xl bg-[#FF9500]/10 border border-[#FF9500]/25 text-xs"
+                  >
+                    <div className="flex items-center justify-between font-bold text-[#1D1D1F]">
+                      <span>{al.title}</span>
+                      <span className="text-[#C97400]">{al.metricValue}</span>
                     </div>
+                    <p className="text-[#6E6E73] mt-1">{al.message}</p>
                   </div>
-                  <div className="font-bold text-slate-100">
-                    RD$ {b.subtotalDop.toLocaleString("es-DO")}
-                  </div>
-                </div>
-              ))}
-              <div className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-slate-950/70 border border-slate-800/80">
-                <span className="text-slate-300">Cargo Fijo Mensual Regulado</span>
-                <span className="font-bold text-slate-100">
-                  RD$ {billSimulation.fixedChargeDop.toFixed(2)}
-                </span>
+                ))}
               </div>
-            </div>
+            ) : (
+              <div className="p-4 rounded-2xl bg-[#28CD41]/10 text-xs text-[#1D832D] mb-4">
+                Todo tu consumo se encuentra dentro de los parámetros normales.
+              </div>
+            )}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-300">
-              Total Calculado por Fórmulas Oficiales:
+          <div className="pt-4 border-t border-black/[0.06] flex items-center justify-between">
+            <span className="text-xs font-medium text-[#6E6E73]">
+              Total calculado con pliego {activeSchedule.distributor_code}:
             </span>
-            <span className="text-lg font-extrabold text-emerald-400">
+            <span className="text-xl font-bold text-[#0071E3]">
               RD${" "}
               {billSimulation.totalEstimatedBillDop.toLocaleString("es-DO", {
                 minimumFractionDigits: 2,
@@ -830,4 +735,3 @@ export function DashboardModule({
     </div>
   );
 }
-

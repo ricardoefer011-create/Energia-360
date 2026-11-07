@@ -1,28 +1,64 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #060D1E;
-  --bg-card: #0F172A;
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --accent-electric: #0EA5E9;
-  --accent-green: #10B981;
+  --apple-bg: #f5f5f7;
+  --apple-surface: #ffffff;
+  --apple-surface-subtle: #fbfbfd;
+  --apple-text: #1d1d1f;
+  --apple-text-secondary: #6e6e73;
+  --apple-border: rgba(0, 0, 0, 0.07);
+  --apple-blue: #0071e3;
+  --apple-green: #28cd41;
+  --apple-amber: #ff9500;
+  --apple-red: #ff3b30;
 }
 
-html.light-theme {
-  filter: invert(0.93) hue-rotate(180deg);
-}
-
-html.light-theme svg,
-html.light-theme img {
-  filter: invert(1) hue-rotate(180deg);
+html.dark {
+  --apple-bg: #000000;
+  --apple-surface: #1c1c1e;
+  --apple-surface-subtle: #141416;
+  --apple-text: #f5f5f7;
+  --apple-text-secondary: #98989d;
+  --apple-border: rgba(255, 255, 255, 0.1);
 }
 
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--apple-bg);
+  color: var(--apple-text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
 }
 
+/* Estilizado amigable tipo Apple para controles deslizantes (sliders) */
+input[type="range"] {
+  height: 6px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* Sombras suaves estilo Apple Bento */
+.apple-card {
+  background-color: var(--apple-surface);
+  border: 1px solid var(--apple-border);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.035), 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.apple-card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.apple-glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+html.dark .apple-glass {
+  background: rgba(28, 28, 30, 0.78);
+}

@@ -356,3 +356,4 @@ on conflict (id) do update set
   energy_blocks = excluded.energy_blocks,
   fixed_charges = excluded.fixed_charges,
   updated_at = now();
+
