@@ -1,5 +1,5 @@
 # Configuración oficial de Supabase CLI para ENERGIA360
-project_id = "energia360-rd"
+project_id = "esqbscqrtkxxqkuvgcmw"
 
 [api]
 enabled = true
