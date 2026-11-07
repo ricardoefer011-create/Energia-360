@@ -8,13 +8,10 @@ import {
   FileSpreadsheet,
   KeyRound,
   LayoutDashboard,
-  Lock,
   Server,
   ShieldCheck,
   Sliders,
-  Sparkles,
   Sun,
-  UserCheck,
 } from "lucide-react";
 import { Energia360Logo } from "@/components/brand/Energia360Logo";
 import { AppleLandingAndAuth } from "@/components/landing/AppleLandingAndAuth";
@@ -69,7 +66,7 @@ type NavigationTab =
   | "admin";
 
 export default function Energia360PlatformPage() {
-  // Por defecto mostramos primero la Página Web de Presentación estilo Apple
+  // Por defecto mostramos primero la Página Web de Presentación en Blanco y Gris Suave
   const [viewMode, setViewMode] = useState<"landing" | "app">("landing");
   const [activeTab, setActiveTab] = useState<NavigationTab>("dashboard");
 
@@ -332,7 +329,7 @@ export default function Energia360PlatformPage() {
     notify("Todos los datos locales fueron eliminados de este navegador.");
   }
 
-  // Si estamos en la vista de Portada Web ("landing"), renderizamos la página web Apple
+  // Si estamos en la vista de Portada Web ("landing"), renderizamos primero la página web
   if (viewMode === "landing") {
     return (
       <>
@@ -344,15 +341,15 @@ export default function Energia360PlatformPage() {
         />
 
         {showUnlockModal && (
-          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="w-full max-w-md rounded-3xl bg-white p-7 shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 bg-zinc-900/30 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="w-full max-w-md rounded-3xl bg-white border border-zinc-200 p-7 shadow-2xl space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-lg text-[#1D1D1F]">
+                <h3 className="font-bold text-lg text-zinc-900">
                   Abrir Mi Bóveda Cifrada
                 </h3>
                 <button
                   onClick={() => setShowUnlockModal(false)}
-                  className="text-xs font-semibold text-[#6E6E73]"
+                  className="text-xs font-semibold text-zinc-500 hover:text-zinc-900"
                 >
                   Cerrar
                 </button>
@@ -364,14 +361,14 @@ export default function Energia360PlatformPage() {
                   value={unlockPassphraseInput}
                   onChange={(e) => setUnlockPassphraseInput(e.target.value)}
                   placeholder="Contraseña maestra..."
-                  className="w-full rounded-2xl bg-[#F5F5F7] border border-black/10 px-4 py-3 text-sm text-[#1D1D1F]"
+                  className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-4 py-3 text-sm text-zinc-900"
                 />
                 {unlockError && (
-                  <div className="text-xs text-[#C92A2A]">{unlockError}</div>
+                  <div className="text-xs text-zinc-800">{unlockError}</div>
                 )}
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-full bg-[#0071E3] text-white font-semibold text-sm"
+                  className="w-full py-3 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm transition"
                 >
                   Desbloquear
                 </button>
@@ -399,7 +396,7 @@ export default function Energia360PlatformPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] flex flex-col">
+    <div className="min-h-screen bg-[#F8F9FA] text-zinc-900 flex flex-col">
       {showOnboarding && !isDemoMode && (
         <OnboardingModal
           initialProfile={realVault.profile}
@@ -411,29 +408,29 @@ export default function Energia360PlatformPage() {
         />
       )}
 
-      {/* Barra Superior Limpia Estilo Apple */}
-      <header className="sticky top-0 z-30 apple-glass border-b border-black/[0.06]">
+      {/* Barra Superior Limpia en Blanco y Gris Suave */}
+      <header className="sticky top-0 z-30 apple-glass border-b border-zinc-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setViewMode("landing")}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-black/[0.05] hover:bg-black/[0.08] text-[#1D1D1F] transition"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-zinc-100 hover:bg-zinc-200 border border-zinc-200/80 text-zinc-800 transition"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Inicio Web</span>
+              <span>Página Web</span>
             </button>
             <Energia360Logo size={32} />
           </div>
 
           {/* Selector Rápido de Usuario de Prueba o Espacio Propio */}
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-1.5 bg-black/[0.05] p-1 rounded-full text-xs font-semibold">
+            <div className="hidden sm:flex items-center gap-1.5 bg-zinc-100 border border-zinc-200/80 p-1 rounded-full text-xs font-semibold">
               <button
                 onClick={() => handleEnterWithTestAccount("hogar_santo_domingo")}
                 className={`px-3 py-1.5 rounded-full transition ${
                   isDemoMode && activeTestPreset === "hogar_santo_domingo"
-                    ? "bg-white text-[#1D1D1F] shadow-2xs"
-                    : "text-[#6E6E73] hover:text-[#1D1D1F]"
+                    ? "bg-white text-zinc-900 shadow-2xs"
+                    : "text-zinc-500 hover:text-zinc-900"
                 }`}
               >
                 Demo Hogar SD
@@ -444,8 +441,8 @@ export default function Energia360PlatformPage() {
                 }
                 className={`px-3 py-1.5 rounded-full transition ${
                   isDemoMode && activeTestPreset === "apartamento_santiago"
-                    ? "bg-white text-[#1D1D1F] shadow-2xs"
-                    : "text-[#6E6E73] hover:text-[#1D1D1F]"
+                    ? "bg-white text-zinc-900 shadow-2xs"
+                    : "text-zinc-500 hover:text-zinc-900"
                 }`}
               >
                 Demo Apto Santiago
@@ -454,8 +451,8 @@ export default function Energia360PlatformPage() {
                 onClick={() => handleEnterWithTestAccount("negocio_punta_cana")}
                 className={`px-3 py-1.5 rounded-full transition ${
                   isDemoMode && activeTestPreset === "negocio_punta_cana"
-                    ? "bg-white text-[#1D1D1F] shadow-2xs"
-                    : "text-[#6E6E73] hover:text-[#1D1D1F]"
+                    ? "bg-white text-zinc-900 shadow-2xs"
+                    : "text-zinc-500 hover:text-zinc-900"
                 }`}
               >
                 Demo Negocio
@@ -464,8 +461,8 @@ export default function Energia360PlatformPage() {
                 onClick={handleStartPersonalWorkspace}
                 className={`px-3 py-1.5 rounded-full transition ${
                   !isDemoMode
-                    ? "bg-[#0071E3] text-white shadow-2xs"
-                    : "text-[#6E6E73] hover:text-[#1D1D1F]"
+                    ? "bg-zinc-900 text-white shadow-2xs"
+                    : "text-zinc-500 hover:text-zinc-900"
                 }`}
               >
                 Mi Espacio
@@ -475,7 +472,7 @@ export default function Energia360PlatformPage() {
         </div>
       </header>
 
-      {/* Layout Principal con Sidebar tipo Apple macOS/iPadOS */}
+      {/* Layout Principal con Sidebar Minimalista */}
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Sidebar de Navegación */}
         <aside className="lg:col-span-3 xl:col-span-2">
@@ -489,8 +486,8 @@ export default function Energia360PlatformPage() {
                   onClick={() => setActiveTab(item.id)}
                   className={`px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2.5 whitespace-nowrap transition ${
                     isActive
-                      ? "bg-[#0071E3] text-white shadow-2xs"
-                      : "text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-[#F5F5F7]"
+                      ? "bg-zinc-900 text-white shadow-2xs"
+                      : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100"
                   }`}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
@@ -685,8 +682,8 @@ export default function Energia360PlatformPage() {
 
       {/* Notificación Flotante */}
       {statusToast && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-full bg-[#1D1D1F] text-white px-5 py-3 text-xs font-semibold shadow-xl flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-[#28CD41]" />
+        <div className="fixed bottom-6 right-6 z-50 rounded-full bg-zinc-900 text-white px-5 py-3 text-xs font-semibold shadow-xl flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-zinc-300" />
           <span>{statusToast}</span>
         </div>
       )}

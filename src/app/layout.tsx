@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Energia360 — Inteligencia Energética para República Dominicana",
   description:
-    "Entiende tu consumo. Controla tu energía. Reduce tus gastos. La plataforma inteligente de ahorro eléctrico, paneles solares e inversores para hogares y negocios en RD.",
+    "Entiende tu consumo. Controla tu energía. Reduce tus gastos. Plataforma inteligente de análisis eléctrico, paneles solares e inversores para hogares y negocios en RD.",
   manifest: "/manifest.json",
   icons: {
     icon: "/icons/logo.svg",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F5F5F7",
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
 };
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es-DO">
-      <body className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F] selection:bg-[#0071E3] selection:text-white">
+      <body className="min-h-screen bg-[#F8F9FA] text-zinc-900 selection:bg-zinc-900 selection:text-white">
         {children}
       </body>
     </html>

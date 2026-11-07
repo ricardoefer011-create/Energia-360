@@ -48,14 +48,14 @@ interface DashboardModuleProps {
   onLoadDemoMode: () => void;
 }
 
-const APPLE_CHART_COLORS = [
-  "#0071E3",
-  "#28CD41",
-  "#FF9500",
-  "#5856D6",
-  "#AF52DE",
-  "#00C7BE",
-  "#FF2D55",
+const MONOCHROME_CHART_COLORS = [
+  "#18181B",
+  "#3F3F46",
+  "#71717A",
+  "#A1A1AA",
+  "#D4D4D8",
+  "#52525B",
+  "#E4E4E7",
 ];
 
 export function DashboardModule({
@@ -186,15 +186,15 @@ export function DashboardModule({
   if (!hasAnyRealData) {
     return (
       <div className="apple-card p-8 sm:p-12 text-center max-w-3xl mx-auto my-6">
-        <div className="w-16 h-16 rounded-3xl bg-[#0071E3]/10 flex items-center justify-center mx-auto mb-5">
-          <Zap className="w-8 h-8 text-[#0071E3]" />
+        <div className="w-16 h-16 rounded-3xl bg-zinc-100 border border-zinc-200 flex items-center justify-center mx-auto mb-5">
+          <Zap className="w-8 h-8 text-zinc-900" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1D1D1F] mb-3">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 mb-3">
           Bienvenido a tu resumen energético
         </h2>
-        <p className="text-[#6E6E73] max-w-xl mx-auto text-base mb-8">
+        <p className="text-zinc-500 max-w-xl mx-auto text-base mb-8">
           Para mostrar tus métricas reales con la tarifa de{" "}
-          <strong className="text-[#1D1D1F]">
+          <strong className="text-zinc-900">
             {vault.profile.distributor} ({vault.profile.tariffCode})
           </strong>
           , elige cómo deseas comenzar:
@@ -203,39 +203,39 @@ export function DashboardModule({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
           <button
             onClick={() => onNavigateTab("equipos")}
-            className="p-6 rounded-3xl bg-[#F5F5F7] hover:bg-[#0071E3]/[0.06] border border-black/[0.05] transition"
+            className="p-6 rounded-3xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 transition"
           >
-            <Calculator className="w-6 h-6 text-[#0071E3] mb-3" />
-            <div className="font-bold text-base text-[#1D1D1F] mb-1">
+            <Calculator className="w-6 h-6 text-zinc-900 mb-3" />
+            <div className="font-bold text-base text-zinc-900 mb-1">
               Agregar Equipos
             </div>
-            <p className="text-xs text-[#6E6E73]">
+            <p className="text-xs text-zinc-500">
               Selecciona tus aires, nevera y abanicos en segundos.
             </p>
           </button>
 
           <button
             onClick={() => onNavigateTab("facturas")}
-            className="p-6 rounded-3xl bg-[#F5F5F7] hover:bg-[#28CD41]/[0.08] border border-black/[0.05] transition"
+            className="p-6 rounded-3xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 transition"
           >
-            <FileSpreadsheet className="w-6 h-6 text-[#1D832D] mb-3" />
-            <div className="font-bold text-base text-[#1D1D1F] mb-1">
+            <FileSpreadsheet className="w-6 h-6 text-zinc-900 mb-3" />
+            <div className="font-bold text-base text-zinc-900 mb-1">
               Subir una Factura
             </div>
-            <p className="text-xs text-[#6E6E73]">
+            <p className="text-xs text-zinc-500">
               Analiza tu recibo en PDF o foto localmente en tu navegador.
             </p>
           </button>
 
           <button
             onClick={onLoadDemoMode}
-            className="p-6 rounded-3xl bg-[#0071E3]/10 hover:bg-[#0071E3]/15 border border-[#0071E3]/20 transition"
+            className="p-6 rounded-3xl bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-900 transition"
           >
-            <Sparkles className="w-6 h-6 text-[#0071E3] mb-3" />
-            <div className="font-bold text-base text-[#0071E3] mb-1">
+            <Sparkles className="w-6 h-6 text-white mb-3" />
+            <div className="font-bold text-base text-white mb-1">
               Cargar Usuario Demo
             </div>
-            <p className="text-xs text-[#6E6E73]">
+            <p className="text-xs text-zinc-300">
               Explora un hogar completo con facturas e inversor precargados.
             </p>
           </button>
@@ -255,37 +255,37 @@ export function DashboardModule({
 
   return (
     <div className="space-y-6">
-      {/* Cabecera amigable del espacio y controles */}
+      {/* Cabecera minimalista del espacio y controles */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-[#0071E3]/10 text-[#0071E3]">
-              <ShieldCheck className="w-3.5 h-3.5" />
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200">
+              <ShieldCheck className="w-3.5 h-3.5 text-zinc-700" />
               {vault.profile.distributor} · {activeSchedule.tariff_code}
             </span>
             {billSimulation.lostStepSubsidy701 && (
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-[#FF3B30]/12 text-[#C92A2A]">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-zinc-900 text-white">
                 <AlertTriangle className="w-3.5 h-3.5" />
                 Escalón &ge; 701 kWh (Sin subsidio escalonado)
               </span>
             )}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1D1D1F]">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
             {vault.profile.spaceName}
           </h1>
         </div>
 
-        {/* Controles tipo Segmented Control de Apple */}
+        {/* Controles tipo Segmented Control */}
         <div className="flex items-center gap-2">
-          <div className="inline-flex rounded-full bg-black/[0.05] p-1 text-xs font-semibold">
+          <div className="inline-flex rounded-full bg-zinc-100 border border-zinc-200/80 p-1 text-xs font-semibold">
             {(["3m", "6m", "all"] as const).map((period) => (
               <button
                 key={period}
                 onClick={() => setPeriodFilter(period)}
                 className={`px-3.5 py-1.5 rounded-full transition ${
                   periodFilter === period
-                    ? "bg-white text-[#1D1D1F] shadow-2xs"
-                    : "text-[#6E6E73] hover:text-[#1D1D1F]"
+                    ? "bg-white text-zinc-900 shadow-2xs"
+                    : "text-zinc-500 hover:text-zinc-900"
                 }`}
               >
                 {period === "3m"
@@ -297,13 +297,13 @@ export function DashboardModule({
             ))}
           </div>
 
-          <div className="inline-flex rounded-full bg-black/[0.05] p-1 text-xs font-semibold">
+          <div className="inline-flex rounded-full bg-zinc-100 border border-zinc-200/80 p-1 text-xs font-semibold">
             <button
               onClick={() => setViewUnit("kwh")}
               className={`px-3.5 py-1.5 rounded-full transition ${
                 viewUnit === "kwh"
-                  ? "bg-white text-[#1D1D1F] shadow-2xs"
-                  : "text-[#6E6E73]"
+                  ? "bg-white text-zinc-900 shadow-2xs"
+                  : "text-zinc-500 hover:text-zinc-900"
               }`}
             >
               kWh
@@ -312,8 +312,8 @@ export function DashboardModule({
               onClick={() => setViewUnit("dop")}
               className={`px-3.5 py-1.5 rounded-full transition ${
                 viewUnit === "dop"
-                  ? "bg-white text-[#1D1D1F] shadow-2xs"
-                  : "text-[#6E6E73]"
+                  ? "bg-white text-zinc-900 shadow-2xs"
+                  : "text-zinc-500 hover:text-zinc-900"
               }`}
             >
               RD$
@@ -322,33 +322,27 @@ export function DashboardModule({
         </div>
       </div>
 
-      {/* 4 Tarjetas Bento Principales */}
+      {/* 4 Tarjetas Bento Principales en Blanco y Gris Suave */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Consumo Mensual */}
         <div className="apple-card p-6">
-          <div className="flex items-center justify-between text-xs font-semibold text-[#6E6E73] mb-3">
+          <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 mb-3">
             <span>Consumo Mensual</span>
-            <div className="w-8 h-8 rounded-full bg-[#0071E3]/10 text-[#0071E3] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200/70 flex items-center justify-center">
               <Zap className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-bold tracking-tight text-[#1D1D1F]">
+          <div className="text-3xl font-bold tracking-tight text-zinc-900">
             {currentReferenceKwh.toLocaleString("es-DO")}{" "}
-            <span className="text-base font-medium text-[#6E6E73]">kWh</span>
+            <span className="text-base font-medium text-zinc-500">kWh</span>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs">
-            <span className="text-[#6E6E73]">
+            <span className="text-zinc-500">
               Promedio:{" "}
-              <strong className="text-[#1D1D1F]">{dailyAverageKwh} kWh/día</strong>
+              <strong className="text-zinc-900">{dailyAverageKwh} kWh/día</strong>
             </span>
             {monthOverMonthVariationPct !== null && (
-              <span
-                className={`inline-flex items-center gap-0.5 font-semibold px-2 py-0.5 rounded-full ${
-                  monthOverMonthVariationPct > 0
-                    ? "bg-[#FF3B30]/10 text-[#C92A2A]"
-                    : "bg-[#28CD41]/15 text-[#1D832D]"
-                }`}
-              >
+              <span className="inline-flex items-center gap-0.5 font-semibold px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200">
                 {monthOverMonthVariationPct > 0 ? (
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 ) : (
@@ -362,13 +356,13 @@ export function DashboardModule({
 
         {/* Card 2: Factura Estimada / Importe */}
         <div className="apple-card p-6">
-          <div className="flex items-center justify-between text-xs font-semibold text-[#6E6E73] mb-3">
+          <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 mb-3">
             <span>Factura Mensual</span>
-            <div className="w-8 h-8 rounded-full bg-[#28CD41]/15 text-[#1D832D] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200/70 flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-bold tracking-tight text-[#1D1D1F]">
+          <div className="text-3xl font-bold tracking-tight text-zinc-900">
             RD${" "}
             {(
               latestInvoice?.totalAmountDop.value ||
@@ -378,14 +372,14 @@ export function DashboardModule({
               maximumFractionDigits: 0,
             })}
           </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-[#6E6E73]">
+          <div className="mt-3 flex items-center justify-between text-xs text-zinc-500">
             <span>
               Tarifa media:{" "}
-              <strong className="text-[#1D1D1F]">
+              <strong className="text-zinc-900">
                 RD$ {billSimulation.averageRateDopPerKwh.toFixed(2)}/kWh
               </strong>
             </span>
-            <span className="px-2 py-0.5 rounded-full bg-[#F5F5F7] text-[#1D1D1F] font-medium">
+            <span className="px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 font-medium border border-zinc-200/60">
               {latestInvoice ? "Medido" : "Estimado"}
             </span>
           </div>
@@ -393,35 +387,37 @@ export function DashboardModule({
 
         {/* Card 3: Termómetro del Subsidio 700 kWh */}
         <div className="apple-card p-6">
-          <div className="flex items-center justify-between text-xs font-semibold text-[#6E6E73] mb-3">
+          <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 mb-3">
             <span>Límite Subsidio (700 kWh)</span>
-            <div className="w-8 h-8 rounded-full bg-[#FF9500]/15 text-[#C97400] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200/70 flex items-center justify-center">
               <Activity className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-bold tracking-tight">
+          <div className="text-3xl font-bold tracking-tight text-zinc-900">
             {currentReferenceKwh >= 701 ? (
-              <span className="text-[#FF3B30]">
+              <span>
                 +{(currentReferenceKwh - 700).toFixed(0)}{" "}
-                <span className="text-sm font-medium">kWh sobre límite</span>
+                <span className="text-sm font-medium text-zinc-500">
+                  kWh sobre límite
+                </span>
               </span>
             ) : (
-              <span className="text-[#0071E3]">
+              <span>
                 {(700 - currentReferenceKwh).toFixed(0)}{" "}
-                <span className="text-sm font-medium text-[#6E6E73]">
+                <span className="text-sm font-medium text-zinc-500">
                   kWh disponibles
                 </span>
               </span>
             )}
           </div>
-          <div className="mt-3 w-full bg-[#F5F5F7] h-2.5 rounded-full overflow-hidden">
+          <div className="mt-3 w-full bg-zinc-100 h-2.5 rounded-full overflow-hidden border border-zinc-200/60">
             <div
               className={`h-full rounded-full transition-all ${
                 currentReferenceKwh >= 701
-                  ? "bg-[#FF3B30]"
+                  ? "bg-zinc-900"
                   : currentReferenceKwh >= 600
-                  ? "bg-[#FF9500]"
-                  : "bg-[#28CD41]"
+                  ? "bg-zinc-700"
+                  : "bg-zinc-500"
               }`}
               style={{
                 width: `${Math.min(100, (currentReferenceKwh / 700) * 100)}%`,
@@ -432,23 +428,23 @@ export function DashboardModule({
 
         {/* Card 4: Eficiencia y Respaldo Inversor */}
         <div className="apple-card p-6">
-          <div className="flex items-center justify-between text-xs font-semibold text-[#6E6E73] mb-3">
+          <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 mb-3">
             <span>Eficiencia y Respaldo</span>
-            <div className="w-8 h-8 rounded-full bg-[#5856D6]/12 text-[#5856D6] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200/70 flex items-center justify-center">
               <BatteryCharging className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2.5">
-            <div className="text-3xl font-bold tracking-tight text-[#1D1D1F]">
+            <div className="text-3xl font-bold tracking-tight text-zinc-900">
               {efficiencyScore !== null ? `${efficiencyScore}%` : "N/D"}
             </div>
             {inverterAutonomy && (
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#5856D6]/10 text-[#5856D6]">
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200">
                 {inverterAutonomy.estimatedAutonomyFormatted} en apagón
               </span>
             )}
           </div>
-          <div className="mt-3 text-xs text-[#6E6E73] truncate">
+          <div className="mt-3 text-xs text-zinc-500 truncate">
             {primaryInverter
               ? `${primaryInverter.inverterBrand} (${primaryInverter.batteryBrand})`
               : "Configurar inversor en pestaña Solar"}
@@ -456,17 +452,17 @@ export function DashboardModule({
         </div>
       </div>
 
-      {/* Gráficos Limpios Estilo Apple Health */}
+      {/* Gráficos Limpios en Escala de Grises Suave */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 apple-card p-6 sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
             <div>
-              <h3 className="font-bold text-lg text-[#1D1D1F]">
+              <h3 className="font-bold text-lg text-zinc-900">
                 {filteredInvoices.length > 0
                   ? "Tendencia Histórica de Consumo"
                   : "Escalones Tarifarios Aplicados"}
               </h3>
-              <p className="text-xs text-[#6E6E73]">
+              <p className="text-xs text-zinc-500">
                 {filteredInvoices.length > 0
                   ? "Evolución mensual de tus facturas confirmadas"
                   : activeSchedule.notes}
@@ -489,35 +485,35 @@ export function DashboardModule({
                     <linearGradient id="appleGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop
                         offset="5%"
-                        stopColor={viewUnit === "kwh" ? "#0071E3" : "#28CD41"}
-                        stopOpacity={0.28}
+                        stopColor="#18181B"
+                        stopOpacity={0.18}
                       />
                       <stop
                         offset="95%"
-                        stopColor={viewUnit === "kwh" ? "#0071E3" : "#28CD41"}
+                        stopColor="#18181B"
                         stopOpacity={0.0}
                       />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" />
-                  <XAxis dataKey="periodo" stroke="#8E8E93" fontSize={12} />
-                  <YAxis stroke="#8E8E93" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" />
+                  <XAxis dataKey="periodo" stroke="#71717A" fontSize={12} />
+                  <YAxis stroke="#71717A" fontSize={12} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "#FFFFFF",
-                      borderColor: "rgba(0,0,0,0.08)",
+                      borderColor: "#E4E4E7",
                       borderRadius: "16px",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
                       fontSize: "12px",
-                      color: "#1D1D1F",
+                      color: "#18181B",
                     }}
                   />
                   <Area
                     type="monotone"
                     dataKey={viewUnit}
                     name={viewUnit === "kwh" ? "Consumo (kWh)" : "Total (RD$)"}
-                    stroke={viewUnit === "kwh" ? "#0071E3" : "#28CD41"}
-                    strokeWidth={3}
+                    stroke="#18181B"
+                    strokeWidth={2.5}
                     fillOpacity={1}
                     fill="url(#appleGrad)"
                   />
@@ -526,20 +522,20 @@ export function DashboardModule({
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={billSimulation.blocksBreakdown}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" />
-                  <XAxis dataKey="label" stroke="#8E8E93" fontSize={11} />
-                  <YAxis stroke="#8E8E93" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" />
+                  <XAxis dataKey="label" stroke="#71717A" fontSize={11} />
+                  <YAxis stroke="#71717A" fontSize={12} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "#FFFFFF",
-                      borderColor: "rgba(0,0,0,0.08)",
+                      borderColor: "#E4E4E7",
                       borderRadius: "16px",
                       fontSize: "12px",
                     }}
                   />
                   <Bar
                     dataKey={viewUnit === "kwh" ? "kwhInBlock" : "subtotalDop"}
-                    fill="#0071E3"
+                    fill="#18181B"
                     radius={[10, 10, 0, 0]}
                   />
                 </BarChart>
@@ -551,12 +547,12 @@ export function DashboardModule({
         {/* Distribución por Categoría */}
         <div className="apple-card p-6 sm:p-7 flex flex-col justify-between">
           <div>
-            <h3 className="font-bold text-lg text-[#1D1D1F]">
+            <h3 className="font-bold text-lg text-zinc-900">
               ¿En qué se va tu energía?
             </h3>
-            <p className="text-xs text-[#6E6E73] mb-3">
+            <p className="text-xs text-zinc-500 mb-3">
               Suma de equipos:{" "}
-              <strong className="text-[#1D1D1F]">
+              <strong className="text-zinc-900">
                 {totalAppliancesMonthlyKwh} kWh/mes
               </strong>
             </p>
@@ -581,8 +577,8 @@ export function DashboardModule({
                         <Cell
                           key={entry.name}
                           fill={
-                            APPLE_CHART_COLORS[
-                              index % APPLE_CHART_COLORS.length
+                            MONOCHROME_CHART_COLORS[
+                              index % MONOCHROME_CHART_COLORS.length
                             ]
                           }
                         />
@@ -591,7 +587,7 @@ export function DashboardModule({
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "#FFFFFF",
-                        borderColor: "rgba(0,0,0,0.08)",
+                        borderColor: "#E4E4E7",
                         borderRadius: "14px",
                         fontSize: "12px",
                       }}
@@ -610,14 +606,16 @@ export function DashboardModule({
                         className="w-3 h-3 rounded-full shrink-0"
                         style={{
                           backgroundColor:
-                            APPLE_CHART_COLORS[idx % APPLE_CHART_COLORS.length],
+                            MONOCHROME_CHART_COLORS[
+                              idx % MONOCHROME_CHART_COLORS.length
+                            ],
                         }}
                       />
-                      <span className="truncate font-medium text-[#1D1D1F]">
+                      <span className="truncate font-medium text-zinc-900">
                         {cat.name}
                       </span>
                     </div>
-                    <span className="font-semibold text-[#6E6E73]">
+                    <span className="font-semibold text-zinc-600">
                       RD$ {cat.costDop.toLocaleString("es-DO")}
                     </span>
                   </div>
@@ -625,7 +623,7 @@ export function DashboardModule({
               </div>
             </>
           ) : (
-            <div className="text-center py-10 text-xs text-[#6E6E73]">
+            <div className="text-center py-10 text-xs text-zinc-500">
               Agrega tus equipos para ver el desglose.
             </div>
           )}
@@ -637,16 +635,16 @@ export function DashboardModule({
         <div className="apple-card p-6 sm:p-7">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-bold text-lg text-[#1D1D1F]">
+              <h3 className="font-bold text-lg text-zinc-900">
                 Equipos de Mayor Costo Mensual
               </h3>
-              <p className="text-xs text-[#6E6E73]">
+              <p className="text-xs text-zinc-500">
                 Tus aparatos ordenados por su impacto en pesos dominicanos
               </p>
             </div>
             <button
               onClick={() => onNavigateTab("equipos")}
-              className="text-xs font-semibold text-[#0071E3] hover:underline"
+              className="text-xs font-semibold text-zinc-900 hover:underline"
             >
               Ajustar horas &rarr;
             </button>
@@ -663,23 +661,23 @@ export function DashboardModule({
               return (
                 <div
                   key={item.id}
-                  className="p-4 rounded-2xl bg-[#F5F5F7] flex items-center justify-between gap-4"
+                  className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200/70 flex items-center justify-between gap-4"
                 >
                   <div>
-                    <div className="font-semibold text-sm text-[#1D1D1F]">
+                    <div className="font-semibold text-sm text-zinc-900">
                       {item.name}
                     </div>
-                    <div className="text-xs text-[#6E6E73] mt-0.5">
+                    <div className="text-xs text-zinc-500 mt-0.5">
                       {item.dailyHours}h al día · {item.monthlyKwh} kWh/mes (
                       {pct}%)
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-sm text-[#1D1D1F]">
+                    <div className="font-bold text-sm text-zinc-900">
                       RD${" "}
                       {item.estimatedMonthlyCostDop.toLocaleString("es-DO")}
                     </div>
-                    <div className="text-[11px] text-[#6E6E73]">al mes</div>
+                    <div className="text-[11px] text-zinc-500">al mes</div>
                   </div>
                 </div>
               );
@@ -690,10 +688,10 @@ export function DashboardModule({
         {/* Alertas y Desglose de Bloques SIE */}
         <div className="apple-card p-6 sm:p-7 flex flex-col justify-between">
           <div>
-            <h3 className="font-bold text-lg text-[#1D1D1F] mb-1">
+            <h3 className="font-bold text-lg text-zinc-900 mb-1">
               Avisos Inteligentes y Escalones SIE
             </h3>
-            <p className="text-xs text-[#6E6E73] mb-4">
+            <p className="text-xs text-zinc-500 mb-4">
               {billSimulation.explanation}
             </p>
 
@@ -702,28 +700,30 @@ export function DashboardModule({
                 {triggeredAlerts.slice(0, 3).map((al) => (
                   <div
                     key={al.id}
-                    className="p-3.5 rounded-2xl bg-[#FF9500]/10 border border-[#FF9500]/25 text-xs"
+                    className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 text-xs"
                   >
-                    <div className="flex items-center justify-between font-bold text-[#1D1D1F]">
+                    <div className="flex items-center justify-between font-bold text-zinc-900">
                       <span>{al.title}</span>
-                      <span className="text-[#C97400]">{al.metricValue}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-zinc-200/80 text-zinc-800 text-[11px]">
+                        {al.metricValue}
+                      </span>
                     </div>
-                    <p className="text-[#6E6E73] mt-1">{al.message}</p>
+                    <p className="text-zinc-500 mt-1">{al.message}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-4 rounded-2xl bg-[#28CD41]/10 text-xs text-[#1D832D] mb-4">
+              <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 text-xs text-zinc-600 mb-4">
                 Todo tu consumo se encuentra dentro de los parámetros normales.
               </div>
             )}
           </div>
 
-          <div className="pt-4 border-t border-black/[0.06] flex items-center justify-between">
-            <span className="text-xs font-medium text-[#6E6E73]">
+          <div className="pt-4 border-t border-zinc-200/80 flex items-center justify-between">
+            <span className="text-xs font-medium text-zinc-500">
               Total calculado con pliego {activeSchedule.distributor_code}:
             </span>
-            <span className="text-xl font-bold text-[#0071E3]">
+            <span className="text-xl font-bold text-zinc-900">
               RD${" "}
               {billSimulation.totalEstimatedBillDop.toLocaleString("es-DO", {
                 minimumFractionDigits: 2,

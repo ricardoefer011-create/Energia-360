@@ -7,10 +7,8 @@ import {
   Building2,
   CheckCircle2,
   ChevronRight,
-  Cpu,
   FileText,
   Home,
-  KeyRound,
   Lock,
   ShieldCheck,
   Sparkles,
@@ -42,7 +40,6 @@ const TEST_ACCOUNTS: Array<{
   email: string;
   distributor: string;
   summary: string;
-  badgeColor: string;
   icon: React.ComponentType<{ className?: string }>;
 }> = [
   {
@@ -50,10 +47,9 @@ const TEST_ACCOUNTS: Array<{
     name: "Familia Rodríguez",
     role: "Hogar Residencial · Santo Domingo",
     email: "familia.rodriguez@energia360.do",
-    distributor: "EDESUR · Tarifa BTS-1",
+    distributor: "EDESUR · BTS-1",
     summary:
-      "Incluye 5 facturas históricas (495 a 735 kWh), 2 aires acondicionados, nevera, bomba de agua e inversor Trace de 3.6 kW.",
-    badgeColor: "bg-[#0071E3]/10 text-[#0071E3]",
+      "5 facturas históricas (495 a 735 kWh), 2 aires acondicionados, nevera, bomba de agua e inversor Trace de 3.6 kW.",
     icon: Home,
   },
   {
@@ -61,10 +57,9 @@ const TEST_ACCOUNTS: Array<{
     name: "Ing. Carlos Méndez",
     role: "Apartamento Eficiente · Santiago",
     email: "carlos.mendez@energia360.do",
-    distributor: "EDENORTE · Tarifa BTS-1",
+    distributor: "EDENORTE · BTS-1",
     summary:
-      "Consumo optimizado de 332 kWh/mes con tecnología Inverter, teletrabajo y margen seguro bajo el escalón de 700 kWh.",
-    badgeColor: "bg-[#28CD41]/15 text-[#1D832D]",
+      "Consumo optimizado de 332 kWh/mes con equipos Inverter, teletrabajo y margen amplio bajo el escalón de 700 kWh.",
     icon: Building2,
   },
   {
@@ -72,10 +67,9 @@ const TEST_ACCOUNTS: Array<{
     name: "Cafetería & Deli El Coral",
     role: "Pequeño Negocio · Zona Este",
     email: "administracion@delielcoral.do",
-    distributor: "EDEESTE · Tarifa Comercial BTS-2",
+    distributor: "EDEESTE · BTS-2 Comercial",
     summary:
       "Consumo comercial de 1,185 kWh/mes con exhibidores refrigerados, freezer, inversor híbrido de 8 kW y simulación solar.",
-    badgeColor: "bg-[#FF9500]/15 text-[#B26600]",
     icon: Store,
   },
 ];
@@ -86,12 +80,10 @@ export function AppleLandingAndAuth({
   hasExistingEncryptedVault,
   onOpenVaultUnlock,
 }: AppleLandingAndAuthProps) {
-  // Simulador interactivo en vivo en la portada
   const [quickDistributor, setQuickDistributor] =
     useState<DistributorCode>("EDESUR");
   const [quickKwh, setQuickKwh] = useState<number>(640);
 
-  // Modal / Sección de Acceso con Usuario de Prueba o Cuenta Real
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [selectedTestPreset, setSelectedTestPreset] =
     useState<TestAccountPresetId>("hogar_santo_domingo");
@@ -112,7 +104,6 @@ export function AppleLandingAndAuth({
     e.preventDefault();
     setAuthMessage(null);
 
-    // Si usa el correo de demostración, entra directo al perfil de prueba seleccionado
     if (
       emailInput.trim().toLowerCase().includes("energia360.do") ||
       emailInput.trim().toLowerCase() === "demo@energia360.do"
@@ -135,14 +126,13 @@ export function AppleLandingAndAuth({
       });
 
       if (error) {
-        // Si no existe, registramos o abrimos espacio personal
         const { error: signUpErr } = await supabase.auth.signUp({
           email: emailInput.trim(),
           password: passwordInput,
         });
         if (signUpErr) {
           setAuthMessage(
-            "Nota: Puedes entrar de inmediato con cualquiera de los Usuarios de Prueba de 1 clic o iniciar tu espacio local privado."
+            "Puedes acceder de inmediato con el Usuario de Prueba o crear tu espacio privado local."
           );
           setAuthLoading(false);
           return;
@@ -157,30 +147,30 @@ export function AppleLandingAndAuth({
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] text-[#1D1D1F]">
-      {/* Barra de Navegación Superior Estilo Apple (Frosted Glass) */}
-      <header className="sticky top-0 z-40 apple-glass border-b border-black/[0.06]">
+    <div className="min-h-screen bg-[#F8F9FA] text-zinc-900">
+      {/* Barra Superior Minimalista Blanca / Gris Suave */}
+      <header className="sticky top-0 z-40 apple-glass border-b border-zinc-200/80">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <Energia360Logo size={36} />
 
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#6E6E73]">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-500">
             <a
               href="#simulador-rapido"
-              className="hover:text-[#1D1D1F] transition"
+              className="hover:text-zinc-900 transition"
             >
-              Calculadora Rápida
+              Calculadora SIE
             </a>
-            <a href="#modulos" className="hover:text-[#1D1D1F] transition">
-              Cómo Funciona
+            <a href="#modulos" className="hover:text-zinc-900 transition">
+              Funcionalidades
             </a>
             <a
               href="#usuarios-prueba"
-              className="hover:text-[#1D1D1F] transition"
+              className="hover:text-zinc-900 transition"
             >
               Usuarios de Prueba
             </a>
-            <a href="#privacidad" className="hover:text-[#1D1D1F] transition">
-              Privacidad Zero-Access
+            <a href="#privacidad" className="hover:text-zinc-900 transition">
+              Privacidad
             </a>
           </nav>
 
@@ -188,9 +178,9 @@ export function AppleLandingAndAuth({
             {hasExistingEncryptedVault && (
               <button
                 onClick={onOpenVaultUnlock}
-                className="px-3.5 py-2 rounded-full text-xs font-semibold bg-white border border-black/10 text-[#1D1D1F] hover:bg-black/5 transition inline-flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-full text-xs font-semibold bg-white border border-zinc-200 text-zinc-800 hover:bg-zinc-100 transition inline-flex items-center gap-1.5"
               >
-                <Lock className="w-3.5 h-3.5 text-[#0071E3]" />
+                <Lock className="w-3.5 h-3.5 text-zinc-600" />
                 Mi Bóveda
               </button>
             )}
@@ -199,7 +189,7 @@ export function AppleLandingAndAuth({
                 setAuthTab("real_account");
                 setShowAuthModal(true);
               }}
-              className="px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-[#1D1D1F] hover:bg-black/[0.05] transition"
+              className="px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition"
             >
               Iniciar sesión
             </button>
@@ -208,146 +198,146 @@ export function AppleLandingAndAuth({
                 setAuthTab("test_user");
                 setShowAuthModal(true);
               }}
-              className="px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-[#0071E3] hover:bg-[#0077ED] text-white shadow-sm transition inline-flex items-center gap-1.5"
+              className="px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-zinc-900 hover:bg-zinc-800 text-white shadow-xs transition inline-flex items-center gap-1.5"
             >
-              <span>Entrar a la Plataforma</span>
+              <span>Entrar a la App</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
       </header>
 
-      {/* HERO PRINCIPAL ESTILO APPLE */}
-      <section className="pt-14 pb-16 sm:pt-20 sm:pb-24 px-4 sm:px-6">
+      {/* HERO PRINCIPAL — BLANCO Y GRIS SUAVE */}
+      <section className="pt-16 pb-20 sm:pt-24 sm:pb-28 px-4 sm:px-6 bg-white border-b border-zinc-200/70">
         <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-black/[0.07] shadow-2xs text-xs font-semibold text-[#1D1D1F] mb-6">
-            <span className="w-2 h-2 rounded-full bg-[#28CD41]" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-medium text-zinc-700 mb-6">
+            <span className="w-2 h-2 rounded-full bg-zinc-900" />
             <span>
-              Inteligencia Energética para República Dominicana · EDESUR ·
-              EDENORTE · EDEESTE · CEPM
+              Plataforma de Inteligencia Energética · EDESUR · EDENORTE ·
+              EDEESTE · CEPM
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[#1D1D1F] leading-[1.06]">
-            Tu electricidad,{" "}
-            <span className="bg-gradient-to-r from-[#0071E3] via-[#0091FF] to-[#20B857] bg-clip-text text-transparent">
-              por fin clara.
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-zinc-900 leading-[1.05]">
+            Entiende tu consumo.
+            <br />
+            <span className="text-zinc-400 font-semibold">
+              Controla tu energía.
             </span>
           </h1>
 
-          <p className="mt-6 text-lg sm:text-xl text-[#6E6E73] max-w-2xl mx-auto font-normal leading-relaxed">
-            Descubre cuánto consumes, qué equipos elevan tu factura, cómo evitar
-            el salto tarifario de los 701 kWh y cuándo te conviene invertir en
-            paneles solares o baterías. Todo con privacidad total.
+          <p className="mt-6 text-lg sm:text-xl text-zinc-500 max-w-2xl mx-auto font-normal leading-relaxed">
+            Analiza tus facturas eléctricas, calcula el gasto real de cada
+            equipo, evita el salto tarifario de los 701 kWh y evalúa paneles
+            solares o inversores con precisión matemática y privacidad total.
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3.5">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3.5">
             <button
               onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
-              className="px-7 py-4 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-base shadow-md hover:shadow-lg transition inline-flex items-center gap-2"
+              className="px-7 py-4 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-base shadow-sm transition inline-flex items-center gap-2"
             >
-              <Sparkles className="w-5 h-5" />
+              <Sparkles className="w-4 h-4" />
               <span>Entrar con Usuario de Prueba (1 Clic)</span>
             </button>
 
             <button
               onClick={onStartPersonalWorkspace}
-              className="px-7 py-4 rounded-full bg-white hover:bg-black/[0.03] text-[#1D1D1F] border border-black/10 font-semibold text-base shadow-xs transition inline-flex items-center gap-2"
+              className="px-7 py-4 rounded-full bg-zinc-100 hover:bg-zinc-200/80 text-zinc-900 font-semibold text-base transition inline-flex items-center gap-2"
             >
               <span>Crear Mi Espacio Propio</span>
-              <ChevronRight className="w-4 h-4 text-[#6E6E73]" />
+              <ChevronRight className="w-4 h-4 text-zinc-500" />
             </button>
-          </div>
-
-          {/* Tarjeta de Acceso Rápido a los 3 Perfiles de Prueba */}
-          <div
-            id="usuarios-prueba"
-            className="mt-14 text-left max-w-5xl mx-auto"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-4 px-1">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-[#0071E3]">
-                  Cuentas de Prueba Preconfiguradas
-                </span>
-                <h2 className="text-xl sm:text-2xl font-bold text-[#1D1D1F]">
-                  Elige un perfil real para explorar toda la plataforma al
-                  instante
-                </h2>
-              </div>
-              <span className="text-xs text-[#6E6E73] bg-white px-3 py-1.5 rounded-full border border-black/[0.06]">
-                Credencial demo: <strong>demo@energia360.do</strong> /{" "}
-                <strong>Energia360RD!</strong>
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {TEST_ACCOUNTS.map((acct) => {
-                const Icon = acct.icon;
-                return (
-                  <div
-                    key={acct.id}
-                    className="apple-card apple-card-interactive p-6 flex flex-col justify-between bg-white"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-2 mb-4">
-                        <div className="w-11 h-11 rounded-2xl bg-[#F5F5F7] flex items-center justify-center text-[#0071E3]">
-                          <Icon className="w-5 h-5" />
-                        </div>
-                        <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full ${acct.badgeColor}`}
-                        >
-                          {acct.distributor}
-                        </span>
-                      </div>
-
-                      <h3 className="text-lg font-bold text-[#1D1D1F]">
-                        {acct.name}
-                      </h3>
-                      <p className="text-xs font-medium text-[#6E6E73] mb-3">
-                        {acct.role} · {acct.email}
-                      </p>
-                      <p className="text-sm text-[#6E6E73] leading-relaxed">
-                        {acct.summary}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => onEnterWithTestAccount(acct.id)}
-                      className="mt-6 w-full py-3 rounded-2xl bg-[#F5F5F7] hover:bg-[#0071E3] text-[#1D1D1F] hover:text-white font-semibold text-sm transition flex items-center justify-center gap-2"
-                    >
-                      <UserCheck className="w-4 h-4" />
-                      <span>Entrar como {acct.name}</span>
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
           </div>
         </div>
       </section>
 
-      {/* CALCULADORA INTERACTIVA EN VIVO EN LA WEB (PLIEGO SIE + ESCALÓN 701 KWH) */}
-      <section id="simulador-rapido" className="py-16 px-4 sm:px-6 bg-white">
+      {/* SECCIÓN DE USUARIOS DE PRUEBA (1 CLIC) */}
+      <section id="usuarios-prueba" className="py-16 px-4 sm:px-6 bg-[#F8F9FA]">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                Demostración Interactiva Inmediata
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 mt-1">
+                Perfiles de prueba listos para explorar
+              </h2>
+            </div>
+            <div className="text-xs text-zinc-600 bg-white px-4 py-2 rounded-full border border-zinc-200">
+              Usuario Demo: <strong>demo@energia360.do</strong> · Clave:{" "}
+              <strong>Energia360RD!</strong>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {TEST_ACCOUNTS.map((acct) => {
+              const Icon = acct.icon;
+              return (
+                <div
+                  key={acct.id}
+                  className="apple-card apple-card-interactive p-7 flex flex-col justify-between bg-white"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-5">
+                      <div className="w-11 h-11 rounded-2xl bg-zinc-100 border border-zinc-200/60 flex items-center justify-center text-zinc-800">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-semibold px-3 py-1 rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200">
+                        {acct.distributor}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-zinc-900">
+                      {acct.name}
+                    </h3>
+                    <p className="text-xs font-medium text-zinc-500 mb-3">
+                      {acct.role}
+                    </p>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      {acct.summary}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => onEnterWithTestAccount(acct.id)}
+                    className="mt-6 w-full py-3 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm transition flex items-center justify-center gap-2"
+                  >
+                    <UserCheck className="w-4 h-4" />
+                    <span>Entrar como {acct.name}</span>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* CALCULADORA SIE EN VIVO EN LA PORTADA */}
+      <section
+        id="simulador-rapido"
+        className="py-16 px-4 sm:px-6 bg-white border-y border-zinc-200/70"
+      >
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#0071E3]">
-              Transparencia Tarifaria SIE
+            <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              Pliego Tarifario Oficial SIE
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mt-1">
-              Comprende el salto de los 701 kWh en segundos.
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 mt-1">
+              Simula tu factura y el escalón de 701 kWh
             </h2>
-            <p className="text-base text-[#6E6E73] mt-3">
-              En República Dominicana, al pasar de 700 a 701 kWh al mes pierdes
-              el subsidio escalonado y cada kWh se cobra al precio más alto.
-              Desliza la barra para comprobarlo en vivo.
+            <p className="text-base text-zinc-500 mt-3">
+              En República Dominicana, al pasar de 700 a 701 kWh mensuales se
+              pierde el subsidio escalonado. Desliza la barra para calcular tu
+              factura al instante.
             </p>
           </div>
 
-          <div className="rounded-3xl bg-[#F5F5F7] border border-black/[0.06] p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="rounded-3xl bg-[#F8F9FA] border border-zinc-200 p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-6">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6E73] mb-2">
-                  1. Selecciona tu Distribuidora
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+                  1. Distribuidora Eléctrica
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {(["EDESUR", "EDENORTE", "EDEESTE", "CEPM"] as const).map(
@@ -358,8 +348,8 @@ export function AppleLandingAndAuth({
                         onClick={() => setQuickDistributor(dist)}
                         className={`py-2.5 px-4 rounded-2xl text-sm font-semibold transition ${
                           quickDistributor === dist
-                            ? "bg-[#0071E3] text-white shadow-xs"
-                            : "bg-white text-[#1D1D1F] border border-black/[0.06] hover:bg-black/[0.02]"
+                            ? "bg-zinc-900 text-white shadow-xs"
+                            : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-100"
                         }`}
                       >
                         {dist}
@@ -371,12 +361,12 @@ export function AppleLandingAndAuth({
 
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-[#6E6E73]">
-                    2. Desliza tu consumo mensual (kWh)
+                  <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    2. Consumo mensual (kWh)
                   </label>
-                  <span className="text-3xl font-bold text-[#1D1D1F]">
+                  <span className="text-3xl font-bold text-zinc-900">
                     {quickKwh}{" "}
-                    <span className="text-base font-medium text-[#6E6E73]">
+                    <span className="text-base font-normal text-zinc-500">
                       kWh/mes
                     </span>
                   </span>
@@ -388,12 +378,12 @@ export function AppleLandingAndAuth({
                   step={5}
                   value={quickKwh}
                   onChange={(e) => setQuickKwh(parseInt(e.target.value, 10))}
-                  className="w-full accent-[#0071E3]"
+                  className="w-full accent-zinc-900"
                 />
-                <div className="flex justify-between text-xs text-[#6E6E73] mt-2">
-                  <span>100 kWh (Hogar pequeño)</span>
-                  <span className="font-semibold text-[#FF9500]">
-                    700 kWh (Límite subsidio SIE)
+                <div className="flex justify-between text-xs text-zinc-500 mt-2">
+                  <span>100 kWh</span>
+                  <span className="font-semibold text-zinc-800">
+                    700 kWh (Límite subsidio escalonado)
                   </span>
                   <span>1,100 kWh</span>
                 </div>
@@ -403,15 +393,15 @@ export function AppleLandingAndAuth({
                 {quickBill.blocksBreakdown.map((b) => (
                   <div
                     key={b.label}
-                    className="flex items-center justify-between text-sm bg-white px-4 py-3 rounded-2xl border border-black/[0.05]"
+                    className="flex items-center justify-between text-sm bg-white px-4 py-3 rounded-2xl border border-zinc-200/80"
                   >
-                    <span className="text-[#1D1D1F] font-medium">
+                    <span className="text-zinc-800 font-medium">
                       {b.label}{" "}
-                      <span className="text-[#6E6E73] text-xs">
+                      <span className="text-zinc-500 text-xs">
                         ({b.kwhInBlock} kWh × RD$ {b.rateDop.toFixed(2)})
                       </span>
                     </span>
-                    <span className="font-bold text-[#1D1D1F]">
+                    <span className="font-bold text-zinc-900">
                       RD$ {b.subtotalDop.toLocaleString("es-DO")}
                     </span>
                   </div>
@@ -419,185 +409,183 @@ export function AppleLandingAndAuth({
               </div>
             </div>
 
-            <div className="lg:col-span-5 bg-white rounded-3xl p-7 border border-black/[0.07] shadow-sm flex flex-col justify-between">
+            <div className="lg:col-span-5 bg-white rounded-3xl p-7 border border-zinc-200 shadow-xs flex flex-col justify-between">
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#6E6E73]">
-                  Factura Mensual Estimada ({quickDistributor})
+                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                  Total Estimado ({quickDistributor})
                 </span>
-                <div className="text-4xl sm:text-5xl font-bold text-[#1D1D1F] mt-2 tracking-tight">
+                <div className="text-4xl sm:text-5xl font-bold text-zinc-900 mt-2 tracking-tight">
                   RD${" "}
                   {quickBill.totalEstimatedBillDop.toLocaleString("es-DO", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </div>
-                <div className="text-sm text-[#6E6E73] mt-1">
-                  Precio promedio:{" "}
-                  <strong className="text-[#1D1D1F]">
+                <div className="text-sm text-zinc-500 mt-1">
+                  Costo medio:{" "}
+                  <strong className="text-zinc-900">
                     RD$ {quickBill.averageRateDopPerKwh.toFixed(2)} / kWh
                   </strong>{" "}
                   · Cargo fijo: RD$ {quickBill.fixedChargeDop.toFixed(2)}
                 </div>
 
                 {quickBill.lostStepSubsidy701 ? (
-                  <div className="mt-5 p-4 rounded-2xl bg-[#FF3B30]/10 border border-[#FF3B30]/20 text-xs text-[#C92A2A] leading-relaxed">
-                    <strong>¡Atención! Superaste los 700 kWh.</strong> Estás
-                    pagando{" "}
+                  <div className="mt-5 p-4 rounded-2xl bg-zinc-100 border border-zinc-300 text-xs text-zinc-800 leading-relaxed">
+                    <strong>Escalón &ge; 701 kWh activo:</strong> Al superar los
+                    700 kWh pierdes los tramos subsidiados y pagas{" "}
                     <strong>
                       RD${" "}
                       {quickBill.subsidyLossPenaltyDop.toLocaleString("es-DO")}{" "}
                       adicionales
-                    </strong>{" "}
-                    este mes por perder los escalones subsidiados.
+                    </strong>
+                    .
                   </div>
                 ) : (
-                  <div className="mt-5 p-4 rounded-2xl bg-[#28CD41]/12 border border-[#28CD41]/25 text-xs text-[#1D832D] leading-relaxed">
-                    <strong>Subsidio escalonado activo.</strong> Te quedan{" "}
-                    <strong>{Math.max(0, 700 - quickKwh)} kWh</strong> de margen
-                    antes del salto tarifario de 701 kWh.
+                  <div className="mt-5 p-4 rounded-2xl bg-zinc-50 border border-zinc-200 text-xs text-zinc-600 leading-relaxed">
+                    <strong>Subsidio escalonado conservado:</strong> Tienes{" "}
+                    <strong className="text-zinc-900">
+                      {Math.max(0, 700 - quickKwh)} kWh
+                    </strong>{" "}
+                    de margen antes del salto tarifario de 701 kWh.
                   </div>
                 )}
               </div>
 
               <button
                 onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
-                className="mt-6 w-full py-3.5 rounded-2xl bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm transition"
+                className="mt-6 w-full py-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm transition"
               >
-                Analizar mis equipos y facturas en la App &rarr;
+                Abrir Analizador Completo &rarr;
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* BENTO GRID DE MÓDULOS ESTILO APPLE */}
-      <section id="modulos" className="py-16 px-4 sm:px-6">
+      {/* BENTO GRID DE FUNCIONALIDADES */}
+      <section id="modulos" className="py-16 px-4 sm:px-6 bg-[#F8F9FA]">
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#0071E3]">
-              Todo en un solo lugar
+            <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              Módulos de la Plataforma
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mt-1">
-              Cinco respuestas clave para controlar tu energía.
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 mt-1">
+              Diseñada con sencillez y rigor técnico
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="apple-card p-8 bg-white">
-              <div className="w-12 h-12 rounded-2xl bg-[#0071E3]/10 text-[#0071E3] flex items-center justify-center mb-5">
-                <FileText className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-2xl bg-zinc-100 text-zinc-800 flex items-center justify-center mb-5">
+                <FileText className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-bold mb-2">
-                1. Analizador Local de Facturas (OCR)
+              <h3 className="text-xl font-bold text-zinc-900 mb-2">
+                Analizador Local de Facturas (OCR)
               </h3>
-              <p className="text-sm text-[#6E6E73] leading-relaxed">
-                Sube tu recibo en PDF o foto de EDESUR, EDENORTE, EDEESTE o
-                CEPM. Nuestro motor extrae los kWh y cargos directamente en tu
-                navegador, sin enviar tus documentos privados a servidores
-                externos.
+              <p className="text-sm text-zinc-500 leading-relaxed">
+                Carga tus recibos en PDF o imagen. El reconocimiento óptico se
+                ejecuta 100% en tu navegador sin subir tus facturas privadas a
+                ningún servidor.
               </p>
             </div>
 
             <div className="apple-card p-8 bg-white">
-              <div className="w-12 h-12 rounded-2xl bg-[#28CD41]/15 text-[#1D832D] flex items-center justify-center mb-5">
-                <Zap className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-2xl bg-zinc-100 text-zinc-800 flex items-center justify-center mb-5">
+                <Zap className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-bold mb-2">
-                2. Calculadora y Simulador de Equipos
+              <h3 className="text-xl font-bold text-zinc-900 mb-2">
+                Calculadora por Equipos en Tiempo Real
               </h3>
-              <p className="text-sm text-[#6E6E73] leading-relaxed">
-                Descubre cuánto te cuesta cada aire acondicionado, nevera,
-                congelador o bomba de agua. Mueve el deslizador de horas diarias
-                y observa al instante cuánto baja tu factura en pesos
-                dominicanos (RD$).
+              <p className="text-sm text-zinc-500 leading-relaxed">
+                Simula el impacto de tus aires acondicionados, neveras, bombas
+                de agua e iluminación ajustando las horas de uso diario con un
+                deslizador suave.
               </p>
             </div>
 
             <div className="apple-card p-8 bg-white">
-              <div className="w-12 h-12 rounded-2xl bg-[#FF9500]/15 text-[#C97400] flex items-center justify-center mb-5">
-                <Sun className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-2xl bg-zinc-100 text-zinc-800 flex items-center justify-center mb-5">
+                <Sun className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-bold mb-2">
-                3. Simulador Solar por Provincia (HSP RD)
+              <h3 className="text-xl font-bold text-zinc-900 mb-2">
+                Simulador Solar por Provincia (HSP RD)
               </h3>
-              <p className="text-sm text-[#6E6E73] leading-relaxed">
-                Evalúa cuántos paneles solares necesitas, qué área de techo
-                ocupan y en cuántos años recuperas tu inversión según la
-                radiación solar real de Santo Domingo, Santiago, Punta Cana,
-                Baní o cualquier provincia del país.
+              <p className="text-sm text-zinc-500 leading-relaxed">
+                Dimensiona paneles solares, superficie de techo e inversión
+                recuperable utilizando las Horas Solares Pico reales de cada
+                provincia dominicana.
               </p>
             </div>
 
             <div className="apple-card p-8 bg-white">
-              <div className="w-12 h-12 rounded-2xl bg-[#5856D6]/12 text-[#5856D6] flex items-center justify-center mb-5">
-                <BatteryCharging className="w-6 h-6" />
+              <div className="w-11 h-11 rounded-2xl bg-zinc-100 text-zinc-800 flex items-center justify-center mb-5">
+                <BatteryCharging className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-bold mb-2">
-                4. Autonomía de Inversores en Apagones
+              <h3 className="text-xl font-bold text-zinc-900 mb-2">
+                Respaldo de Inversores y Baterías
               </h3>
-              <p className="text-sm text-[#6E6E73] leading-relaxed">
-                Calcula cuántas horas reales de respaldo te ofrece tu banco de
-                baterías (Trojan Plomo-Ácido, AGM o Litio LiFePO4) según los
-                equipos que dejes encendidos durante una interrupción eléctrica.
+              <p className="text-sm text-zinc-500 leading-relaxed">
+                Calcula tus horas reales de autonomía durante apagones según la
+                química de tu banco de baterías (Plomo-Ácido, AGM o Litio
+                LiFePO4).
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECCIÓN DE PRIVACIDAD ZERO-ACCESS */}
-      <section id="privacidad" className="py-14 px-4 sm:px-6 bg-white">
-        <div className="max-w-5xl mx-auto rounded-3xl bg-[#1D1D1F] text-white p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+      {/* PRIVACIDAD ZERO-ACCESS */}
+      <section
+        id="privacidad"
+        className="py-16 px-4 sm:px-6 bg-white border-t border-zinc-200/70"
+      >
+        <div className="max-w-5xl mx-auto rounded-3xl bg-[#F3F4F6] border border-zinc-200 p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="max-w-xl space-y-3">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#28CD41]">
-              <ShieldCheck className="w-4 h-4" /> Privacidad por Diseño · Zero
-              Access
+            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+              <ShieldCheck className="w-4 h-4 text-zinc-900" /> Arquitectura
+              Local-First y Zero-Access
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              Tus facturas son privadas. Ni nosotros podemos leerlas.
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
+              Tus datos te pertenecen únicamente a ti.
             </h2>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Toda tu información privada se cifra en tu dispositivo con{" "}
+            <p className="text-sm text-zinc-600 leading-relaxed">
+              Tu información energética se cifra en el navegador con{" "}
               <strong>AES-256-GCM y PBKDF2 (310,000 iteraciones)</strong>.
-              Supabase gestiona únicamente los catálogos públicos de la SIE y
-              respaldos cifrados de extremo a extremo cuya llave maestra jamás
-              sale de tu navegador.
+              Ningún empleado o administrador puede consultar tus facturas ni
+              descifrar tu bóveda.
             </p>
           </div>
-          <div className="shrink-0 flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
-              className="px-6 py-3.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm transition"
-            >
-              Probar Demo Ahora
-            </button>
-          </div>
+          <button
+            onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
+            className="px-7 py-4 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm shrink-0 transition"
+          >
+            Entrar con Usuario de Prueba &rarr;
+          </button>
         </div>
       </section>
 
-      {/* MODAL DE INICIO DE SESIÓN Y SELECCIÓN DE USUARIO DE PRUEBA */}
+      {/* MODAL DE ACCESO */}
       {showAuthModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-lg rounded-3xl bg-white border border-black/10 p-6 sm:p-8 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-white border border-zinc-200 p-6 sm:p-8 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <Energia360Logo size={32} />
               <button
                 onClick={() => setShowAuthModal(false)}
-                className="text-xs font-semibold text-[#6E6E73] hover:text-[#1D1D1F] px-3 py-1.5 rounded-full bg-[#F5F5F7]"
+                className="text-xs font-semibold text-zinc-500 hover:text-zinc-900 px-3 py-1.5 rounded-full bg-zinc-100"
               >
                 Cerrar
               </button>
             </div>
 
-            {/* Selector tipo Segmented Control de Apple */}
-            <div className="grid grid-cols-2 p-1 rounded-2xl bg-[#F5F5F7] mb-6 text-xs font-semibold">
+            <div className="grid grid-cols-2 p-1 rounded-2xl bg-zinc-100 mb-6 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => setAuthTab("test_user")}
                 className={`py-2.5 rounded-xl transition ${
                   authTab === "test_user"
-                    ? "bg-white text-[#1D1D1F] shadow-xs"
-                    : "text-[#6E6E73]"
+                    ? "bg-white text-zinc-900 shadow-2xs"
+                    : "text-zinc-500"
                 }`}
               >
                 Usuario de Prueba (1 Clic)
@@ -607,8 +595,8 @@ export function AppleLandingAndAuth({
                 onClick={() => setAuthTab("real_account")}
                 className={`py-2.5 rounded-xl transition ${
                   authTab === "real_account"
-                    ? "bg-white text-[#1D1D1F] shadow-xs"
-                    : "text-[#6E6E73]"
+                    ? "bg-white text-zinc-900 shadow-2xs"
+                    : "text-zinc-500"
                 }`}
               >
                 Cuenta / Espacio Propio
@@ -617,10 +605,8 @@ export function AppleLandingAndAuth({
 
             {authTab === "test_user" ? (
               <div className="space-y-4">
-                <p className="text-xs text-[#6E6E73]">
-                  Selecciona cualquiera de los 3 usuarios de prueba precargados
-                  con facturas, equipos e inversores reales de República
-                  Dominicana:
+                <p className="text-xs text-zinc-500">
+                  Elige un perfil de prueba precargado para entrar directamente:
                 </p>
 
                 <div className="space-y-2.5">
@@ -630,21 +616,19 @@ export function AppleLandingAndAuth({
                       onClick={() => setSelectedTestPreset(acct.id)}
                       className={`block p-4 rounded-2xl border cursor-pointer transition ${
                         selectedTestPreset === acct.id
-                          ? "border-[#0071E3] bg-[#0071E3]/[0.04]"
-                          : "border-black/10 hover:bg-[#F5F5F7]/60"
+                          ? "border-zinc-900 bg-zinc-50"
+                          : "border-zinc-200 hover:bg-zinc-50/60"
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-[#1D1D1F]">
+                        <span className="font-bold text-sm text-zinc-900">
                           {acct.name}
                         </span>
-                        <span
-                          className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${acct.badgeColor}`}
-                        >
+                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200">
                           {acct.distributor}
                         </span>
                       </div>
-                      <div className="text-xs text-[#6E6E73] mt-1">
+                      <div className="text-xs text-zinc-500 mt-1">
                         Usuario: <strong>{acct.email}</strong> · Clave:{" "}
                         <strong>Energia360RD!</strong>
                       </div>
@@ -655,15 +639,15 @@ export function AppleLandingAndAuth({
                 <button
                   type="button"
                   onClick={() => onEnterWithTestAccount(selectedTestPreset)}
-                  className="w-full py-3.5 rounded-2xl bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm shadow-sm transition"
+                  className="w-full py-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm transition"
                 >
-                  Entrar Ahora con este Usuario de Prueba &rarr;
+                  Entrar con este Usuario de Prueba &rarr;
                 </button>
               </div>
             ) : (
               <form onSubmit={handleRealSupabaseAuth} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                  <label className="block text-xs font-semibold text-zinc-600 mb-1">
                     Correo electrónico
                   </label>
                   <input
@@ -671,11 +655,11 @@ export function AppleLandingAndAuth({
                     required
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
-                    className="w-full rounded-2xl bg-[#F5F5F7] border border-black/10 px-4 py-3 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                    className="w-full rounded-2xl bg-zinc-100 border border-zinc-200 px-4 py-3 text-sm text-zinc-900 focus:outline-none focus:border-zinc-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                  <label className="block text-xs font-semibold text-zinc-600 mb-1">
                     Contraseña
                   </label>
                   <input
@@ -683,12 +667,12 @@ export function AppleLandingAndAuth({
                     required
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
-                    className="w-full rounded-2xl bg-[#F5F5F7] border border-black/10 px-4 py-3 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                    className="w-full rounded-2xl bg-zinc-100 border border-zinc-200 px-4 py-3 text-sm text-zinc-900 focus:outline-none focus:border-zinc-900"
                   />
                 </div>
 
                 {authMessage && (
-                  <div className="p-3 rounded-xl bg-[#FF9500]/10 text-xs text-[#B26600]">
+                  <div className="p-3 rounded-xl bg-zinc-100 text-xs text-zinc-700">
                     {authMessage}
                   </div>
                 )}
@@ -696,19 +680,17 @@ export function AppleLandingAndAuth({
                 <button
                   type="submit"
                   disabled={authLoading}
-                  className="w-full py-3.5 rounded-2xl bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm transition"
+                  className="w-full py-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm transition"
                 >
-                  {authLoading
-                    ? "Conectando..."
-                    : "Iniciar Sesión / Entrar a la Plataforma"}
+                  {authLoading ? "Accediendo..." : "Iniciar Sesión"}
                 </button>
 
                 <button
                   type="button"
                   onClick={onStartPersonalWorkspace}
-                  className="w-full py-3 rounded-2xl bg-[#F5F5F7] hover:bg-black/5 text-[#1D1D1F] font-semibold text-xs transition"
+                  className="w-full py-3 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-semibold text-xs transition"
                 >
-                  O configurar mi espacio local privado sin cuenta en la nube
+                  O configurar mi espacio local privado sin cuenta
                 </button>
               </form>
             )}
@@ -718,4 +700,3 @@ export function AppleLandingAndAuth({
     </div>
   );
 }
-

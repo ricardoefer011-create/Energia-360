@@ -162,14 +162,14 @@ export function IntelligenceAndSavingsModule({
       <div className="apple-card p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-[#0071E3]/10 text-[#0071E3] flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-zinc-100 border border-zinc-200 text-zinc-900 flex items-center justify-center">
               <Cpu className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-xl text-[#1D1D1F]">
+              <h2 className="font-bold text-xl text-zinc-900">
                 Recomendaciones Personalizadas de Ahorro
               </h2>
-              <p className="text-xs text-[#6E6E73]">
+              <p className="text-xs text-zinc-500">
                 Basadas en tus facturas y equipos registrados en{" "}
                 {activeSchedule.distributor_code}
               </p>
@@ -181,40 +181,40 @@ export function IntelligenceAndSavingsModule({
           {recommendations.map((rec) => (
             <div
               key={rec.id}
-              className="p-6 rounded-3xl bg-[#F5F5F7] flex flex-col justify-between"
+              className="p-6 rounded-3xl bg-zinc-50 border border-zinc-200/80 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span
                     className={`text-xs font-semibold px-3 py-1 rounded-full ${
                       rec.severity === "alta"
-                        ? "bg-[#FF3B30]/12 text-[#C92A2A]"
-                        : "bg-[#0071E3]/10 text-[#0071E3]"
+                        ? "bg-zinc-900 text-white"
+                        : "bg-zinc-200 text-zinc-800"
                     }`}
                   >
                     Impacto {rec.severity}
                   </span>
-                  <span className="text-xs text-[#6E6E73]">
-                    Confianza: <strong>{rec.confidenceLevel}</strong>
+                  <span className="text-xs text-zinc-500">
+                    Confianza: <strong className="text-zinc-800">{rec.confidenceLevel}</strong>
                   </span>
                 </div>
 
-                <h3 className="font-bold text-base text-[#1D1D1F] mb-2">
+                <h3 className="font-bold text-base text-zinc-900 mb-2">
                   {rec.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-[#6E6E73] leading-relaxed mb-3">
+                <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed mb-3">
                   {rec.problemIdentified}
                 </p>
-                <div className="p-3.5 rounded-2xl bg-white text-xs text-[#1D1D1F]">
+                <div className="p-3.5 rounded-2xl bg-white border border-zinc-200/80 text-xs text-zinc-900">
                   <strong>Qué hacer:</strong> {rec.suggestedAction}
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-black/[0.06] flex items-center justify-between text-xs">
-                <span className="text-[#6E6E73]">
-                  Reducción: <strong>-{rec.potentialMonthlySavingsKwh} kWh</strong>
+              <div className="mt-4 pt-3 border-t border-zinc-200/80 flex items-center justify-between text-xs">
+                <span className="text-zinc-500">
+                  Reducción: <strong className="text-zinc-900">-{rec.potentialMonthlySavingsKwh} kWh</strong>
                 </span>
-                <span className="font-bold text-sm text-[#1D832D]">
+                <span className="font-bold text-sm text-zinc-900">
                   Ahorro: ~RD${" "}
                   {rec.potentialMonthlySavingsDop.toLocaleString("es-DO")}/mes
                 </span>
@@ -227,14 +227,14 @@ export function IntelligenceAndSavingsModule({
       {/* Simulador de 3 Escenarios */}
       <div className="apple-card p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-11 h-11 rounded-2xl bg-[#28CD41]/15 text-[#1D832D] flex items-center justify-center">
+          <div className="w-11 h-11 rounded-2xl bg-zinc-100 border border-zinc-200 text-zinc-900 flex items-center justify-center">
             <Scale className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-xl text-[#1D1D1F]">
+            <h3 className="font-bold text-xl text-zinc-900">
               Comparador de Escenarios de Ahorro
             </h3>
-            <p className="text-xs text-[#6E6E73]">
+            <p className="text-xs text-zinc-500">
               Compara hasta 3 planes de acción frente a tu factura actual de RD${" "}
               {currentBill.totalEstimatedBillDop.toLocaleString("es-DO")}
             </p>
@@ -245,20 +245,20 @@ export function IntelligenceAndSavingsModule({
           {scenarioComparisons.map((sc) => (
             <div
               key={sc.id}
-              className="p-6 rounded-3xl bg-[#F5F5F7] flex flex-col justify-between"
+              className="p-6 rounded-3xl bg-zinc-50 border border-zinc-200/80 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="font-bold text-sm text-[#1D1D1F]">
+                  <span className="font-bold text-sm text-zinc-900">
                     {sc.name}
                   </span>
                 </div>
-                <p className="text-xs text-[#6E6E73] mb-4">{sc.description}</p>
+                <p className="text-xs text-zinc-500 mb-4">{sc.description}</p>
 
                 <div className="mb-4">
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-[#6E6E73]">Ahorro en energía:</span>
-                    <strong className="text-[#0071E3]">
+                    <span className="text-zinc-500">Ahorro en energía:</span>
+                    <strong className="text-zinc-900">
                       -{sc.kwhReductionMonthly} kWh/mes
                     </strong>
                   </div>
@@ -271,27 +271,27 @@ export function IntelligenceAndSavingsModule({
                     onChange={(e) =>
                       updateScenarioKwh(sc.id, parseInt(e.target.value, 10))
                     }
-                    className="w-full accent-[#28CD41]"
+                    className="w-full accent-zinc-900"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2 pt-3 border-t border-black/[0.06] text-xs">
+              <div className="space-y-2 pt-3 border-t border-zinc-200/80 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-[#6E6E73]">Nueva factura:</span>
-                  <strong className="text-[#1D1D1F]">
+                  <span className="text-zinc-500">Nueva factura:</span>
+                  <strong className="text-zinc-900">
                     RD$ {sc.projectedBillDop.toLocaleString("es-DO")}
                   </strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#6E6E73]">Ahorro mensual:</span>
-                  <strong className="text-sm text-[#1D832D]">
+                  <span className="text-zinc-500">Ahorro mensual:</span>
+                  <strong className="text-sm text-zinc-900">
                     RD$ {sc.monthlySavingsDop.toLocaleString("es-DO")}/mes
                   </strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#6E6E73]">Ahorro en 1 año:</span>
-                  <strong className="text-[#1D832D]">
+                  <span className="text-zinc-500">Ahorro en 1 año:</span>
+                  <strong className="text-zinc-800">
                     RD$ {sc.annualSavingsDop.toLocaleString("es-DO")}/año
                   </strong>
                 </div>
@@ -310,13 +310,13 @@ export function IntelligenceAndSavingsModule({
                 "Ahorro Mensual": s.monthlySavingsDop,
               }))}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" />
-              <XAxis dataKey="escenario" stroke="#8E8E93" fontSize={12} />
-              <YAxis stroke="#8E8E93" fontSize={12} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" />
+              <XAxis dataKey="escenario" stroke="#71717A" fontSize={12} />
+              <YAxis stroke="#71717A" fontSize={12} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "#FFFFFF",
-                  borderColor: "rgba(0,0,0,0.08)",
+                  borderColor: "#E4E4E7",
                   borderRadius: "16px",
                   fontSize: "12px",
                 }}
@@ -324,17 +324,17 @@ export function IntelligenceAndSavingsModule({
               <Legend wrapperStyle={{ fontSize: "12px" }} />
               <Bar
                 dataKey="Factura Actual"
-                fill="#8E8E93"
+                fill="#D4D4D8"
                 radius={[8, 8, 0, 0]}
               />
               <Bar
                 dataKey="Nueva Factura"
-                fill="#0071E3"
+                fill="#71717A"
                 radius={[8, 8, 0, 0]}
               />
               <Bar
                 dataKey="Ahorro Mensual"
-                fill="#28CD41"
+                fill="#18181B"
                 radius={[8, 8, 0, 0]}
               />
             </BarChart>
@@ -346,14 +346,14 @@ export function IntelligenceAndSavingsModule({
       <div className="apple-card p-6 sm:p-8">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-[#FF9500]/15 text-[#C97400] flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-zinc-100 border border-zinc-200 text-zinc-900 flex items-center justify-center">
               <Bell className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-lg text-[#1D1D1F]">
+              <h3 className="font-bold text-lg text-zinc-900">
                 Mis Alertas Inteligentes
               </h3>
-              <p className="text-xs text-[#6E6E73]">
+              <p className="text-xs text-zinc-500">
                 Personaliza cuándo quieres que te avisemos ({triggeredAlerts.length}{" "}
                 activas)
               </p>
@@ -365,7 +365,7 @@ export function IntelligenceAndSavingsModule({
           {alertConfigs.map((cfg) => (
             <div
               key={cfg.id}
-              className="p-4 rounded-2xl bg-[#F5F5F7] flex items-center justify-between gap-4"
+              className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between gap-4"
             >
               <label className="flex items-center gap-3 cursor-pointer flex-1">
                 <input
@@ -377,9 +377,9 @@ export function IntelligenceAndSavingsModule({
                       enabled: e.target.checked,
                     })
                   }
-                  className="w-4 h-4 rounded accent-[#0071E3]"
+                  className="w-4 h-4 rounded accent-zinc-900"
                 />
-                <span className="font-medium text-xs sm:text-sm text-[#1D1D1F]">
+                <span className="font-medium text-xs sm:text-sm text-zinc-900">
                   {cfg.label}
                 </span>
               </label>
@@ -394,9 +394,9 @@ export function IntelligenceAndSavingsModule({
                       thresholdValue: parseFloat(e.target.value) || 0,
                     })
                   }
-                  className="w-20 rounded-xl bg-white border border-black/10 px-2.5 py-1.5 text-xs text-right font-bold text-[#1D1D1F]"
+                  className="w-20 rounded-xl bg-white border border-zinc-200 px-2.5 py-1.5 text-xs text-right font-bold text-zinc-900"
                 />
-                <span className="text-xs text-[#6E6E73] w-10">{cfg.unit}</span>
+                <span className="text-xs text-zinc-500 w-10">{cfg.unit}</span>
               </div>
             </div>
           ))}

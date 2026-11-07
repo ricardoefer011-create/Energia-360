@@ -5,7 +5,6 @@ import {
   AlertCircle,
   CheckCircle2,
   FileCheck2,
-  Lock,
   Sparkles,
   Trash2,
   UploadCloud,
@@ -20,7 +19,6 @@ import {
   extractTextFromLocalFile,
   parseDominicanInvoiceText,
 } from "@/lib/ocr/invoice-parser";
-import { calculateDominicanTariffBill } from "@/lib/engine/energy-engine";
 
 interface InvoiceAnalyzerModuleProps {
   invoices: ElectricityInvoice[];
@@ -36,33 +34,32 @@ const PROVENANCE_LABELS: Record<
 > = {
   confirmado_usuario: {
     label: "Confirmado",
-    badgeClass: "bg-[#28CD41]/15 text-[#1D832D]",
+    badgeClass: "bg-zinc-900 text-white",
   },
   extraido_automatico: {
     label: "Extraído",
-    badgeClass: "bg-[#0071E3]/10 text-[#0071E3]",
+    badgeClass: "bg-zinc-200 text-zinc-800",
   },
   estimado: {
     label: "Estimado",
-    badgeClass: "bg-[#FF9500]/15 text-[#B26600]",
+    badgeClass: "bg-zinc-100 text-zinc-600 border border-zinc-200",
   },
   no_disponible: {
     label: "Opcional",
-    badgeClass: "bg-black/[0.05] text-[#6E6E73]",
+    badgeClass: "bg-zinc-100 text-zinc-500",
   },
 };
 
 export function InvoiceAnalyzerModule({
   invoices,
   defaultDistributor,
-  activeSchedule,
   onAddConfirmedInvoice,
   onDeleteInvoice,
 }: InvoiceAnalyzerModuleProps) {
   const [processingStage, setProcessingStage] = useState<string | null>(null);
   const [processingPct, setProcessingPct] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [warnings, setWarnings] = useState<string[]>([]);
+  const [, setWarnings] = useState<string[]>([]);
   const [rawSampleInput, setRawSampleInput] = useState<string>("");
   const [draftInvoice, setDraftInvoice] = useState<ElectricityInvoice | null>(
     null
@@ -188,16 +185,16 @@ export function InvoiceAnalyzerModule({
       {/* Encabezado limpio */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#0071E3]">
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
             Procesamiento Local · Privacidad Total
           </span>
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1D1D1F]">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
             Analizador Inteligente de Facturas
           </h2>
         </div>
         <button
           onClick={handleStartManualReview}
-          className="px-5 py-2.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs sm:text-sm font-semibold shadow-xs transition"
+          className="px-5 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-xs sm:text-sm font-semibold shadow-xs transition"
         >
           + Registrar Factura Manualmente
         </button>
@@ -206,22 +203,22 @@ export function InvoiceAnalyzerModule({
       {/* Carga de PDF/Foto o Texto */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="apple-card p-6 sm:p-8">
-          <h3 className="font-bold text-lg text-[#1D1D1F] mb-1">
+          <h3 className="font-bold text-lg text-zinc-900 mb-1">
             Subir Factura en PDF o Foto
           </h3>
-          <p className="text-xs text-[#6E6E73] mb-5">
+          <p className="text-xs text-zinc-500 mb-5">
             Compatible con recibos de EDESUR, EDENORTE, EDEESTE y CEPM (PDF, JPG
             o PNG). Se procesa en tu dispositivo sin subir el archivo a la nube.
           </p>
 
-          <label className="flex flex-col items-center justify-center border-2 border-dashed border-black/15 hover:border-[#0071E3] rounded-3xl p-8 cursor-pointer bg-[#F5F5F7]/70 hover:bg-[#0071E3]/[0.03] transition">
-            <div className="w-12 h-12 rounded-2xl bg-[#0071E3]/10 text-[#0071E3] flex items-center justify-center mb-3">
+          <label className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-300 hover:border-zinc-900 rounded-3xl p-8 cursor-pointer bg-zinc-50 hover:bg-zinc-100/80 transition">
+            <div className="w-12 h-12 rounded-2xl bg-white border border-zinc-200 text-zinc-900 flex items-center justify-center mb-3 shadow-2xs">
               <UploadCloud className="w-6 h-6" />
             </div>
-            <span className="font-semibold text-sm text-[#1D1D1F]">
+            <span className="font-semibold text-sm text-zinc-900">
               Haz clic para elegir tu factura (PDF o Imagen)
             </span>
-            <span className="text-xs text-[#6E6E73] mt-1">
+            <span className="text-xs text-zinc-500 mt-1">
               Lectura óptica local mediante WebWorker
             </span>
             <input
@@ -233,14 +230,14 @@ export function InvoiceAnalyzerModule({
           </label>
 
           {processingStage && (
-            <div className="mt-4 p-4 rounded-2xl bg-[#F5F5F7]">
-              <div className="flex items-center justify-between text-xs font-semibold text-[#0071E3] mb-2">
+            <div className="mt-4 p-4 rounded-2xl bg-zinc-50 border border-zinc-200">
+              <div className="flex items-center justify-between text-xs font-semibold text-zinc-900 mb-2">
                 <span>{processingStage}</span>
                 <span>{processingPct}%</span>
               </div>
-              <div className="w-full h-2 bg-black/10 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-zinc-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#0071E3] transition-all duration-300"
+                  className="h-full bg-zinc-900 transition-all duration-300"
                   style={{ width: `${processingPct}%` }}
                 />
               </div>
@@ -248,7 +245,7 @@ export function InvoiceAnalyzerModule({
           )}
 
           {errorMessage && (
-            <div className="mt-4 p-4 rounded-2xl bg-[#FF3B30]/10 text-xs text-[#C92A2A] flex items-center gap-2">
+            <div className="mt-4 p-4 rounded-2xl bg-zinc-100 border border-zinc-300 text-xs text-zinc-900 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -258,7 +255,7 @@ export function InvoiceAnalyzerModule({
         <div className="apple-card p-6 sm:p-8 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h3 className="font-bold text-lg text-[#1D1D1F]">
+              <h3 className="font-bold text-lg text-zinc-900">
                 Pegar Resumen de Factura por Correo
               </h3>
               <button
@@ -268,12 +265,12 @@ export function InvoiceAnalyzerModule({
                     "EDESUR DOMINICANA S.A. NIC: 8492014 Tarifa: BTS-1 Periodo Facturado: 30 dias Consumo Facturado: 615 kWh Total a Pagar: RD$ 6,129.10"
                   )
                 }
-                className="text-xs font-semibold text-[#0071E3] hover:underline inline-flex items-center gap-1"
+                className="text-xs font-semibold text-zinc-900 hover:underline inline-flex items-center gap-1"
               >
                 <Sparkles className="w-3.5 h-3.5" /> Cargar ejemplo EDESUR
               </button>
             </div>
-            <p className="text-xs text-[#6E6E73] mb-4">
+            <p className="text-xs text-zinc-500 mb-4">
               Copia y pega el texto del correo de tu distribuidora para extraer
               los valores al instante.
             </p>
@@ -282,13 +279,13 @@ export function InvoiceAnalyzerModule({
               value={rawSampleInput}
               onChange={(e) => setRawSampleInput(e.target.value)}
               placeholder="Ej: EDENORTE NIC 5541023 Tarifa BTS-1 Consumo Facturado: 520 kWh Total a Pagar: RD$ 5,180.00..."
-              className="w-full rounded-2xl bg-[#F5F5F7] border border-black/10 p-4 text-xs text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+              className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 p-4 text-xs text-zinc-900 focus:outline-none focus:border-zinc-900"
             />
           </div>
           <button
             type="button"
             onClick={handleAnalyzePastedText}
-            className="mt-4 w-full py-3 rounded-2xl bg-[#1D1D1F] hover:bg-black/80 text-white font-semibold text-xs sm:text-sm transition"
+            className="mt-4 w-full py-3 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-xs sm:text-sm transition"
           >
             Extraer Datos y Revisar
           </button>
@@ -297,15 +294,15 @@ export function InvoiceAnalyzerModule({
 
       {/* Pantalla de Revisión Manual Obligatoria */}
       {draftInvoice && (
-        <div className="apple-card p-6 sm:p-8 border-2 border-[#0071E3]">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-5 pb-4 border-b border-black/[0.06]">
+        <div className="apple-card p-6 sm:p-8 border-2 border-zinc-900">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-5 pb-4 border-b border-zinc-200">
             <div className="flex items-center gap-2.5">
-              <FileCheck2 className="w-5 h-5 text-[#0071E3]" />
-              <h3 className="font-bold text-lg text-[#1D1D1F]">
+              <FileCheck2 className="w-5 h-5 text-zinc-900" />
+              <h3 className="font-bold text-lg text-zinc-900">
                 Verifica los datos de tu factura antes de guardar
               </h3>
             </div>
-            <span className="text-xs text-[#6E6E73]">
+            <span className="text-xs text-zinc-500">
               Puedes corregir cualquier campo manualmente
             </span>
           </div>
@@ -313,7 +310,7 @@ export function InvoiceAnalyzerModule({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <label className="font-semibold text-[#1D1D1F]">
+                <label className="font-semibold text-zinc-900">
                   Distribuidora
                 </label>
                 <span
@@ -333,7 +330,7 @@ export function InvoiceAnalyzerModule({
                     e.target.value as DistributorCode
                   )
                 }
-                className="w-full rounded-xl bg-[#F5F5F7] border border-black/10 px-3 py-2.5 text-xs font-medium text-[#1D1D1F]"
+                className="w-full rounded-xl bg-zinc-50 border border-zinc-200 px-3 py-2.5 text-xs font-medium text-zinc-900"
               >
                 <option value="EDESUR">EDESUR</option>
                 <option value="EDENORTE">EDENORTE</option>
@@ -344,7 +341,7 @@ export function InvoiceAnalyzerModule({
 
             <div>
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <label className="font-semibold text-[#1D1D1F]">Tarifa</label>
+                <label className="font-semibold text-zinc-900">Tarifa</label>
                 <span
                   className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                     PROVENANCE_LABELS[draftInvoice.tariffCode.status].badgeClass
@@ -356,7 +353,7 @@ export function InvoiceAnalyzerModule({
               <select
                 value={draftInvoice.tariffCode.value}
                 onChange={(e) => updateDraftField("tariffCode", e.target.value)}
-                className="w-full rounded-xl bg-[#F5F5F7] border border-black/10 px-3 py-2.5 text-xs font-medium text-[#1D1D1F]"
+                className="w-full rounded-xl bg-zinc-50 border border-zinc-200 px-3 py-2.5 text-xs font-medium text-zinc-900"
               >
                 <option value="BTS-1">BTS-1 (Residencial)</option>
                 <option value="BTS-2">BTS-2 (Comercial)</option>
@@ -366,7 +363,7 @@ export function InvoiceAnalyzerModule({
 
             <div>
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <label className="font-semibold text-[#1D1D1F]">
+                <label className="font-semibold text-zinc-900">
                   Consumo (kWh)
                 </label>
                 <span
@@ -385,13 +382,13 @@ export function InvoiceAnalyzerModule({
                 onChange={(e) =>
                   updateDraftField("billedKwh", parseFloat(e.target.value) || 0)
                 }
-                className="w-full rounded-xl bg-[#F5F5F7] border border-black/10 px-3 py-2.5 text-xs font-bold text-[#1D1D1F]"
+                className="w-full rounded-xl bg-zinc-50 border border-zinc-200 px-3 py-2.5 text-xs font-bold text-zinc-900"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <label className="font-semibold text-[#1D1D1F]">
+                <label className="font-semibold text-zinc-900">
                   Total Facturado (RD$)
                 </label>
                 <span
@@ -414,12 +411,12 @@ export function InvoiceAnalyzerModule({
                     parseFloat(e.target.value) || 0
                   )
                 }
-                className="w-full rounded-xl bg-[#F5F5F7] border border-black/10 px-3 py-2.5 text-xs font-bold text-[#0071E3]"
+                className="w-full rounded-xl bg-zinc-50 border border-zinc-200 px-3 py-2.5 text-xs font-bold text-zinc-900"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#1D1D1F] mb-1.5">
+              <label className="block text-xs font-semibold text-zinc-900 mb-1.5">
                 Fecha Cierre Factura
               </label>
               <input
@@ -428,12 +425,12 @@ export function InvoiceAnalyzerModule({
                 onChange={(e) =>
                   updateDraftField("billingPeriodEnd", e.target.value)
                 }
-                className="w-full rounded-xl bg-[#F5F5F7] border border-black/10 px-3 py-2.5 text-xs text-[#1D1D1F]"
+                className="w-full rounded-xl bg-zinc-50 border border-zinc-200 px-3 py-2.5 text-xs text-zinc-900"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#1D1D1F] mb-1.5">
+              <label className="block text-xs font-semibold text-zinc-900 mb-1.5">
                 Días Facturados
               </label>
               <input
@@ -447,7 +444,7 @@ export function InvoiceAnalyzerModule({
                     parseInt(e.target.value, 10) || 30
                   )
                 }
-                className="w-full rounded-xl bg-[#F5F5F7] border border-black/10 px-3 py-2.5 text-xs text-[#1D1D1F]"
+                className="w-full rounded-xl bg-zinc-50 border border-zinc-200 px-3 py-2.5 text-xs text-zinc-900"
               />
             </div>
 
@@ -455,14 +452,14 @@ export function InvoiceAnalyzerModule({
               <button
                 type="button"
                 onClick={() => setDraftInvoice(null)}
-                className="px-5 py-2.5 rounded-full bg-[#F5F5F7] text-xs font-semibold text-[#1D1D1F]"
+                className="px-5 py-2.5 rounded-full bg-zinc-100 hover:bg-zinc-200 text-xs font-semibold text-zinc-800 transition"
               >
                 Cancelar
               </button>
               <button
                 type="button"
                 onClick={handleConfirmAndSave}
-                className="px-6 py-2.5 rounded-full bg-[#28CD41] hover:bg-[#22B538] text-white font-semibold text-xs inline-flex items-center gap-1.5 shadow-xs transition"
+                className="px-6 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-xs inline-flex items-center gap-1.5 shadow-xs transition"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 Confirmar y Guardar Factura
@@ -474,10 +471,10 @@ export function InvoiceAnalyzerModule({
 
       {/* Historial de Facturas */}
       <div className="apple-card p-6 sm:p-8">
-        <h3 className="font-bold text-lg text-[#1D1D1F] mb-1">
+        <h3 className="font-bold text-lg text-zinc-900 mb-1">
           Historial de Facturas ({sortedInvoices.length})
         </h3>
-        <p className="text-xs text-[#6E6E73] mb-5">
+        <p className="text-xs text-zinc-500 mb-5">
           Tus recibos registrados con cálculo de costo promedio por kWh y
           comparación frente al pliego oficial de la SIE.
         </p>
@@ -486,7 +483,7 @@ export function InvoiceAnalyzerModule({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
-                <tr className="border-b border-black/[0.08] text-[#6E6E73] text-xs">
+                <tr className="border-b border-zinc-200 text-zinc-500 text-xs">
                   <th className="py-3 pr-4">Fecha</th>
                   <th className="py-3 px-3">Distribuidora</th>
                   <th className="py-3 px-3">Consumo</th>
@@ -496,7 +493,7 @@ export function InvoiceAnalyzerModule({
                   <th className="py-3 pl-3 text-right">Eliminar</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-black/[0.05]">
+              <tbody className="divide-y divide-zinc-100">
                 {sortedInvoices.map((inv) => {
                   const avgKwhRate =
                     inv.billedKwh.value > 0
@@ -508,34 +505,34 @@ export function InvoiceAnalyzerModule({
                       : inv.billedKwh.value / 30;
 
                   return (
-                    <tr key={inv.id} className="hover:bg-[#F5F5F7]/60">
-                      <td className="py-3.5 pr-4 font-semibold text-[#1D1D1F]">
+                    <tr key={inv.id} className="hover:bg-zinc-50">
+                      <td className="py-3.5 pr-4 font-semibold text-zinc-900">
                         {inv.billingPeriodEnd.value}
                       </td>
                       <td className="py-3.5 px-3">
-                        <span className="px-2.5 py-1 rounded-full bg-[#F5F5F7] text-xs font-semibold text-[#1D1D1F]">
+                        <span className="px-2.5 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-semibold text-zinc-800">
                           {inv.distributor.value} · {inv.tariffCode.value}
                         </span>
                       </td>
-                      <td className="py-3.5 px-3 font-bold text-[#0071E3]">
+                      <td className="py-3.5 px-3 font-bold text-zinc-900">
                         {inv.billedKwh.value.toLocaleString("es-DO")} kWh
                       </td>
-                      <td className="py-3.5 px-3 text-[#6E6E73]">
+                      <td className="py-3.5 px-3 text-zinc-500">
                         {dailyKwh.toFixed(1)} kWh/día
                       </td>
-                      <td className="py-3.5 px-3 font-bold text-[#1D1D1F]">
+                      <td className="py-3.5 px-3 font-bold text-zinc-900">
                         RD${" "}
                         {inv.totalAmountDop.value.toLocaleString("es-DO", {
                           minimumFractionDigits: 2,
                         })}
                       </td>
-                      <td className="py-3.5 px-3 text-[#6E6E73]">
+                      <td className="py-3.5 px-3 text-zinc-500">
                         RD$ {avgKwhRate.toFixed(2)}/kWh
                       </td>
                       <td className="py-3.5 pl-3 text-right">
                         <button
                           onClick={() => onDeleteInvoice(inv.id)}
-                          className="p-2 rounded-full text-[#6E6E73] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10 transition"
+                          className="p-2 rounded-full text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -547,7 +544,7 @@ export function InvoiceAnalyzerModule({
             </table>
           </div>
         ) : (
-          <div className="text-center py-10 text-sm text-[#6E6E73]">
+          <div className="text-center py-10 text-sm text-zinc-500">
             Aún no has registrado facturas.
           </div>
         )}

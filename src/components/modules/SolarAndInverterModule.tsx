@@ -70,14 +70,14 @@ export function SolarAndInverterModule({
   );
 
   const [invName, setInvName] = useState("Inversor Principal Residencial");
-  const [invBrand, setInvBrand] = useState("Trace / Xantrex");
+  const [invBrand] = useState("Trace / Xantrex");
   const [invPowerW, setInvPowerW] = useState(3600);
   const [batType, setBatType] =
     useState<InverterBatterySystem["batteryType"]>("lead_acid_flooded");
   const [batVoltageV, setBatVoltageV] = useState(24);
-  const [batCapacityAh, setBatCapacityAh] = useState(225);
-  const [batCount, setBatCount] = useState(4);
-  const [socPercent, setSocPercent] = useState(95);
+  const [batCapacityAh] = useState(225);
+  const [batCount] = useState(4);
+  const [socPercent] = useState(95);
 
   const solarReport = useMemo(
     () => simulateDominicanSolarSystem(solarInput),
@@ -152,14 +152,14 @@ export function SolarAndInverterModule({
       <div className="apple-card p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#FF9500]/15 text-[#C97400] flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-zinc-200 text-zinc-900 flex items-center justify-center">
               <Sun className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="font-bold text-xl sm:text-2xl text-[#1D1D1F]">
+              <h2 className="font-bold text-xl sm:text-2xl text-zinc-900">
                 Simulador de Paneles Solares
               </h2>
-              <p className="text-xs text-[#6E6E73]">
+              <p className="text-xs text-zinc-500">
                 Calculado con la radiación solar real de {solarInput.province} (
                 {solarReport.provinceHsp} Horas Solares Pico)
               </p>
@@ -167,9 +167,9 @@ export function SolarAndInverterModule({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-5 rounded-3xl bg-[#F5F5F7]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-5 rounded-3xl bg-zinc-50 border border-zinc-200/80">
           <div>
-            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">
               Consumo Mensual (kWh)
             </label>
             <input
@@ -182,12 +182,12 @@ export function SolarAndInverterModule({
                   monthlyKwh: parseFloat(e.target.value) || 100,
                 })
               }
-              className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs font-bold text-[#1D1D1F]"
+              className="w-full rounded-2xl bg-white border border-zinc-200 px-3.5 py-2.5 text-xs font-bold text-zinc-900"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">
               Factura Promedio (RD$)
             </label>
             <input
@@ -200,12 +200,12 @@ export function SolarAndInverterModule({
                   averageMonthlyBillDop: parseFloat(e.target.value) || 1000,
                 })
               }
-              className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs font-bold text-[#0071E3]"
+              className="w-full rounded-2xl bg-white border border-zinc-200 px-3.5 py-2.5 text-xs font-bold text-zinc-900"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">
               Provincia en RD
             </label>
             <select
@@ -213,7 +213,7 @@ export function SolarAndInverterModule({
               onChange={(e) =>
                 setSolarInput({ ...solarInput, province: e.target.value })
               }
-              className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs text-[#1D1D1F]"
+              className="w-full rounded-2xl bg-white border border-zinc-200 px-3.5 py-2.5 text-xs text-zinc-900"
             >
               {Object.keys(RD_PROVINCES_SOLAR_HSP).map((prov) => (
                 <option key={prov} value={prov}>
@@ -224,7 +224,7 @@ export function SolarAndInverterModule({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+            <label className="block text-xs font-semibold text-zinc-600 mb-1">
               Tipo de Sistema
             </label>
             <select
@@ -236,7 +236,7 @@ export function SolarAndInverterModule({
                     e.target.value as SolarSimulationInput["installationType"],
                 })
               }
-              className="w-full rounded-2xl bg-white border border-black/10 px-3.5 py-2.5 text-xs text-[#1D1D1F]"
+              className="w-full rounded-2xl bg-white border border-zinc-200 px-3.5 py-2.5 text-xs text-zinc-900"
             >
               <option value="on_grid_net_metering">
                 Medición Neta (Sin baterías)
@@ -254,58 +254,58 @@ export function SolarAndInverterModule({
               key={sc.scenarioLabel}
               className={`p-6 rounded-3xl flex flex-col justify-between ${
                 sc.scenarioLabel === "Intermedio"
-                  ? "bg-white border-2 border-[#0071E3] shadow-md"
-                  : "bg-[#F5F5F7]"
+                  ? "bg-white border-2 border-zinc-900 shadow-sm"
+                  : "bg-zinc-50 border border-zinc-200/80"
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#0071E3]">
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-700">
                     Escenario {sc.scenarioLabel}
                   </span>
-                  <span className="text-xs font-semibold text-[#6E6E73]">
+                  <span className="text-xs font-semibold text-zinc-500">
                     Cubre {sc.coveragePercent}%
                   </span>
                 </div>
 
-                <div className="text-3xl font-bold text-[#1D1D1F]">
+                <div className="text-3xl font-bold text-zinc-900">
                   {sc.recommendedKwPeak} kWp
                 </div>
-                <div className="text-xs font-medium text-[#6E6E73] mb-4">
+                <div className="text-xs font-medium text-zinc-500 mb-4">
                   {sc.estimatedPanelsCount} paneles solares de{" "}
                   {sc.panelWattsEach}W · Techo: {sc.requiredRoofAreaM2} m²
                 </div>
 
-                <div className="space-y-2 text-xs pt-3 border-t border-black/[0.06]">
+                <div className="space-y-2 text-xs pt-3 border-t border-zinc-200">
                   <div className="flex justify-between">
-                    <span className="text-[#6E6E73]">Producción mensual:</span>
-                    <strong className="text-[#1D1D1F]">
+                    <span className="text-zinc-500">Producción mensual:</span>
+                    <strong className="text-zinc-900">
                       {sc.monthlyGenerationKwh} kWh/mes
                     </strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6E6E73]">Inversión estimada:</span>
-                    <strong className="text-[#1D1D1F]">
+                    <span className="text-zinc-500">Inversión estimada:</span>
+                    <strong className="text-zinc-900">
                       RD$ {sc.estimatedInvestmentDop.toLocaleString("es-DO")}
                     </strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6E6E73]">Ahorro mensual:</span>
-                    <strong className="text-[#1D832D]">
+                    <span className="text-zinc-500">Ahorro mensual:</span>
+                    <strong className="text-zinc-900">
                       RD$ {sc.monthlySavingsDop.toLocaleString("es-DO")}/mes
                     </strong>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-black/[0.06] flex items-center justify-between text-xs">
-                <span className="text-[#6E6E73]">
+              <div className="mt-5 pt-3 border-t border-zinc-200 flex items-center justify-between text-xs">
+                <span className="text-zinc-500">
                   Retorno:{" "}
-                  <strong className="text-[#1D1D1F]">
+                  <strong className="text-zinc-900">
                     {sc.paybackYears} años
                   </strong>
                 </span>
-                <span className="font-bold text-[#0071E3]">
+                <span className="font-bold text-zinc-900">
                   ROI 10 años: +{sc.roi10YearsPercent}%
                 </span>
               </div>
@@ -317,25 +317,25 @@ export function SolarAndInverterModule({
       {/* INVERSORES Y BATERÍAS */}
       <div className="apple-card p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-[#5856D6]/12 text-[#5856D6] flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-zinc-200 text-zinc-900 flex items-center justify-center">
             <BatteryCharging className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="font-bold text-xl sm:text-2xl text-[#1D1D1F]">
+            <h2 className="font-bold text-xl sm:text-2xl text-zinc-900">
               Inversores y Respaldo en Apagones
             </h2>
-            <p className="text-xs text-[#6E6E73]">
+            <p className="text-xs text-zinc-500">
               Simula cuántas horas duran tus baterías según los equipos que
               dejes encendidos
             </p>
           </div>
         </div>
 
-        <div className="p-5 rounded-3xl bg-[#F5F5F7] mb-6">
+        <div className="p-5 rounded-3xl bg-zinc-50 border border-zinc-200/80 mb-6">
           <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
-            <span className="font-semibold text-[#1D1D1F]">
+            <span className="font-semibold text-zinc-900">
               Consumo conectado durante el apagón:{" "}
-              <strong className="text-[#5856D6]">
+              <strong className="text-zinc-900">
                 {simulatedBlackoutWatts} Watts
               </strong>
             </span>
@@ -345,7 +345,7 @@ export function SolarAndInverterModule({
                 onClick={() =>
                   setSimulatedBlackoutWatts(criticalAppliancesLoadW)
                 }
-                className="text-xs font-semibold text-[#0071E3] hover:underline"
+                className="text-xs font-semibold text-zinc-900 hover:underline"
               >
                 Usar mis equipos críticos ({criticalAppliancesLoadW} W)
               </button>
@@ -360,7 +360,7 @@ export function SolarAndInverterModule({
             onChange={(e) =>
               setSimulatedBlackoutWatts(parseInt(e.target.value, 10))
             }
-            className="w-full accent-[#5856D6]"
+            className="w-full accent-zinc-900"
           />
         </div>
 
@@ -372,29 +372,32 @@ export function SolarAndInverterModule({
                 simulatedBlackoutWatts
               );
               return (
-                <div key={sys.id} className="p-6 rounded-3xl bg-[#F5F5F7]">
+                <div
+                  key={sys.id}
+                  className="p-6 rounded-3xl bg-zinc-50 border border-zinc-200/80"
+                >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <span className="font-bold text-base text-[#1D1D1F]">
+                      <span className="font-bold text-base text-zinc-900">
                         {sys.name}
                       </span>
-                      <p className="text-xs text-[#6E6E73] mt-0.5">
+                      <p className="text-xs text-zinc-500 mt-0.5">
                         {sys.inverterBrand} ({sys.inverterPowerW}W) ·{" "}
                         {sys.batteryBrand} ({sys.batteryVoltageV}V)
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        <div className="text-xs text-[#6E6E73]">
+                        <div className="text-xs text-zinc-500">
                           Autonomía estimada
                         </div>
-                        <div className="text-2xl font-bold text-[#5856D6]">
+                        <div className="text-2xl font-bold text-zinc-900">
                           {aut.estimatedAutonomyFormatted}
                         </div>
                       </div>
                       <button
                         onClick={() => onDeleteInverterSystem(sys.id)}
-                        className="p-2 rounded-full text-[#6E6E73] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10"
+                        className="p-2 rounded-full text-zinc-400 hover:text-zinc-900 hover:bg-zinc-200/60"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -408,20 +411,20 @@ export function SolarAndInverterModule({
               {RD_INVERTER_BATTERY_LIBRARY.map((preset) => (
                 <div
                   key={preset.id}
-                  className="p-4 rounded-2xl bg-[#F5F5F7] flex flex-col justify-between"
+                  className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex flex-col justify-between"
                 >
                   <div>
-                    <div className="font-bold text-xs text-[#1D1D1F]">
+                    <div className="font-bold text-xs text-zinc-900">
                       {preset.brand} — {preset.model}
                     </div>
-                    <p className="text-[11px] text-[#6E6E73] mt-1">
+                    <p className="text-[11px] text-zinc-500 mt-1">
                       {preset.note}
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleAddFromCatalog(preset)}
-                    className="mt-3 py-2 rounded-xl bg-white hover:bg-[#0071E3] text-[#1D1D1F] hover:text-white text-xs font-semibold inline-flex items-center justify-center gap-1 transition"
+                    className="mt-3 py-2 rounded-xl bg-white hover:bg-zinc-900 text-zinc-900 hover:text-white border border-zinc-200 text-xs font-semibold inline-flex items-center justify-center gap-1 transition"
                   >
                     <Plus className="w-3.5 h-3.5" /> Cargar este sistema
                   </button>
@@ -432,25 +435,25 @@ export function SolarAndInverterModule({
 
           <form
             onSubmit={handleCreateCustomInverter}
-            className="p-6 rounded-3xl bg-[#F5F5F7] space-y-3.5 h-fit"
+            className="p-6 rounded-3xl bg-zinc-50 border border-zinc-200/80 space-y-3.5 h-fit"
           >
-            <h4 className="font-bold text-base text-[#1D1D1F]">
+            <h4 className="font-bold text-base text-zinc-900">
               Registrar Mi Inversor
             </h4>
             <div>
-              <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+              <label className="block text-xs font-semibold text-zinc-600 mb-1">
                 Nombre
               </label>
               <input
                 type="text"
                 value={invName}
                 onChange={(e) => setInvName(e.target.value)}
-                className="w-full rounded-xl bg-white border border-black/10 px-3 py-2 text-xs text-[#1D1D1F]"
+                className="w-full rounded-xl bg-white border border-zinc-200 px-3 py-2 text-xs text-zinc-900"
               />
             </div>
             <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                <label className="block text-xs font-semibold text-zinc-600 mb-1">
                   Potencia (W)
                 </label>
                 <input
@@ -459,11 +462,11 @@ export function SolarAndInverterModule({
                   onChange={(e) =>
                     setInvPowerW(parseInt(e.target.value, 10) || 1500)
                   }
-                  className="w-full rounded-xl bg-white border border-black/10 px-3 py-2 text-xs font-bold text-[#1D1D1F]"
+                  className="w-full rounded-xl bg-white border border-zinc-200 px-3 py-2 text-xs font-bold text-zinc-900"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+                <label className="block text-xs font-semibold text-zinc-600 mb-1">
                   Voltaje
                 </label>
                 <select
@@ -471,7 +474,7 @@ export function SolarAndInverterModule({
                   onChange={(e) =>
                     setBatVoltageV(parseInt(e.target.value, 10))
                   }
-                  className="w-full rounded-xl bg-white border border-black/10 px-3 py-2 text-xs text-[#1D1D1F]"
+                  className="w-full rounded-xl bg-white border border-zinc-200 px-3 py-2 text-xs text-zinc-900"
                 >
                   <option value={12}>12 V</option>
                   <option value={24}>24 V</option>
@@ -480,7 +483,7 @@ export function SolarAndInverterModule({
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#6E6E73] mb-1">
+              <label className="block text-xs font-semibold text-zinc-600 mb-1">
                 Tipo de Baterías
               </label>
               <select
@@ -490,7 +493,7 @@ export function SolarAndInverterModule({
                     e.target.value as InverterBatterySystem["batteryType"]
                   )
                 }
-                className="w-full rounded-xl bg-white border border-black/10 px-3 py-2 text-xs text-[#1D1D1F]"
+                className="w-full rounded-xl bg-white border border-zinc-200 px-3 py-2 text-xs text-zinc-900"
               >
                 <option value="lead_acid_flooded">
                   Plomo-Ácido (Trojan / Ciclo Profundo)
@@ -501,7 +504,7 @@ export function SolarAndInverterModule({
             </div>
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl bg-[#0071E3] text-white font-semibold text-xs transition"
+              className="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-xs transition"
             >
               Guardar Inversor
             </button>
