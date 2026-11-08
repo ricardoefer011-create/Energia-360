@@ -40,13 +40,43 @@ export interface TariffBillCalculationResult {
   totalKwh: number;
   energyChargeDop: number;
   fixedChargeDop: number;
+  demandChargeDop: number;
   totalEstimatedBillDop: number;
+  unsubsidizedTotalDop: number;
+  governmentSubsidyDop: number;
   averageRateDopPerKwh: number;
   marginalRateDopPerKwh: number;
   lostStepSubsidy701: boolean;
   subsidyLossPenaltyDop: number;
   blocksBreakdown: TariffBillBreakdownBlock[];
   explanation: string;
+}
+
+/**
+ * Calcula el consumo a partir de las lecturas del medidor (Activa B.T.) y su múltiplo.
+ * Fórmula oficial de las prestadoras: Consumo = (Lectura Actual - Lectura Anterior) × Múltiplo
+ */
+export function calculateMeterReadingDiff(
+  previousReading: number,
+  currentReading: number,
+  multiplier: number = 1,
+  billingDays: number = 30
+): {
+  computedKwh: number;
+  dailyAverageKwh: number;
+  isValid: boolean;
+} {
+  const prev = Math.max(0, Number.isFinite(previousReading) ? previousReading : 0);
+  const curr = Math.max(0, Number.isFinite(currentReading) ? currentReading : 0);
+  const mult = Math.max(0.0001, Number.isFinite(multiplier) ? multiplier : 1);
+  const days = Math.max(1, Number.isFinite(billingDays) ? billingDays : 30);
+
+  if (curr < prev) {
+    return { computedKwh: 0, dailyAverageKwh: 0, isValid: false };
+  }
+  const computedKwh = round2((curr - prev) * mult);
+  const dailyAverageKwh = round2(computedKwh / days);
+  return { computedKwh, dailyAverageKwh, isValid: true };
 }
 
 /**
@@ -70,14 +100,19 @@ export function resolveTariffSchedule(
 }
 
 /**
- * Calcula una factura eléctrica según el pliego tarifario de República Dominicana (SIE).
- * Contempla tanto el escalonamiento por bloques (0-200, 201-300, 301-700) como la
- * regla crítica de >= 701 kWh donde cada kWh desde el primero se cobra al precio tope.
+ * Calcula una liquidación eléctrica según el pliego tarifario de República Dominicana (SIE).
+ * Contempla:
+ * 1. Escalonamiento por bloques (0-200, 201-300, 301-700).
+ * 2. Regla crítica de >= 701 kWh donde cada kWh desde el primero se cobra al precio tope (ej. RD$ 13.09).
+ * 3. Cargo fijo por tramo (ej. RD$ 40.84 hasta 100 kWh y RD$ 128.59 para >100 kWh).
+ * 4. Importe Total Sin Subsidio (Tarifa Técnica de Referencia SIE) y Aporte Total Gobierno (FETE).
+ * 5. Cargo por Potencia / Demanda Máxima (kW) en tarifas BTD y MTD.
  */
 export function calculateDominicanTariffBill(
   rawKwh: number,
   schedule: TariffSchedule,
-  customOverrideRateDopPerKwh?: number | null
+  customOverrideRateDopPerKwh?: number | null,
+  measuredDemandKw: number = 0
 ): TariffBillCalculationResult {
   const totalKwh = Math.max(0, Number.isFinite(rawKwh) ? rawKwh : 0);
 
@@ -96,17 +131,44 @@ export function calculateDominicanTariffBill(
       schedule.fixed_charges[schedule.fixed_charges.length - 1].charge_dop;
   }
 
+  // Cargo por demanda de potencia si aplica (BTD / MTD)
+  const demandRate = schedule.demand_charge_dop_per_kw || 0;
+  const demandChargeDop =
+    demandRate > 0 && measuredDemandKw > 0
+      ? round2(measuredDemandKw * demandRate)
+      : 0;
+
+  // Tarifa técnica de referencia sin subsidio estatal (FETE)
+  const techRefRate =
+    schedule.technical_reference_rate_dop ||
+    (schedule.full_reset_rate_dop ? schedule.full_reset_rate_dop * 1.1485 : 15.0338);
+
   // Si el usuario definió una tarifa personalizada explícita
   if (customOverrideRateDopPerKwh && customOverrideRateDopPerKwh > 0) {
     const energyChargeDop = round2(totalKwh * customOverrideRateDopPerKwh);
-    const totalEstimatedBillDop = round2(energyChargeDop + fixedChargeDop);
+    const totalEstimatedBillDop = round2(
+      energyChargeDop + fixedChargeDop + demandChargeDop
+    );
+    const unsubsidizedTotalDop = Math.max(
+      totalEstimatedBillDop,
+      round2(totalKwh * techRefRate + fixedChargeDop + demandChargeDop)
+    );
+    const governmentSubsidyDop = Math.max(
+      0,
+      round2(unsubsidizedTotalDop - totalEstimatedBillDop)
+    );
     return {
       totalKwh,
       energyChargeDop,
       fixedChargeDop,
+      demandChargeDop,
       totalEstimatedBillDop,
+      unsubsidizedTotalDop,
+      governmentSubsidyDop,
       averageRateDopPerKwh:
-        totalKwh > 0 ? round2(energyChargeDop / totalKwh) : customOverrideRateDopPerKwh,
+        totalKwh > 0
+          ? round2(energyChargeDop / totalKwh)
+          : customOverrideRateDopPerKwh,
       marginalRateDopPerKwh: customOverrideRateDopPerKwh,
       lostStepSubsidy701: false,
       subsidyLossPenaltyDop: 0,
@@ -125,8 +187,7 @@ export function calculateDominicanTariffBill(
   // Calcular siempre el costo escalonado progresivo para comparar la penalización de >700 kWh
   let progressiveEnergyDop = 0;
   const progressiveBlocks: TariffBillBreakdownBlock[] = [];
-  let marginalRate =
-    schedule.energy_blocks[0]?.rate_dop ?? 10;
+  let marginalRate = schedule.energy_blocks[0]?.rate_dop ?? 10;
 
   for (const block of schedule.energy_blocks) {
     const lowerBound = block.min_kwh === 0 ? 0 : block.min_kwh - 1;
@@ -165,31 +226,57 @@ export function calculateDominicanTariffBill(
     totalKwh >= resetThreshold
   ) {
     const flatHighEnergyDop = round2(totalKwh * resetRate);
-    const totalEstimatedBillDop = round2(flatHighEnergyDop + fixedChargeDop);
-    const penaltyDop = Math.max(0, round2(flatHighEnergyDop - progressiveEnergyDop));
+    const totalEstimatedBillDop = round2(
+      flatHighEnergyDop + fixedChargeDop + demandChargeDop
+    );
+    const penaltyDop = Math.max(
+      0,
+      round2(flatHighEnergyDop - progressiveEnergyDop)
+    );
+    const unsubsidizedTotalDop = Math.max(
+      totalEstimatedBillDop,
+      round2(totalKwh * techRefRate + fixedChargeDop + demandChargeDop)
+    );
+    const governmentSubsidyDop = Math.max(
+      0,
+      round2(unsubsidizedTotalDop - totalEstimatedBillDop)
+    );
 
     return {
       totalKwh,
       energyChargeDop: flatHighEnergyDop,
       fixedChargeDop,
+      demandChargeDop,
       totalEstimatedBillDop,
+      unsubsidizedTotalDop,
+      governmentSubsidyDop,
       averageRateDopPerKwh: resetRate,
       marginalRateDopPerKwh: resetRate,
       lostStepSubsidy701: true,
       subsidyLossPenaltyDop: penaltyDop,
       blocksBreakdown: [
         {
-          label: `Tarifa Plana >= ${resetThreshold} kWh (Sin subsidio escalonado)`,
+          label: `Tarifa Plana >= ${resetThreshold} kWh (Todos los kWh a RD$ ${resetRate})`,
           kwhInBlock: totalKwh,
           rateDop: resetRate,
           subtotalDop: flatHighEnergyDop,
         },
       ],
-      explanation: `Al alcanzar ${totalKwh.toFixed(0)} kWh (>= ${resetThreshold} kWh en ${schedule.distributor_code} ${schedule.tariff_code}), el pliego SIE aplica RD$ ${resetRate.toFixed(2)}/kWh a la totalidad del consumo, generando un sobrecosto de RD$ ${penaltyDop.toLocaleString("es-DO")} frente al esquema escalonado.`,
+      explanation: `Al alcanzar ${totalKwh.toFixed(0)} kWh (>= ${resetThreshold} kWh en ${schedule.tariff_code}), se aplica RD$ ${resetRate.toFixed(2)}/kWh a la totalidad del consumo (RD$ ${flatHighEnergyDop.toLocaleString("es-DO")}) + Cargo Fijo RD$ ${fixedChargeDop.toFixed(2)} = RD$ ${totalEstimatedBillDop.toLocaleString("es-DO")}. Importe sin subsidio: RD$ ${unsubsidizedTotalDop.toLocaleString("es-DO")} (Aporte Gobierno: -RD$ ${governmentSubsidyDop.toLocaleString("es-DO")}).`,
     };
   }
 
-  const totalEstimatedBillDop = round2(progressiveEnergyDop + fixedChargeDop);
+  const totalEstimatedBillDop = round2(
+    progressiveEnergyDop + fixedChargeDop + demandChargeDop
+  );
+  const unsubsidizedTotalDop = Math.max(
+    totalEstimatedBillDop,
+    round2(totalKwh * techRefRate + fixedChargeDop + demandChargeDop)
+  );
+  const governmentSubsidyDop = Math.max(
+    0,
+    round2(unsubsidizedTotalDop - totalEstimatedBillDop)
+  );
   const averageRateDopPerKwh =
     totalKwh > 0 ? round2(progressiveEnergyDop / totalKwh) : marginalRate;
 
@@ -197,13 +284,16 @@ export function calculateDominicanTariffBill(
     totalKwh,
     energyChargeDop: progressiveEnergyDop,
     fixedChargeDop,
+    demandChargeDop,
     totalEstimatedBillDop,
+    unsubsidizedTotalDop,
+    governmentSubsidyDop,
     averageRateDopPerKwh,
     marginalRateDopPerKwh: marginalRate,
     lostStepSubsidy701: false,
     subsidyLossPenaltyDop: 0,
     blocksBreakdown: progressiveBlocks,
-    explanation: `Cálculo por bloques progresivos SIE (${schedule.distributor_code} ${schedule.tariff_code}): ${progressiveBlocks.map((b) => `${b.kwhInBlock} kWh × RD$ ${b.rateDop}`).join(" + ")} + Cargo fijo RD$ ${fixedChargeDop.toFixed(2)}.`,
+    explanation: `Cálculo por bloques progresivos (${schedule.tariff_code}): ${progressiveBlocks.map((b) => `${b.kwhInBlock} kWh × RD$ ${b.rateDop}`).join(" + ")} + Cargo fijo RD$ ${fixedChargeDop.toFixed(2)}. Importe sin subsidio: RD$ ${unsubsidizedTotalDop.toLocaleString("es-DO")} (Aporte Gobierno: -RD$ ${governmentSubsidyDop.toLocaleString("es-DO")}).`,
   };
 }
 

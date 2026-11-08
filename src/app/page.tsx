@@ -468,16 +468,17 @@ export default function Energia360PlatformPage() {
     {
       id: "dashboard",
       code: "01",
-      label: "PANEL EJECUTIVO",
-      description: "Métricas de demanda, umbral 701 kWh y costos en RD$",
+      label: "PANEL EJECUTIVO 360°",
+      description: "Telemetría de medidor, subsidio FETE y simuladores en vivo",
+      badge: "PRO",
       icon: LayoutDashboard,
     },
     {
       id: "facturas",
       code: "02",
-      label: "AUDITORÍA DE DATOS",
-      description: "Escáner OCR y validación de tramos de suministro",
-      badge: "OCR",
+      label: "DATOS MANUALES & OCR",
+      description: "Carga manual de lecturas, 13 meses e importación OCR",
+      badge: "MANUAL+OCR",
       icon: FileSpreadsheet,
     },
     {

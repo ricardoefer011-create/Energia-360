@@ -41,6 +41,17 @@ describe("Motor Matemático y Tarifario Dominicano (SIE)", () => {
     expect(bill701.subsidyLossPenaltyDop).toBeGreaterThan(1500);
   });
 
+  it("reproduce al centavo la liquidación real de 735 kWh (NIC 2032762: RD$ 9,749.74 y Subsidio RD$ 1,428.69)", () => {
+    const schedule = resolveTariffSchedule("EDESUR", "BTS-1");
+    const bill735 = calculateDominicanTariffBill(735, schedule, null, 3.816);
+
+    expect(bill735.fixedChargeDop).toBeCloseTo(128.59, 2);
+    expect(bill735.energyChargeDop).toBeCloseTo(9621.15, 2);
+    expect(bill735.totalEstimatedBillDop).toBeCloseTo(9749.74, 2);
+    expect(bill735.unsubsidizedTotalDop).toBeCloseTo(11178.43, 1);
+    expect(bill735.governmentSubsidyDop).toBeCloseTo(1428.69, 1);
+  });
+
   it("calcula el consumo diario y mensual de equipos eléctricos con factor de ciclo", () => {
     const res = calculateApplianceConsumption(
       {

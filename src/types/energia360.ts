@@ -51,7 +51,7 @@ export interface TariffEnergyBlock {
 export interface TariffSchedule {
   id: string;
   distributor_code: DistributorCode;
-  tariff_code: string; // Ej. BTS-1, BTS-2, RES-CEPM
+  tariff_code: string; // Ej. BTS-1, BTS-2, BTD, MTD-1, RES-CEPM
   category_name: string;
   customer_segment: "residencial" | "comercial" | "industrial" | "solar_net_metering";
   currency: "DOP";
@@ -63,6 +63,8 @@ export interface TariffSchedule {
   billing_mode: "tiered_with_threshold_reset" | "tiered_progressive" | "flat";
   full_reset_threshold_kwh: number | null;
   full_reset_rate_dop: number | null;
+  technical_reference_rate_dop?: number; // Tarifa técnica sin subsidio (RD$/kWh)
+  demand_charge_dop_per_kw?: number; // Cargo por demanda máxima (RD$/kW) para BTD / MTD
   fixed_charges: TariffFixedChargeTier[];
   energy_blocks: TariffEnergyBlock[];
   notes: string;
@@ -71,6 +73,12 @@ export interface TariffSchedule {
 export interface FieldWithProvenance<T> {
   value: T;
   status: DataProvenanceStatus;
+}
+
+export interface HistoricalMonthlyConsumptionPoint {
+  monthLabel: string; // Ej. "2025-10" o "10/25"
+  kwh: number;
+  powerKw?: number;
 }
 
 export interface ElectricityInvoice {
@@ -91,6 +99,17 @@ export interface ElectricityInvoice {
   totalAmountDop: FieldWithProvenance<number>;
   tariffCode: FieldWithProvenance<string>;
   confirmedByUserAt: string;
+  // Campos técnicos extendidos de liquidación y medición
+  meterNumber?: string; // No. de Contador / Medidor (ej. 57117767)
+  previousReading?: number; // Lectura Anterior Activa B.T. (ej. 61465)
+  currentReading?: number; // Lectura Actual Activa B.T. (ej. 62200)
+  meterMultiplier?: number; // Múltiplo (ej. 1.0000)
+  contractedPowerKw?: number; // Potencia Contratada (ej. 4.028 kW)
+  measuredPowerDemandKw?: number; // Potencia B.T. Leída (ej. 3.816 kW)
+  voltageLevel?: string; // Ej. Baja 120/240 Doble Monofásica
+  unsubsidizedTotalDop?: number; // Importe Total Sin Subsidio RD$ (ej. 11,178.43)
+  governmentSubsidyDop?: number; // Aporte Total Gobierno RD$ (ej. 1,428.69)
+  historical13Months?: HistoricalMonthlyConsumptionPoint[];
   notes?: string;
 }
 
