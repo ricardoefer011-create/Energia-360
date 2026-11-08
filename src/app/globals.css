@@ -1,21 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #313338;
-  --bg-secondary: #2B2D31;
-  --bg-tertiary: #1E1F22;
-  --bg-elevated: #383A40;
-  --text-primary: #F2F3F5;
-  --text-secondary: #B5BAC1;
-  --text-muted: #949BA4;
-  --discord-blurple: #5865F2;
-  --discord-blurple-hover: #4752C4;
-  --discord-hero: #404EED;
-  --discord-green: #23A55A;
-  --discord-neon-green: #57F287;
-  --discord-yellow: #F0B232;
-  --discord-fuchsia: #EB459E;
-  --discord-red: #F23F43;
+  --color1: #091197;
+  --color2: #03A9EC;
+  --color3: #F75600;
+  --text: #091197;
+  --border: #AAAAAA;
+  --background: #DBDCDE;
+  --lightgray: #F1F1F1;
+  --stroke: #D9D9D9;
+  --radius: 12px;
+  --bigradius: 24px;
+  --lowrad: 8px;
+  --midrad: 9px;
 }
 
 html {
@@ -23,108 +20,142 @@ html {
 }
 
 body {
-  background-color: #313338;
-  color: #F2F3F5;
-  font-family: -apple-system, BlinkMacSystemFont, "gg sans", "Noto Sans",
-    "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #FFFFFF;
+  color: #091197;
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* Tarjetas estilo Discord dentro de la plataforma (#2B2D31 sobre #313338) */
+/* Tarjeta corporativa limpia inspirada en GrupaMar (.citembox / .citemicon) */
 .apple-card {
-  background: #2B2D31;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
-  border-radius: 20px;
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #FFFFFF;
+  border: 1px solid #D9D9D9;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(9, 17, 151, 0.04);
+  transition: all 0.25s ease-in-out;
 }
 
 .apple-card:hover {
-  border-color: rgba(88, 101, 242, 0.35);
+  border-color: #03A9EC;
+  box-shadow: 0 16px 40px rgba(9, 17, 151, 0.08);
 }
 
-/* Efecto cristal estilo Discord Nitro */
+/* Cabecera flotante translúcida estilo .cheaderinner de GrupaMar */
 .apple-glass {
-  background: rgba(49, 51, 56, 0.88);
-  backdrop-filter: saturate(180%) blur(16px);
-  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-/* Fondo Hero estilo discord.com (#404EED con destellos cósmicos) */
-.discord-hero-bg {
-  background-color: #404EED;
+/* Botón insignia .cta.ctair de GrupaMar (borde #03A9EC + cuadrado #091197 con flecha) */
+.grupamar-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #03A9EC;
+  border-radius: 12px;
+  padding: 3px 3px 3px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #091197;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.22s ease-in-out;
+}
+
+.grupamar-cta .grupamar-cta-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 9px;
+  background: #091197;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.22s ease-in-out;
+  flex-shrink: 0;
+}
+
+.grupamar-cta:hover {
+  background: #091197;
+  border-color: #091197;
+  color: #FFFFFF;
+}
+
+.grupamar-cta:hover .grupamar-cta-box {
+  background: #03A9EC;
+  color: #FFFFFF;
+}
+
+/* Variante naranja de alto impacto (.cpresubottom) */
+.grupamar-cta-orange:hover {
+  background: #F75600;
+  border-color: #F75600;
+  color: #FFFFFF;
+}
+
+.grupamar-cta-orange:hover .grupamar-cta-box {
+  background: #FFFFFF;
+  color: #F75600;
+}
+
+/* Fondo azul profundo #091197 con líneas técnicas sutiles (.csectionsolucionesinner) */
+.grupamar-royal-section {
+  background-color: #091197;
   background-image: radial-gradient(
-      circle at 15% 20%,
-      rgba(235, 69, 158, 0.28) 0%,
-      transparent 40%
+      circle at 85% 15%,
+      rgba(3, 169, 236, 0.22) 0%,
+      transparent 45%
     ),
-    radial-gradient(
-      circle at 85% 75%,
-      rgba(87, 242, 135, 0.2) 0%,
-      transparent 42%
-    ),
-    radial-gradient(
-      circle at 50% 100%,
-      #23272A 0%,
-      transparent 65%
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.04) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.04) 50%,
+      rgba(255, 255, 255, 0.04) 75%,
+      transparent 75%,
+      transparent
     );
+  background-size: 100% 100%, 64px 64px;
 }
 
-/* Patrón de estrellas sutiles estilo Discord */
-.discord-stars {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1px),
-    radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px);
-  background-size: 48px 48px, 96px 96px;
-  background-position: 0 0, 24px 24px;
-}
-
-/* Animación flotante orgánica para elementos no lineales */
-@keyframes floatSlow {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(-2deg);
+/* Animación suave de zoom como .zoominout de GrupaMar */
+@keyframes zoomInOutSlow {
+  0% {
+    transform: scale(1);
   }
   50% {
-    transform: translateY(-8px) rotate(-1deg);
+    transform: scale(1.04);
   }
-}
-
-@keyframes floatSlowReverse {
-  0%,
   100% {
-    transform: translateY(0px) rotate(2deg);
-  }
-  50% {
-    transform: translateY(-10px) rotate(3deg);
+    transform: scale(1);
   }
 }
 
-.discord-float-left {
-  animation: floatSlow 6s ease-in-out infinite;
+.grupamar-zoom-slow {
+  animation: zoomInOutSlow 20s linear infinite;
 }
 
-.discord-float-right {
-  animation: floatSlowReverse 7s ease-in-out infinite;
-}
-
-/* Scrollbar estilo Discord */
+/* Scrollbar corporativo GrupaMar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #2B2D31;
+  background: #F1F1F1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1A1B1E;
-  border-radius: 9999px;
+  background: #091197;
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #5865F2;
+  background: #03A9EC;
 }

@@ -3,23 +3,24 @@
 import React, { useState } from "react";
 import {
   ArrowRight,
+  ArrowUpRight,
   BatteryCharging,
+  Building2,
   Check,
   Copy,
   FileSpreadsheet,
-  Flame,
-  Hash,
   KeyRound,
   Lock,
-  MessageSquare,
+  MapPin,
   ShieldCheck,
-  Sparkles,
   Sun,
-  Users,
-  Volume2,
+  UserCheck,
   Zap,
 } from "lucide-react";
-import { Energia360Logo } from "@/components/brand/Energia360Logo";
+import {
+  Energia360DiamondPin,
+  Energia360Logo,
+} from "@/components/brand/Energia360Logo";
 import {
   TEST_USER_ACCOUNTS,
   TestAccountPresetId,
@@ -32,6 +33,53 @@ interface AppleLandingAndAuthProps {
   onOpenVaultUnlock: () => void;
 }
 
+const RD_ZONES = [
+  {
+    id: "edesur",
+    code: "ZONA SUR / METROPOLITANA",
+    name: "EDESUR Dominicana",
+    cities: "Distrito Nacional, Santo Domingo Oeste, San Cristóbal, Baní, Azua, Barahona",
+    tariffs: "BTS-1 (4 Escalones) · BTS-2 Comercial · BTD Demanda",
+    hsp: "5.45 kWh/m²/día",
+    subsidyThreshold: "700 kWh / mes",
+    presetId: "hogar_santo_domingo" as TestAccountPresetId,
+    coords: { top: "58%", left: "53%" },
+  },
+  {
+    id: "edenorte",
+    code: "ZONA NORTE / CIBAO",
+    name: "EDENORTE Dominicana",
+    cities: "Santiago de los Caballeros, La Vega, Puerto Plata, San Francisco de Macorís, Mao",
+    tariffs: "BTS-1 Residencial · BTS-2 PyME · MTD Media Tensión",
+    hsp: "5.35 kWh/m²/día",
+    subsidyThreshold: "700 kWh / mes",
+    presetId: "apartamento_santiago" as TestAccountPresetId,
+    coords: { top: "30%", left: "40%" },
+  },
+  {
+    id: "edeeste",
+    code: "ZONA ORIENTAL / ESTE",
+    name: "EDEESTE Dominicana",
+    cities: "Santo Domingo Este, Santo Domingo Norte, Boca Chica, San Pedro de Macorís, La Romana",
+    tariffs: "BTS-1 Escalones SIE · BTS-2 Comercial · Prepago",
+    hsp: "5.40 kWh/m²/día",
+    subsidyThreshold: "700 kWh / mes",
+    presetId: "hogar_santo_domingo" as TestAccountPresetId,
+    coords: { top: "55%", left: "68%" },
+  },
+  {
+    id: "cepm",
+    code: "CONCESIÓN TURÍSTICA ESTE",
+    name: "CEPM / Consorcio Energético",
+    cities: "Punta Cana, Bávaro, Cap Cana, Verón, Macao, Bayahíbe",
+    tariffs: "Tarifa Residencial Plana · Tarifa Comercial e Industrial Continua 24/7",
+    hsp: "5.65 kWh/m²/día",
+    subsidyThreshold: "Tarifa Privada Indexada",
+    presetId: "negocio_punta_cana" as TestAccountPresetId,
+    coords: { top: "48%", left: "86%" },
+  },
+];
+
 export function AppleLandingAndAuth({
   onEnterWithTestAccount,
   onStartPersonalWorkspace,
@@ -41,6 +89,8 @@ export function AppleLandingAndAuth({
   const [selectedPreset, setSelectedPreset] = useState<TestAccountPresetId>(
     "hogar_santo_domingo"
   );
+  const [activeZoneId, setActiveZoneId] = useState<string>("edesur");
+  const [simKwh, setSimKwh] = useState<number>(685);
   const [emailInput, setEmailInput] = useState("demo.hogar@energia360.do");
   const [passwordInput, setPasswordInput] = useState("DemoRD2026!");
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -72,537 +122,772 @@ export function AppleLandingAndAuth({
     }
   }
 
+  // Cálculo en vivo del salto del subsidio SIE 701 kWh para el banner interactivo
+  const losesSubsidy = simKwh >= 701;
+  const estimatedBillRD = losesSubsidy
+    ? Math.round(simKwh * 11.95 + 137.25)
+    : Math.round(
+        Math.min(simKwh, 200) * 6.05 +
+          Math.max(0, Math.min(simKwh - 200, 100)) * 8.59 +
+          Math.max(0, Math.min(simKwh - 300, 400)) * 11.68 +
+          38.95
+      );
+  const billAt695 = Math.round(200 * 6.05 + 100 * 8.59 + 395 * 11.68 + 38.95);
+  const subsidyLossPenalty = losesSubsidy
+    ? Math.max(0, estimatedBillRD - billAt695)
+    : 0;
+
+  const activeZone =
+    RD_ZONES.find((z) => z.id === activeZoneId) || RD_ZONES[0];
+
   return (
-    <div className="min-h-screen bg-[#23272A] text-white flex flex-col overflow-x-hidden">
-      {/* ================= HERO ESTILO DISCORD.COM (#404EED) ================= */}
-      <div className="discord-hero-bg discord-stars relative overflow-hidden">
-        {/* Blobs decorativos orgánicos no lineales */}
-        <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#EB459E]/25 blur-3xl" />
-        <div className="pointer-events-none absolute top-32 -right-28 w-[28rem] h-[28rem] rounded-full bg-[#57F287]/20 blur-3xl" />
+    <div className="min-h-screen bg-white text-[#091197] flex flex-col selection:bg-[#03A9EC] selection:text-white">
+      {/* ================= FLOATING HEADER ESTILO GRUPAMAR (.cheader / .cheaderinner) ================= */}
+      <header className="sticky top-0 z-50 w-full px-3 sm:px-6 pt-3 pb-2 pointer-events-none">
+        <div className="max-w-[1640px] mx-auto bg-white/95 backdrop-blur-md border border-[#D9D9D9] rounded-[12px] h-[76px] sm:h-[86px] px-4 sm:px-7 flex items-center justify-between shadow-[0_12px_34px_rgba(9,17,151,0.06)] pointer-events-auto">
+          <a href="#top" className="focus:outline-none">
+            <Energia360Logo size={42} showTagline variant="light" />
+          </a>
 
-        {/* Barra de navegación estilo Discord */}
-        <header className="relative z-20 max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
-          <Energia360Logo size={40} showTagline variant="dark" />
-
-          <nav className="hidden md:flex items-center gap-8 text-sm font-bold text-white/90">
+          <nav className="hidden xl:flex items-center gap-8 text-[14px] font-bold uppercase tracking-[0.06em] text-[#091197]">
             <a
-              href="#como-funciona"
-              className="hover:underline underline-offset-4 transition"
+              href="#soluciones"
+              className="hover:text-[#03A9EC] transition-colors py-2"
             >
-              Descubrir
+              Soluciones
             </a>
             <a
-              href="#ahorro-sie"
-              className="hover:underline underline-offset-4 transition"
+              href="#simulador-sie"
+              className="hover:text-[#03A9EC] transition-colors py-2"
             >
-              Subsidio 700 kWh
+              Tarifa SIE 700 kWh
             </a>
             <a
-              href="#solar-nitro"
-              className="hover:underline underline-offset-4 transition"
+              href="#cifras"
+              className="hover:text-[#03A9EC] transition-colors py-2"
             >
-              Solar &amp; Inversor
+              Ingeniería Solar
             </a>
             <a
-              href="#servidores-demo"
-              className="hover:underline underline-offset-4 transition"
+              href="#delegaciones-rd"
+              className="hover:text-[#03A9EC] transition-colors py-2"
             >
-              Usuarios de Prueba
+              Distribuidoras RD
+            </a>
+            <a
+              href="#area-clientes"
+              className="hover:text-[#03A9EC] transition-colors py-2"
+            >
+              Área Clientes
             </a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          {/* Botones de cabecera (.cheaderright -> .c2button) */}
+          <div className="flex items-center gap-2.5">
             {hasExistingEncryptedVault && (
               <button
                 onClick={onOpenVaultUnlock}
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-full bg-[#23272A]/80 hover:bg-[#23272A] text-white transition"
+                className="hidden md:inline-flex items-center gap-2 h-[48px] px-4 rounded-[12px] border border-[#03A9EC] bg-white hover:bg-[#091197] text-[#091197] hover:text-white text-xs font-bold uppercase tracking-[0.05em] transition-all"
               >
-                <KeyRound className="w-3.5 h-3.5 text-[#57F287]" />
-                <span>Mi Bóveda</span>
+                <KeyRound className="w-4 h-4 text-[#03A9EC]" />
+                Bóveda AES-256
               </button>
             )}
-            <button
-              onClick={() => onEnterWithTestAccount(selectedPreset)}
-              className="text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full bg-white text-[#23272A] hover:text-[#5865F2] hover:shadow-lg transition cursor-pointer"
-            >
-              Abrir ENERGIA360
-            </button>
-          </div>
-        </header>
-
-        {/* Contenido Principal del Hero */}
-        <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 pt-10 pb-24 md:pt-16 md:pb-32 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#23272A]/60 backdrop-blur-md border border-white/15 text-xs font-bold text-[#57F287] mb-6 shadow-lg -rotate-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>
-              EDESUR · EDENORTE · EDEESTE · CEPM — Hecho para República Dominicana
-            </span>
-          </div>
-
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight uppercase leading-[0.98] max-w-4xl mx-auto drop-shadow-sm">
-            IMAGINA UN LUGAR...{" "}
-            <span className="text-[#FEE75C] inline-block rotate-[-1deg]">
-              DONDE EL RECIBO
-            </span>{" "}
-            DE LA LUZ NO ASUSTE.
-          </h1>
-
-          <p className="mt-6 text-base sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed font-medium">
-            ...un espacio donde puedes descubrir qué aire acondicionado se está
-            comiendo tus cuartos, proteger tu subsidio de los{" "}
-            <strong className="text-[#57F287]">700 kWh</strong> y saber cuántas
-            horas te dura el inversor cuando se va la luz. Sin trucos y 100%
-            privado en tu navegador.
-          </p>
-
-          {/* Dos botones píldora icónicos de Discord */}
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-            <button
-              onClick={() => onEnterWithTestAccount(selectedPreset)}
-              className="px-8 py-4 rounded-full bg-white text-[#23272A] hover:text-[#5865F2] font-extrabold text-sm sm:text-base shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition inline-flex items-center gap-2.5 cursor-pointer"
-            >
-              <Zap className="w-5 h-5 text-[#5865F2]" />
-              <span>Entrar con Usuario de Prueba (1 Clic)</span>
-            </button>
 
             <a
-              href="#servidores-demo"
-              className="px-8 py-4 rounded-full bg-[#23272A] hover:bg-[#313338] text-white font-extrabold text-sm sm:text-base shadow-xl hover:-translate-y-0.5 transition inline-flex items-center gap-2"
+              href="#area-clientes"
+              className="hidden sm:inline-flex items-center gap-3 h-[50px] pl-4 pr-1.5 rounded-[12px] border border-[#03A9EC] bg-white hover:bg-[#091197] text-[#091197] hover:text-white text-xs font-bold uppercase tracking-[0.05em] transition-all group"
             >
-              <span>Ver Cuentas Demo y Credenciales</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Área Clientes</span>
+              <span className="w-[38px] h-[38px] rounded-[9px] bg-[#091197] group-hover:bg-[#03A9EC] text-white flex items-center justify-center transition-colors">
+                <UserCheck className="w-4 h-4" />
+              </span>
             </a>
-          </div>
 
-          {/* Escenario Visual No-Lineal (Tarjetas flotantes inclinadas + Ventana Discord) */}
-          <div className="mt-14 relative max-w-5xl mx-auto">
-            {/* Sticker Flotante Izquierdo (Inclinado) */}
-            <div className="hidden lg:block discord-float-left absolute -left-8 -top-8 z-30 w-72 rounded-3xl bg-[#2B2D31] border-2 border-[#5865F2] p-4 text-left shadow-2xl">
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center font-black text-xs">
-                  BOT
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-extrabold text-white">
-                      Vigía SIE
-                    </span>
-                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-[#5865F2] text-white">
-                      APP
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-[#B5BAC1]">
-                    Hoy a las 10:42 AM
-                  </span>
-                </div>
-              </div>
-              <p className="text-xs text-[#F2F3F5] leading-snug">
-                ¡Ojo familia! Si bajan el Split del cuarto{" "}
-                <strong className="text-[#57F287]">1.5 horas</strong>, no cruzan
-                los 700 kWh y se ahorran{" "}
-                <strong className="text-[#FEE75C]">RD$ 2,640</strong> este mes.
-              </p>
-              <div className="mt-2.5 flex items-center gap-1.5">
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#5865F2]/25 border border-[#5865F2] text-white font-bold">
-                  ⚡ 18
-                </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#383A40] text-[#B5BAC1] font-bold">
-                  🇩🇴 9
-                </span>
-              </div>
-            </div>
-
-            {/* Sticker Flotante Derecho (Inclinado) */}
-            <div className="hidden lg:block discord-float-right absolute -right-6 -bottom-6 z-30 w-72 rounded-3xl bg-[#1E1F22] border-2 border-[#57F287] p-4 text-left shadow-2xl">
-              <div className="flex items-center justify-between mb-2">
-                <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#57F287]">
-                  <Volume2 className="w-4 h-4" /> Canal de Respaldo Activo
-                </span>
-                <span className="w-2.5 h-2.5 rounded-full bg-[#57F287] animate-pulse" />
-              </div>
-              <div className="p-3 rounded-2xl bg-[#2B2D31] flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] text-[#B5BAC1]">
-                    Inversor Trace 3.6 kW
-                  </div>
-                  <div className="text-base font-black text-white">
-                    6h 36m en apagón
-                  </div>
-                </div>
-                <BatteryCharging className="w-7 h-7 text-[#57F287]" />
-              </div>
-            </div>
-
-            {/* Ventana Principal tipo Discord Mockup */}
-            <div className="rounded-[28px] bg-[#313338] border-4 border-[#1E1F22] shadow-2xl overflow-hidden text-left grid grid-cols-1 md:grid-cols-12">
-              {/* Mini barra de servidores izquierda */}
-              <div className="hidden md:flex md:col-span-1 bg-[#1E1F22] py-4 flex-col items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-[#5865F2] flex items-center justify-center text-white font-black shadow-md">
-                  <Zap className="w-5 h-5" />
-                </div>
-                <div className="w-8 h-0.5 bg-[#35363C] rounded-full" />
-                <div
-                  onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
-                  title="Hogar Santo Domingo"
-                  className="w-11 h-11 rounded-3xl hover:rounded-2xl bg-[#2B2D31] hover:bg-[#5865F2] text-xs font-black flex items-center justify-center cursor-pointer transition-all"
-                >
-                  SD
-                </div>
-                <div
-                  onClick={() => onEnterWithTestAccount("apartamento_santiago")}
-                  title="Apartamento Santiago"
-                  className="w-11 h-11 rounded-3xl hover:rounded-2xl bg-[#2B2D31] hover:bg-[#23A55A] text-xs font-black flex items-center justify-center cursor-pointer transition-all"
-                >
-                  STI
-                </div>
-                <div
-                  onClick={() => onEnterWithTestAccount("negocio_punta_cana")}
-                  title="Negocio Punta Cana"
-                  className="w-11 h-11 rounded-3xl hover:rounded-2xl bg-[#2B2D31] hover:bg-[#EB459E] text-xs font-black flex items-center justify-center cursor-pointer transition-all"
-                >
-                  PC
-                </div>
-              </div>
-
-              {/* Lista de canales */}
-              <div className="hidden md:flex md:col-span-3 bg-[#2B2D31] p-4 flex-col justify-between">
-                <div>
-                  <div className="font-extrabold text-sm text-white pb-3 mb-3 border-b border-white/10 flex items-center justify-between">
-                    <span>Hogar Naco (EDESUR)</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#57F287]/20 text-[#57F287]">
-                      BTS-1
-                    </span>
-                  </div>
-                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#949BA4] mb-2">
-                    Canales de Energía
-                  </div>
-                  <div className="space-y-1 text-xs font-bold">
-                    <div className="px-2.5 py-2 rounded-lg bg-[#404249] text-white flex items-center gap-2">
-                      <Hash className="w-4 h-4 text-[#B5BAC1]" />
-                      <span>resumen-mensual</span>
-                    </div>
-                    <div className="px-2.5 py-2 rounded-lg text-[#949BA4] hover:bg-[#35373C] hover:text-white flex items-center justify-between transition">
-                      <span className="flex items-center gap-2">
-                        <Hash className="w-4 h-4" />
-                        <span>escaner-facturas</span>
-                      </span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#F23F43] text-white">
-                        OCR
-                      </span>
-                    </div>
-                    <div className="px-2.5 py-2 rounded-lg text-[#949BA4] hover:bg-[#35373C] hover:text-white flex items-center gap-2 transition">
-                      <Hash className="w-4 h-4" />
-                      <span>mis-equipos</span>
-                    </div>
-                    <div className="px-2.5 py-2 rounded-lg text-[#949BA4] hover:bg-[#35373C] hover:text-white flex items-center gap-2 transition">
-                      <Hash className="w-4 h-4" />
-                      <span>solar-e-inversor</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Barra de usuario inferior tipo Discord */}
-                <div className="p-2.5 rounded-xl bg-[#23272A] flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-[#5865F2] flex items-center justify-center font-black text-xs">
-                        RD
-                      </div>
-                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#23A55A] border-2 border-[#23272A]" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-extrabold text-white leading-none">
-                        Familia Pérez
-                      </div>
-                      <div className="text-[10px] text-[#57F287] mt-0.5">
-                        ● En línea · Demo
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Contenido del canal */}
-              <div className="md:col-span-8 p-5 sm:p-6 bg-[#313338] space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                  <div className="flex items-center gap-2">
-                    <Hash className="w-5 h-5 text-[#949BA4]" />
-                    <span className="font-extrabold text-sm text-white">
-                      resumen-mensual
-                    </span>
-                    <span className="hidden sm:inline text-xs text-[#949BA4]">
-                      | Monitoreo en vivo de tu factura EDESUR
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => onEnterWithTestAccount(selectedPreset)}
-                    className="text-xs font-extrabold px-3 py-1 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white transition cursor-pointer"
-                  >
-                    Interactuar en vivo &rarr;
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="p-4 rounded-2xl bg-[#2B2D31] border border-white/5">
-                    <div className="text-[11px] font-bold text-[#B5BAC1]">
-                      Consumo Actual
-                    </div>
-                    <div className="text-2xl font-black text-white mt-1">
-                      645 kWh
-                    </div>
-                    <div className="text-[11px] font-bold text-[#57F287] mt-1">
-                      Dentro del subsidio (&lt;700)
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-[#2B2D31] border border-white/5">
-                    <div className="text-[11px] font-bold text-[#B5BAC1]">
-                      Factura Estimada SIE
-                    </div>
-                    <div className="text-2xl font-black text-[#FEE75C] mt-1">
-                      RD$ 6,129
-                    </div>
-                    <div className="text-[11px] text-[#B5BAC1] mt-1">
-                      Promedio RD$ 9.50/kWh
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-[#2B2D31] border border-white/5">
-                    <div className="text-[11px] font-bold text-[#B5BAC1]">
-                      Potencial Ahorro IA
-                    </div>
-                    <div className="text-2xl font-black text-[#EB459E] mt-1">
-                      -RD$ 1,850
-                    </div>
-                    <div className="text-[11px] text-[#B5BAC1] mt-1">
-                      Ajustando 2 equipos
-                    </div>
-                  </div>
-                </div>
-
-                {/* Termómetro visual divertido */}
-                <div className="p-4 rounded-2xl bg-[#1E1F22] border border-white/5">
-                  <div className="flex items-center justify-between text-xs font-bold mb-2">
-                    <span className="text-white">
-                      Termómetro del Escalón 701 kWh (Pérdida de Subsidio)
-                    </span>
-                    <span className="text-[#FEE75C]">
-                      Te quedan 55 kWh de margen
-                    </span>
-                  </div>
-                  <div className="w-full h-3 rounded-full bg-[#2B2D31] overflow-hidden p-0.5">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#5865F2] via-[#57F287] to-[#FEE75C]"
-                      style={{ width: "88%" }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Divisor de Onda Orgánica Estilo Discord */}
-        <div className="w-full overflow-hidden leading-none">
-          <svg
-            viewBox="0 0 1440 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-12 sm:h-20 preserve-3d"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0 40C320 110 720 -20 1440 60V100H0V40Z"
-              fill="#FFFFFF"
-            />
-          </svg>
-        </div>
-      </div>
-
-      {/* ================= SECCIÓN ZIG-ZAG 1 (FONDO BLANCO COMO DISCORD.COM) ================= */}
-      <section
-        id="como-funciona"
-        className="bg-white text-[#23272A] py-16 sm:py-24 px-4 sm:px-8"
-      >
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Tarjeta visual juguetona inclinada a la izquierda */}
-          <div className="lg:col-span-7 relative">
-            <div className="rounded-[32px] bg-[#F6F6F6] p-6 sm:p-8 border-2 border-[#E3E5E8] shadow-xl -rotate-1 hover:rotate-0 transition-transform duration-300">
-              <div className="flex items-center justify-between mb-5">
-                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#5865F2] text-white text-xs font-extrabold">
-                  <Flame className="w-4 h-4" /> Top Equipos Tragones del Mes
-                </span>
-                <span className="text-xs font-bold text-[#4E5058]">
-                  Desliza para simular en vivo
-                </span>
-              </div>
-
-              <div className="space-y-3.5">
-                <div className="p-4 rounded-2xl bg-white border border-black/5 shadow-xs flex items-center justify-between">
-                  <div>
-                    <div className="font-extrabold text-sm text-[#23272A]">
-                      ❄️ Aire Split 12,000 BTU (Habitación Principal)
-                    </div>
-                    <div className="text-xs text-[#4E5058] mt-0.5">
-                      8 horas/día · Compresor Inverter · 214 kWh/mes
-                    </div>
-                  </div>
-                  <span className="px-3 py-1.5 rounded-xl bg-[#5865F2]/10 text-[#5865F2] font-black text-sm">
-                    RD$ 2,390/mes
-                  </span>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-white border border-black/5 shadow-xs flex items-center justify-between">
-                  <div>
-                    <div className="font-extrabold text-sm text-[#23272A]">
-                      🧊 Nevera Inverter 18 pies³
-                    </div>
-                    <div className="text-xs text-[#4E5058] mt-0.5">
-                      24 horas/día · En Inversor · 92 kWh/mes
-                    </div>
-                  </div>
-                  <span className="px-3 py-1.5 rounded-xl bg-[#23A55A]/15 text-[#23A55A] font-black text-sm">
-                    RD$ 1,030/mes
-                  </span>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-[#23272A] text-white flex items-center justify-between rotate-1 shadow-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#EB459E] flex items-center justify-center font-black">
-                      IA
-                    </div>
-                    <div>
-                      <div className="font-extrabold text-xs text-[#57F287]">
-                        CONSEJO RÁPIDO
-                      </div>
-                      <div className="text-xs text-white/90">
-                        Pon el aire en 24°C después de las 11 PM y ahorras RD$
-                        680/mes.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Texto conversacional a la derecha */}
-          <div className="lg:col-span-5 space-y-5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#5865F2]/10 text-[#5865F2] text-xs font-extrabold uppercase">
-              Sin Matemáticas Aburridas
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.05] text-[#23272A]">
-              Descubre quién se está comiendo tus cuartos en casa.
-            </h2>
-            <p className="text-base sm:text-lg text-[#4E5058] leading-relaxed">
-              No tienes que ser ingeniero eléctrico. Elige tus equipos del
-              catálogo dominicano (aires, neveras, bombas de agua, abanicos y
-              freidoras) y mueve la barra de horas para ver al instante cuánto
-              impacta cada aparato en pesos dominicanos.
-            </p>
             <button
               onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
-              className="px-6 py-3.5 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-extrabold text-sm shadow-lg transition inline-flex items-center gap-2 cursor-pointer"
+              className="inline-flex items-center gap-3 h-[50px] pl-4 pr-1.5 rounded-[12px] border border-[#091197] bg-[#091197] hover:bg-[#03A9EC] hover:border-[#03A9EC] text-white text-xs font-bold uppercase tracking-[0.05em] transition-all group"
             >
-              <span>Probar la Calculadora Ahora</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Entrar Demo</span>
+              <span className="w-[38px] h-[38px] rounded-[9px] bg-[#03A9EC] group-hover:bg-[#091197] text-white flex items-center justify-center transition-colors">
+                <ArrowRight className="w-4 h-4" />
+              </span>
             </button>
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* Onda divisoria hacia gris suave */}
-      <div className="bg-white w-full overflow-hidden leading-none">
-        <svg
-          viewBox="0 0 1440 90"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-12 sm:h-16"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0 20C480 90 960 -10 1440 50V90H0V20Z"
-            fill="#F6F6F6"
+      {/* ================= SECCIÓN 1: BANNER VISUAL ENMARCADO (.csectionbannerdefault) ================= */}
+      <section id="top" className="px-3 sm:px-6 pt-1">
+        <div className="max-w-[1640px] mx-auto rounded-[12px] bg-[#091197] text-white overflow-hidden relative border border-[#091197]">
+          {/* Retícula arquitectónica sutil tipo plano de ingeniería */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-15"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgba(3,169,236,0.35) 1px, transparent 1px), linear-gradient(to bottom, rgba(3,169,236,0.35) 1px, transparent 1px)",
+              backgroundSize: "56px 56px",
+            }}
           />
-        </svg>
-      </div>
+          <div className="pointer-events-none absolute -right-24 -top-24 w-[480px] h-[480px] rounded-full bg-[#03A9EC]/20 blur-3xl" />
 
-      {/* ================= SECCIÓN ZIG-ZAG 2 (FONDO #F6F6F6) ================= */}
-      <section
-        id="ahorro-sie"
-        className="bg-[#F6F6F6] text-[#23272A] py-16 sm:py-24 px-4 sm:px-8"
-      >
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Texto a la izquierda */}
-          <div className="lg:col-span-5 space-y-5 order-2 lg:order-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EB459E]/15 text-[#EB459E] text-xs font-extrabold uppercase">
-              Escáner Local + Subsidio SIE
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.05] text-[#23272A]">
-              Sube tu factura como quien manda una foto por chat.
-            </h2>
-            <p className="text-base sm:text-lg text-[#4E5058] leading-relaxed">
-              ¿Sabías que al pasar de <strong>700 kWh a 701 kWh</strong> en
-              tarifa BTS-1 pierdes los escalones subsidiados y toda tu energía se
-              cobra al precio más alto? Nuestro detector analiza tu recibo PDF o
-              foto directamente en tu navegador sin enviar tus datos privados a
-              nadie.
-            </p>
-            <div className="flex flex-wrap gap-2 pt-1">
-              <span className="px-3.5 py-1.5 rounded-full bg-white border border-black/10 text-xs font-extrabold text-[#23272A]">
-                🔒 Cifrado AES-256-GCM
-              </span>
-              <span className="px-3.5 py-1.5 rounded-full bg-white border border-black/10 text-xs font-extrabold text-[#23272A]">
-                📄 Lector PDF/Foto Local
-              </span>
-            </div>
-          </div>
+          <div className="relative z-10 p-6 sm:p-10 lg:p-14 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Columna izquierda: Telemetría ejecutiva e identidad */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-[8px] bg-white/10 border border-[#03A9EC]/40 text-[#03A9EC] text-xs font-bold uppercase tracking-[0.1em]">
+                <span className="w-2 h-2 rounded-full bg-[#03A9EC] animate-pulse" />
+                SISTEMA INTEGRAL DE AUDITORÍA ELÉCTRICA · REPÚBLICA DOMINICANA
+              </div>
 
-          {/* Tarjeta visual a la derecha */}
-          <div className="lg:col-span-7 order-1 lg:order-2">
-            <div className="rounded-[32px] bg-[#2B2D31] text-white p-6 sm:p-8 shadow-2xl rotate-1 hover:rotate-0 transition-transform duration-300">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-2xl bg-[#5865F2] flex items-center justify-center">
-                    <FileSpreadsheet className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-extrabold text-sm">
-                      Detector de Escalones SIE (BTS-1)
-                    </div>
-                    <div className="text-xs text-[#B5BAC1]">
-                      Comparativa real 700 kWh vs 701 kWh
-                    </div>
-                  </div>
+              <div className="space-y-2">
+                <p className="text-[#03A9EC] text-sm sm:text-base font-bold uppercase tracking-[0.12em]">
+                  EDESUR · EDENORTE · EDEESTE · CEPM
+                </p>
+                <h2 className="text-3xl sm:text-5xl lg:text-[54px] font-extrabold tracking-tight text-white leading-[0.98] uppercase">
+                  CONTROL TOTAL DE TU FACTURA, EQUIPOS Y ENERGÍA SOLAR
+                </h2>
+              </div>
+
+              <p className="text-white/80 text-base sm:text-lg max-w-2xl leading-relaxed font-normal">
+                Auditamos cada escalón tarifario de la{" "}
+                <strong className="text-white font-semibold">
+                  Superintendencia de Electricidad (SIE)
+                </strong>
+                , detectamos fugas de consumo antes de cruzar el umbral de{" "}
+                <span className="text-[#03A9EC] font-bold">701 kWh</span> y
+                dimensionamos sistemas fotovoltaicos e inversores con precisión
+                matemática.
+              </p>
+
+              {/* Selector rápido de expedientes reales de prueba */}
+              <div className="pt-2">
+                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#03A9EC] mb-3">
+                  ACCESO INMEDIATO CON EXPEDIENTES PRECARGADOS (1 CLIC):
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {TEST_USER_ACCOUNTS.map((acc) => (
+                    <button
+                      key={acc.id}
+                      onClick={() => onEnterWithTestAccount(acc.id)}
+                      className="text-left p-4 rounded-[12px] bg-white text-[#091197] border border-[#03A9EC] hover:bg-[#03A9EC] hover:text-white transition-all group flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <span className="text-[10px] font-extrabold uppercase tracking-[0.08em] px-2 py-0.5 rounded bg-[#F1F1F1] text-[#091197] group-hover:bg-[#091197] group-hover:text-white transition-colors">
+                            {acc.distributor}
+                          </span>
+                          <span className="w-7 h-7 rounded-[7px] bg-[#091197] text-white flex items-center justify-center group-hover:bg-white group-hover:text-[#091197] transition-colors">
+                            <ArrowUpRight className="w-4 h-4" />
+                          </span>
+                        </div>
+                        <p className="font-extrabold text-sm leading-tight uppercase">
+                          {acc.title}
+                        </p>
+                        <p className="text-xs text-[#4B528A] group-hover:text-white/90 mt-0.5">
+                          {acc.subtitle}
+                        </p>
+                      </div>
+                      <div className="mt-3 pt-2.5 border-t border-[#D9D9D9] group-hover:border-white/30 flex items-center justify-between text-xs font-bold">
+                        <span>{acc.highlightMetric}</span>
+                        <span className="text-[#03A9EC] group-hover:text-white">
+                          Entrar →
+                        </span>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-                <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-[#57F287]/20 text-[#57F287]">
-                  Verificado
+              </div>
+            </div>
+
+            {/* Columna derecha: Simulador en vivo de Escalones SIE y Subsidio 701 kWh */}
+            <div
+              id="simulador-sie"
+              className="lg:col-span-5 bg-white text-[#091197] rounded-[12px] p-6 sm:p-7 border-2 border-[#03A9EC] shadow-2xl"
+            >
+              <div className="flex items-center justify-between gap-2 pb-4 border-b border-[#D9D9D9]">
+                <div>
+                  <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+                    MONITOR TARIFARIO BTS-1 EN VIVO
+                  </span>
+                  <h3 className="text-xl font-extrabold uppercase tracking-tight text-[#091197] mt-0.5">
+                    SIMULADOR UMBRAL 701 KWH
+                  </h3>
+                </div>
+                <span
+                  className={`px-3 py-1 rounded-[8px] text-xs font-extrabold uppercase tracking-wider ${
+                    losesSubsidy
+                      ? "bg-[#F75600] text-white"
+                      : "bg-[#03A9EC]/15 text-[#091197] border border-[#03A9EC]"
+                  }`}
+                >
+                  {losesSubsidy ? "SIN SUBSIDIO ESTATAL" : "SUBSIDIO ACTIVO"}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-[#1E1F22] border-2 border-[#23A55A]">
-                  <div className="text-xs font-bold text-[#57F287] uppercase">
-                    Con 700 kWh (Con Subsidio)
+              <div className="py-5 space-y-4">
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#4B528A]">
+                      Consumo Mensual Simulado
+                    </p>
+                    <p className="text-3xl sm:text-4xl font-extrabold text-[#091197] tabular-nums">
+                      {simKwh}{" "}
+                      <span className="text-lg font-bold text-[#03A9EC]">
+                        kWh/mes
+                      </span>
+                    </p>
                   </div>
-                  <div className="text-3xl font-black text-white mt-2">
-                    RD$ 6,545
+                  <div className="text-right">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#4B528A]">
+                      Factura Estimada SIE
+                    </p>
+                    <p
+                      className={`text-2xl sm:text-3xl font-extrabold tabular-nums ${
+                        losesSubsidy ? "text-[#F75600]" : "text-[#091197]"
+                      }`}
+                    >
+                      RD$ {estimatedBillRD.toLocaleString("es-DO")}
+                    </p>
                   </div>
-                  <p className="text-xs text-[#B5BAC1] mt-2">
-                    Conservas los primeros 3 bloques económicos de la SIE.
-                  </p>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-[#1E1F22] border-2 border-[#F23F43]">
-                  <div className="text-xs font-bold text-[#F23F43] uppercase">
-                    Con 701 kWh (Pierdes Subsidio)
+                <div>
+                  <input
+                    type="range"
+                    min={150}
+                    max={950}
+                    step={5}
+                    value={simKwh}
+                    onChange={(e) => setSimKwh(Number(e.target.value))}
+                    className="w-full h-2.5 bg-[#F1F1F1] rounded-lg appearance-none cursor-pointer accent-[#091197]"
+                  />
+                  <div className="flex justify-between text-[11px] font-bold text-[#4B528A] mt-1.5 uppercase">
+                    <span>150 kWh (Tramo 1)</span>
+                    <span className="text-[#F75600] font-extrabold">
+                      ▲ 701 kWh (Pérdida Subsidio)
+                    </span>
+                    <span>950 kWh</span>
                   </div>
-                  <div className="text-3xl font-black text-[#FEE75C] mt-2">
-                    RD$ 9,191
+                </div>
+
+                {/* Alerta técnica del salto tarifario */}
+                <div
+                  className={`p-4 rounded-[12px] border ${
+                    losesSubsidy
+                      ? "bg-[#F75600]/10 border-[#F75600] text-[#091197]"
+                      : "bg-[#F1F1F1] border-[#D9D9D9] text-[#091197]"
+                  }`}
+                >
+                  {losesSubsidy ? (
+                    <p className="text-xs sm:text-sm leading-relaxed">
+                      <strong className="text-[#F75600] uppercase font-extrabold">
+                        ¡Alerta de Penalización Tarifaria!
+                      </strong>{" "}
+                      Al pasar de 700 a{" "}
+                      <strong>{simKwh} kWh</strong>, pierdes el subsidio
+                      escalonado y todos tus kWh se cobran a tarifa plena (~RD$
+                      11.95/kWh), pagando{" "}
+                      <strong className="text-[#F75600]">
+                        +RD$ {subsidyLossPenalty.toLocaleString("es-DO")} extra
+                      </strong>{" "}
+                      este mes.
+                    </p>
+                  ) : (
+                    <p className="text-xs sm:text-sm leading-relaxed">
+                      <strong className="text-[#091197] uppercase font-extrabold">
+                        Zona Protegida con Subsidio:
+                      </strong>{" "}
+                      Estás a{" "}
+                      <strong className="text-[#03A9EC]">
+                        {701 - simKwh} kWh
+                      </strong>{" "}
+                      de cruzar el límite de 701 kWh. Nuestra auditoría de
+                      equipos te ayuda a mantenerte por debajo todos los meses.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <button
+                onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
+                className="grupamar-cta w-full"
+              >
+                <span>AUDITAR MI FACTURA COMPLETA EN PLATAFORMA</span>
+                <span className="grupamar-cta-arrow">
+                  <ArrowRight className="w-5 h-5" />
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECCIÓN 2: TITULAR EDITORIAL (.csectiontopbannerbottomtext) ================= */}
+      <section className="py-12 sm:py-20 px-4 sm:px-8 border-b border-[#D9D9D9]">
+        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+          <div className="lg:col-span-7">
+            <h1 className="text-[34px] sm:text-[52px] xl:text-[68px] font-extrabold uppercase leading-[0.96] tracking-[-0.03em] text-[#091197]">
+              INTELIGENCIA ENERGÉTICA
+            </h1>
+            <h2 className="text-[28px] sm:text-[42px] xl:text-[54px] font-normal leading-[1.02] tracking-[-0.02em] text-[#03A9EC] mt-1">
+              y Gestión Eléctrica Integral
+            </h2>
+          </div>
+
+          <div className="lg:col-span-5 lg:pl-8 lg:border-l border-[#D9D9D9]">
+            <h4 className="text-lg sm:text-2xl font-medium uppercase leading-[1.2] tracking-[-0.01em] text-[#091197]">
+              ESPECIALISTAS EN OPTIMIZACIÓN TARIFARIA SIE, DIMENSIONAMIENTO
+              FOTOVOLTAICO Y AUTONOMÍA DE INVERSORES EN REPÚBLICA DOMINICANA
+            </h4>
+            <p className="text-sm text-[#4B528A] mt-3 leading-relaxed">
+              Tecnología Zero-Access con cifrado local{" "}
+              <strong className="text-[#091197]">AES-256-GCM</strong> y motor de
+              cálculo calibrado con los pliegos tarifarios vigentes de EDESUR,
+              EDENORTE, EDEESTE y CEPM.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECCIÓN 3: BLOQUE AZUL REAL ENMARCADO - SOLUCIONES (.csectionsolucionesinner) ================= */}
+      <section id="soluciones" className="p-2 sm:p-4">
+        <div className="max-w-[1640px] mx-auto rounded-[12px] bg-[#091197] text-white px-5 sm:px-10 lg:px-14 py-14 sm:py-20">
+          {/* Cabecera centrada estilo GrupaMar */}
+          <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16">
+            <h6 className="text-[#03A9EC] text-sm sm:text-base font-bold uppercase tracking-[0.12em] mb-3">
+              SOLUCIONES DE INGENIERÍA ENERGÉTICA
+            </h6>
+            <h3 className="text-3xl sm:text-5xl font-medium tracking-[-0.02em] leading-[0.98] text-white">
+              Conectando consumo real con decisiones rentables
+            </h3>
+            <p className="text-white/75 text-base sm:text-lg mt-4 leading-relaxed">
+              Cuatro módulos de ingeniería interconectados que transforman tu
+              recibo de luz en una hoja de ruta técnica para reducir hasta un
+              42% tu gasto eléctrico mensual.
+            </p>
+          </div>
+
+          {/* Grid de 4 tarjetas blancas (.citembox) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+            {/* Solución 01 */}
+            <div className="bg-white text-[#091197] rounded-[12px] p-6 sm:p-7 flex flex-col justify-between min-h-[390px] border border-transparent hover:border-[#03A9EC] transition-all">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-xs font-extrabold uppercase tracking-[0.1em] text-[#03A9EC] px-3 py-1 rounded-[6px] bg-[#F1F1F1]">
+                    MÓDULO 01 · OCR SIE
+                  </span>
+                  <div className="w-11 h-11 rounded-[10px] bg-[#F1F1F1] text-[#091197] flex items-center justify-center">
+                    <FileSpreadsheet className="w-5 h-5 text-[#03A9EC]" />
                   </div>
-                  <p className="text-xs text-[#B5BAC1] mt-2">
-                    ¡Pagas <strong>+RD$ 2,646 extra</strong> por solo 1 kWh de
-                    diferencia!
+                </div>
+                <h4 className="text-2xl font-extrabold uppercase leading-[1.08] text-[#091197] mb-3">
+                  AUDITORÍA DE FACTURAS ELÉCTRICAS
+                </h4>
+                <p className="text-sm text-[#4B528A] leading-relaxed">
+                  Desglose milimétrico por escalones BTS-1 (0-200, 201-300,
+                  301-700 y +701 kWh), validación de cargos fijos, lectura de
+                  recibos por OCR y detección de cobros improcedentes.
+                </p>
+              </div>
+
+              <div className="pt-6 mt-6 border-t border-[#D9D9D9]">
+                <button
+                  onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
+                  className="grupamar-cta w-full"
+                >
+                  <span>ABRIR AUDITOR DE FACTURAS</span>
+                  <span className="grupamar-cta-arrow">
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Solución 02 */}
+            <div className="bg-white text-[#091197] rounded-[12px] p-6 sm:p-7 flex flex-col justify-between min-h-[390px] border border-transparent hover:border-[#03A9EC] transition-all">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-xs font-extrabold uppercase tracking-[0.1em] text-[#03A9EC] px-3 py-1 rounded-[6px] bg-[#F1F1F1]">
+                    MÓDULO 02 · INVENTARIO
+                  </span>
+                  <div className="w-11 h-11 rounded-[10px] bg-[#F1F1F1] text-[#091197] flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-[#03A9EC]" />
+                  </div>
+                </div>
+                <h4 className="text-2xl font-extrabold uppercase leading-[1.08] text-[#091197] mb-3">
+                  CALCULADORA DE EQUIPOS Y CLIMA
+                </h4>
+                <p className="text-sm text-[#4B528A] leading-relaxed">
+                  Catálogo dominicano de aires acondicionados (Inverter SEER 18+
+                  vs Convencional), neveras, bombas de agua y calentadores con
+                  cálculo exacto de su costo marginal en RD$.
+                </p>
+              </div>
+
+              <div className="pt-6 mt-6 border-t border-[#D9D9D9]">
+                <button
+                  onClick={() => onEnterWithTestAccount("apartamento_santiago")}
+                  className="grupamar-cta w-full"
+                >
+                  <span>SIMULAR CONSUMO POR EQUIPO</span>
+                  <span className="grupamar-cta-arrow">
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Solución 03 */}
+            <div className="bg-white text-[#091197] rounded-[12px] p-6 sm:p-7 flex flex-col justify-between min-h-[390px] border border-transparent hover:border-[#03A9EC] transition-all">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-xs font-extrabold uppercase tracking-[0.1em] text-[#03A9EC] px-3 py-1 rounded-[6px] bg-[#F1F1F1]">
+                    MÓDULO 03 · FOTOVOLTAICA
+                  </span>
+                  <div className="w-11 h-11 rounded-[10px] bg-[#F1F1F1] text-[#091197] flex items-center justify-center">
+                    <Sun className="w-5 h-5 text-[#03A9EC]" />
+                  </div>
+                </div>
+                <h4 className="text-2xl font-extrabold uppercase leading-[1.08] text-[#091197] mb-3">
+                  INGENIERÍA SOLAR Y MEDICIÓN NETA
+                </h4>
+                <p className="text-sm text-[#4B528A] leading-relaxed">
+                  Dimensionamiento de paneles monocristalinos 580W según la
+                  Hora Solar Pico (HSP) de tu provincia dominicana, área de
+                  techo requerida, ROI en años y crédito fiscal Ley 57-07.
+                </p>
+              </div>
+
+              <div className="pt-6 mt-6 border-t border-[#D9D9D9]">
+                <button
+                  onClick={() => onEnterWithTestAccount("negocio_punta_cana")}
+                  className="grupamar-cta w-full"
+                >
+                  <span>CALCULAR SISTEMA SOLAR RD</span>
+                  <span className="grupamar-cta-arrow">
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Solución 04 */}
+            <div className="bg-white text-[#091197] rounded-[12px] p-6 sm:p-7 flex flex-col justify-between min-h-[390px] border border-transparent hover:border-[#03A9EC] transition-all">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-xs font-extrabold uppercase tracking-[0.1em] text-[#03A9EC] px-3 py-1 rounded-[6px] bg-[#F1F1F1]">
+                    MÓDULO 04 · RESPALDO
+                  </span>
+                  <div className="w-11 h-11 rounded-[10px] bg-[#F1F1F1] text-[#091197] flex items-center justify-center">
+                    <BatteryCharging className="w-5 h-5 text-[#03A9EC]" />
+                  </div>
+                </div>
+                <h4 className="text-2xl font-extrabold uppercase leading-[1.08] text-[#091197] mb-3">
+                  AUTONOMÍA DE INVERSORES Y BATERÍAS
+                </h4>
+                <p className="text-sm text-[#4B528A] leading-relaxed">
+                  Cálculo real de horas de autonomía ante apagones para bancos
+                  de baterías LiFePO4, AGM y Plomo-Ácido a 12V/24V/48V, evitando
+                  el consumo fantasma que dispara tu recibo.
+                </p>
+              </div>
+
+              <div className="pt-6 mt-6 border-t border-[#D9D9D9]">
+                <button
+                  onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
+                  className="grupamar-cta w-full"
+                >
+                  <span>DIMENSIONAR BANCO BATERÍAS</span>
+                  <span className="grupamar-cta-arrow">
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECCIÓN 4: LAS CIFRAS NOS AVALAN (.citemicon / #F1F1F1) ================= */}
+      <section id="cifras" className="py-16 sm:py-24 px-4 sm:px-8 bg-white">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end mb-12">
+            <div className="lg:col-span-7">
+              <h6 className="text-[#03A9EC] text-sm sm:text-base font-bold uppercase tracking-[0.12em] mb-2">
+                LAS CIFRAS NOS AVALAN
+              </h6>
+              <h3 className="text-3xl sm:text-5xl font-medium tracking-[-0.02em] leading-[0.98] text-[#091197]">
+                Precisión normativa, ahorro demostrable y privacidad criptográfica
+              </h3>
+            </div>
+            <div className="lg:col-span-5">
+              <p className="text-[#4B528A] text-base leading-relaxed">
+                Cada recomendación de reemplazo tecnológico o ajuste de horario
+                se calcula cruzando tu tarifa actual de la SIE con el costo real
+                del kilovatio-hora marginal en pesos dominicanos.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grupamar-kpi-box flex flex-col justify-between min-h-[250px] border border-[#D9D9D9] hover:border-[#03A9EC] transition-all">
+              <div className="w-14 h-14 rounded-[12px] bg-white border border-[#D9D9D9] flex items-center justify-center">
+                <Zap className="w-7 h-7 text-[#03A9EC]" />
+              </div>
+              <div className="mt-8">
+                <p className="text-4xl sm:text-5xl font-extrabold text-[#03A9EC] tracking-tight">
+                  701 kWh
+                </p>
+                <h5 className="text-lg font-extrabold uppercase text-[#091197] mt-2">
+                  ALERTA DE SUBSIDIO ESTATAL
+                </h5>
+                <p className="text-sm text-[#4B528A] mt-1">
+                  Monitoreo preventivo antes de perder el subsidio escalonado de
+                  la tarifa residencial BTS-1.
+                </p>
+              </div>
+            </div>
+
+            <div className="grupamar-kpi-box flex flex-col justify-between min-h-[250px] border border-[#D9D9D9] hover:border-[#03A9EC] transition-all">
+              <div className="w-14 h-14 rounded-[12px] bg-white border border-[#D9D9D9] flex items-center justify-center">
+                <Sun className="w-7 h-7 text-[#03A9EC]" />
+              </div>
+              <div className="mt-8">
+                <p className="text-4xl sm:text-5xl font-extrabold text-[#03A9EC] tracking-tight">
+                  5.65 HSP
+                </p>
+                <h5 className="text-lg font-extrabold uppercase text-[#091197] mt-2">
+                  ATLAS SOLAR DOMINICANO
+                </h5>
+                <p className="text-sm text-[#4B528A] mt-1">
+                  Radiación solar calibrada por provincia desde Montecristi y
+                  Santiago hasta Punta Cana y Barahona.
+                </p>
+              </div>
+            </div>
+
+            <div className="grupamar-kpi-box flex flex-col justify-between min-h-[250px] border border-[#D9D9D9] hover:border-[#03A9EC] transition-all">
+              <div className="w-14 h-14 rounded-[12px] bg-white border border-[#D9D9D9] flex items-center justify-center">
+                <ShieldCheck className="w-7 h-7 text-[#03A9EC]" />
+              </div>
+              <div className="mt-8">
+                <p className="text-4xl sm:text-5xl font-extrabold text-[#03A9EC] tracking-tight">
+                  AES-256
+                </p>
+                <h5 className="text-lg font-extrabold uppercase text-[#091197] mt-2">
+                  BÓVEDA LOCAL ZERO-ACCESS
+                </h5>
+                <p className="text-sm text-[#4B528A] mt-1">
+                  Tus facturas, NIC y contratos se cifran localmente en tu
+                  navegador con PBKDF2 (210,000 iteraciones).
+                </p>
+              </div>
+            </div>
+
+            <div className="grupamar-kpi-box flex flex-col justify-between min-h-[250px] border border-[#D9D9D9] hover:border-[#03A9EC] transition-all">
+              <div className="w-14 h-14 rounded-[12px] bg-white border border-[#D9D9D9] flex items-center justify-center">
+                <Building2 className="w-7 h-7 text-[#03A9EC]" />
+              </div>
+              <div className="mt-8">
+                <p className="text-4xl sm:text-5xl font-extrabold text-[#03A9EC] tracking-tight">
+                  -38%
+                </p>
+                <h5 className="text-lg font-extrabold uppercase text-[#091197] mt-2">
+                  REDUCCIÓN MEDIA EN FACTURA
+                </h5>
+                <p className="text-sm text-[#4B528A] mt-1">
+                  Optimización combinada mediante migración a Inverter SEER 20,
+                  control de inversores y gestión de tramos.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECCIÓN 5: DELEGACIONES / DISTRIBUIDORAS RD (.csectiongray + Rombo GrupaMar) ================= */}
+      <section
+        id="delegaciones-rd"
+        className="py-16 sm:py-24 px-4 sm:px-8 bg-[#F1F1F1] border-y border-[#D9D9D9]"
+      >
+        <div className="max-w-[1600px] mx-auto">
+          <div className="mb-12">
+            <h6 className="text-[#03A9EC] text-sm sm:text-base font-bold uppercase tracking-[0.12em] mb-2">
+              COBERTURA NACIONAL DE CONCESIONES ELÉCTRICAS
+            </h6>
+            <h3 className="text-3xl sm:text-5xl font-medium tracking-[-0.02em] leading-[0.98] text-[#091197]">
+              Pliegos tarifarios sincronizados con las 4 distribuidoras de RD
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            {/* Lista de zonas estilo acordeón/tarjetas GrupaMar */}
+            <div className="lg:col-span-6 space-y-3">
+              {RD_ZONES.map((zone) => {
+                const isSelected = zone.id === activeZoneId;
+                return (
+                  <div
+                    key={zone.id}
+                    onClick={() => setActiveZoneId(zone.id)}
+                    className={`cursor-pointer rounded-[12px] p-5 sm:p-6 transition-all border ${
+                      isSelected
+                        ? "bg-[#091197] text-white border-[#091197] shadow-lg"
+                        : "bg-white text-[#091197] border-[#D9D9D9] hover:border-[#03A9EC]"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3.5">
+                        <Energia360DiamondPin active={isSelected} />
+                        <div>
+                          <p
+                            className={`text-[11px] font-extrabold uppercase tracking-[0.1em] ${
+                              isSelected ? "text-[#03A9EC]" : "text-[#03A9EC]"
+                            }`}
+                          >
+                            {zone.code}
+                          </p>
+                          <h4 className="text-xl sm:text-2xl font-extrabold uppercase">
+                            {zone.name}
+                          </h4>
+                        </div>
+                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-[8px] text-xs font-bold uppercase ${
+                          isSelected
+                            ? "bg-[#03A9EC] text-white"
+                            : "bg-[#F1F1F1] text-[#091197]"
+                        }`}
+                      >
+                        HSP {zone.hsp}
+                      </span>
+                    </div>
+
+                    {isSelected && (
+                      <div className="mt-4 pt-4 border-t border-white/15 space-y-3">
+                        <p className="text-sm text-white/85">
+                          <strong className="text-[#03A9EC] uppercase text-xs tracking-wider block mb-0.5">
+                            Demarcación y Provincias:
+                          </strong>
+                          {zone.cities}
+                        </p>
+                        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                          <span className="text-xs font-semibold text-white/80">
+                            {zone.tariffs}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEnterWithTestAccount(zone.presetId);
+                            }}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#03A9EC] hover:bg-white text-white hover:text-[#091197] text-xs font-extrabold uppercase tracking-wider transition-colors"
+                          >
+                            Cargar Expediente {zone.name.split(" ")[0]}
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Panel Cartográfico Técnico con Rombos Interactivos estilo GrupaMar */}
+            <div className="lg:col-span-6 bg-white rounded-[12px] border border-[#D9D9D9] p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden">
+              <div className="flex items-center justify-between gap-4 pb-4 border-b border-[#D9D9D9]">
+                <div>
+                  <span className="text-xs font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+                    MAPA ELÉCTRICO Y RADIACIÓN SOLAR
+                  </span>
+                  <h4 className="text-2xl font-extrabold uppercase text-[#091197]">
+                    {activeZone.name}
+                  </h4>
+                </div>
+                <MapPin className="w-6 h-6 text-[#03A9EC]" />
+              </div>
+
+              {/* Representación esquemática de la isla y nodos con el rombo GrupaMar */}
+              <div className="my-6 relative h-[280px] sm:h-[320px] rounded-[12px] bg-[#F1F1F1] border border-[#D9D9D9] overflow-hidden flex items-center justify-center">
+                <div
+                  className="absolute inset-0 opacity-40"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(#091197 1px, transparent 1px)",
+                    backgroundSize: "20px 20px",
+                  }}
+                />
+
+                {/* Silueta estilizada de RD + líneas de transmisión */}
+                <svg
+                  viewBox="0 0 600 300"
+                  className="w-full h-full max-w-[540px] opacity-90"
+                  fill="none"
+                >
+                  <path
+                    d="M95 160 L155 95 L265 75 L370 90 L445 125 L525 140 L505 190 L415 200 L330 205 L245 245 L175 210 L110 195 Z"
+                    fill="#FFFFFF"
+                    stroke="#091197"
+                    strokeWidth="3"
+                  />
+                  {/* Líneas troncales del SENI 345kV / 138kV */}
+                  <path
+                    d="M240 105 L325 175 L410 165 L500 155"
+                    stroke="#03A9EC"
+                    strokeWidth="2.5"
+                    strokeDasharray="5 5"
+                  />
+                </svg>
+
+                {/* Pines de Rombos GrupaMar sobre el mapa */}
+                {RD_ZONES.map((z) => {
+                  const isAct = z.id === activeZoneId;
+                  return (
+                    <button
+                      key={z.id}
+                      onClick={() => setActiveZoneId(z.id)}
+                      style={{ top: z.coords.top, left: z.coords.left }}
+                      className={`-translate-x-1/2 -translate-y-1/2 absolute group flex flex-col items-center transition-transform ${
+                        isAct ? "scale-125 z-20" : "hover:scale-110 z-10"
+                      }`}
+                    >
+                      <Energia360DiamondPin active={isAct} />
+                      <span
+                        className={`mt-1 px-2.5 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider whitespace-nowrap shadow ${
+                          isAct
+                            ? "bg-[#091197] text-white"
+                            : "bg-white text-[#091197] border border-[#D9D9D9]"
+                        }`}
+                      >
+                        {z.name.split(" ")[0]}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                <div className="p-3.5 rounded-[10px] bg-[#F1F1F1]">
+                  <p className="text-[10px] font-bold uppercase text-[#4B528A]">
+                    RADIACIÓN MEDIA
+                  </p>
+                  <p className="text-base sm:text-lg font-extrabold text-[#091197] mt-0.5">
+                    {activeZone.hsp}
+                  </p>
+                </div>
+                <div className="p-3.5 rounded-[10px] bg-[#F1F1F1]">
+                  <p className="text-[10px] font-bold uppercase text-[#4B528A]">
+                    LÍMITE SUBSIDIO
+                  </p>
+                  <p className="text-base sm:text-lg font-extrabold text-[#03A9EC] mt-0.5">
+                    {activeZone.subsidyThreshold}
+                  </p>
+                </div>
+                <div className="p-3.5 rounded-[10px] bg-[#F1F1F1]">
+                  <p className="text-[10px] font-bold uppercase text-[#4B528A]">
+                    MEDICIÓN NETA
+                  </p>
+                  <p className="text-base sm:text-lg font-extrabold text-[#091197] mt-0.5">
+                    Ley 57-07 Activa
                   </p>
                 </div>
               </div>
@@ -611,189 +896,260 @@ export function AppleLandingAndAuth({
         </div>
       </section>
 
-      {/* ================= SECCIÓN 3: SERVIDORES DE PRUEBA (ESTILO DISCORD SERVERS) ================= */}
-      <section
-        id="servidores-demo"
-        className="bg-[#23272A] text-white py-20 px-4 sm:px-8 relative"
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#5865F2] text-white text-xs font-extrabold uppercase tracking-wider mb-4">
-              <Users className="w-3.5 h-3.5" /> Acceso Inmediato sin Registro
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight uppercase">
-              Elige un Servidor de Prueba y Entra en 1 Clic
-            </h2>
-            <p className="text-sm sm:text-base text-[#B5BAC1] mt-3">
-              Preparamos 3 espacios dominicanos completos con facturas, equipos,
-              inversores y paneles solares para que pruebes todo ahora mismo.
+      {/* ================= SECCIÓN 6: ÁREA DE CLIENTES Y PERFILES DE PRUEBA ================= */}
+      <section id="area-clientes" className="py-16 sm:py-24 px-4 sm:px-8 bg-white">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="max-w-3xl mb-12">
+            <h6 className="text-[#03A9EC] text-sm sm:text-base font-bold uppercase tracking-[0.12em] mb-2">
+              ÁREA DE CLIENTES · ACCESO INMEDIATO
+            </h6>
+            <h3 className="text-3xl sm:text-5xl font-medium tracking-[-0.02em] leading-[0.98] text-[#091197]">
+              Prueba la plataforma con perfiles dominicanos reales o inicia tu bóveda
+            </h3>
+            <p className="text-[#4B528A] text-base mt-3">
+              Selecciona cualquiera de los 3 expedientes precargados para auditar
+              casos reales en Santo Domingo, Santiago o Punta Cana, o utiliza el
+              acceso directo de credenciales.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Tarjetas de los 3 Servidores Demo */}
+            {/* 3 Tarjetas de Usuarios de Prueba (7 columnas) */}
             <div className="lg:col-span-7 space-y-4">
-              {TEST_USER_ACCOUNTS.map((acc, idx) => {
-                const isSelected = selectedPreset === acc.id;
-                const badgeColors = [
-                  "bg-[#5865F2]",
-                  "bg-[#23A55A]",
-                  "bg-[#EB459E]",
-                ];
+              {TEST_USER_ACCOUNTS.map((account) => {
+                const isSelected = selectedPreset === account.id;
                 return (
                   <div
-                    key={acc.id}
-                    onClick={() => handleSelectPresetCard(acc.id)}
-                    className={`p-5 sm:p-6 rounded-[26px] cursor-pointer transition-all border-2 ${
+                    key={account.id}
+                    onClick={() => handleSelectPresetCard(account.id)}
+                    className={`cursor-pointer rounded-[12px] p-6 transition-all border ${
                       isSelected
-                        ? "bg-[#313338] border-[#5865F2] shadow-xl scale-[1.01]"
-                        : "bg-[#2B2D31] border-white/5 hover:border-white/20"
+                        ? "bg-white border-2 border-[#091197] shadow-[0_14px_34px_rgba(9,17,151,0.08)]"
+                        : "bg-[#F1F1F1]/60 border-[#D9D9D9] hover:border-[#03A9EC] hover:bg-white"
                     }`}
                   >
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="flex items-center gap-3.5">
-                        <div
-                          className={`w-13 h-13 rounded-2xl ${
-                            badgeColors[idx % badgeColors.length]
-                          } flex items-center justify-center font-black text-base text-white shadow-md shrink-0`}
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <span className="px-2.5 py-1 rounded-[6px] bg-[#091197] text-white text-[11px] font-extrabold uppercase tracking-wider">
+                            {account.distributor}
+                          </span>
+                          <span className="px-2.5 py-1 rounded-[6px] bg-[#03A9EC]/15 text-[#091197] border border-[#03A9EC] text-[11px] font-extrabold uppercase">
+                            {account.subtitle}
+                          </span>
+                        </div>
+                        <h4 className="text-xl sm:text-2xl font-extrabold uppercase text-[#091197]">
+                          {account.title}
+                        </h4>
+                      </div>
+
+                      <div className="text-right bg-[#F1F1F1] px-4 py-2.5 rounded-[10px] border border-[#D9D9D9]">
+                        <p className="text-[10px] font-extrabold uppercase text-[#4B528A]">
+                          CONSUMO / FACTURA
+                        </p>
+                        <p className="text-lg font-extrabold text-[#091197]">
+                          {account.highlightMetric}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-[#4B528A] mt-3 leading-relaxed">
+                      {account.summary}
+                    </p>
+
+                    {/* Credenciales copiables + CTA estilo GrupaMar */}
+                    <div className="mt-5 pt-4 border-t border-[#D9D9D9] flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCopyText(account.email, account.id + "-email");
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] bg-[#F1F1F1] hover:bg-[#03A9EC]/15 text-[#091197] font-mono font-semibold border border-[#D9D9D9]"
                         >
-                          {acc.distributor.slice(0, 3)}
-                        </div>
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-extrabold text-base sm:text-lg text-white">
-                              {acc.title}
-                            </h3>
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#23A55A]/20 text-[#57F287]">
-                              ● Online
-                            </span>
-                          </div>
-                          <div className="text-xs text-[#B5BAC1] mt-0.5">
-                            {acc.subtitle} ·{" "}
-                            <strong className="text-white">
-                              {acc.highlightMetric}
-                            </strong>
-                          </div>
-                        </div>
+                          <span>{account.email}</span>
+                          {copiedField === account.id + "-email" ? (
+                            <Check className="w-3.5 h-3.5 text-[#008A5E]" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5 text-[#03A9EC]" />
+                          )}
+                        </button>
+                        <span className="px-2.5 py-1.5 rounded-[8px] bg-[#F1F1F1] text-[#091197] font-mono text-xs font-semibold border border-[#D9D9D9]">
+                          Clave: {account.password}
+                        </span>
                       </div>
 
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onEnterWithTestAccount(acc.id);
+                          onEnterWithTestAccount(account.id);
                         }}
-                        className="px-4 py-2 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-extrabold transition cursor-pointer"
+                        className="inline-flex items-center gap-3 h-[44px] pl-4 pr-1.5 rounded-[10px] border border-[#03A9EC] bg-white hover:bg-[#091197] text-[#091197] hover:text-white text-xs font-extrabold uppercase tracking-wider transition-all group"
                       >
-                        Entrar al Servidor &rarr;
+                        <span>Entrar con este Perfil</span>
+                        <span className="w-[34px] h-[34px] rounded-[8px] bg-[#091197] group-hover:bg-[#03A9EC] text-white flex items-center justify-center transition-colors">
+                          <ArrowRight className="w-4 h-4" />
+                        </span>
                       </button>
                     </div>
-
-                    <p className="text-xs text-[#B5BAC1] mt-3 leading-relaxed">
-                      {acc.summary}
-                    </p>
                   </div>
                 );
               })}
             </div>
 
-            {/* Caja de Login Estilo Discord */}
-            <div className="lg:col-span-5 rounded-[28px] bg-[#313338] border border-white/10 p-6 sm:p-8 shadow-2xl">
-              <div className="text-center mb-5">
-                <h3 className="text-xl font-black text-white">
-                  ¡Qué bueno verte por aquí!
-                </h3>
-                <p className="text-xs text-[#B5BAC1] mt-1">
-                  Las credenciales de prueba ya están listas abajo
+            {/* Formulario de Acceso Corporativo Área Clientes (5 columnas) */}
+            <div className="lg:col-span-5 bg-[#F1F1F1] rounded-[12px] p-6 sm:p-8 border border-[#D9D9D9]">
+              <div className="pb-5 mb-6 border-b border-[#D9D9D9]">
+                <span className="text-xs font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+                  PORTAL DE ACCESO DIRECTO
+                </span>
+                <h4 className="text-2xl font-extrabold uppercase text-[#091197] mt-1">
+                  INICIAR SESIÓN EN ENERGIA360
+                </h4>
+                <p className="text-xs text-[#4B528A] mt-1">
+                  Las credenciales del perfil seleccionado se autocompletan para
+                  que entres en un solo clic.
                 </p>
               </div>
 
               <form onSubmit={handleFormLogin} className="space-y-4">
                 <div>
-                  <div className="flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-[#B5BAC1] mb-1.5">
-                    <span>Correo del Usuario Demo</span>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyText(emailInput, "email")}
-                      className="text-[#5865F2] hover:underline inline-flex items-center gap-1"
-                    >
-                      {copiedField === "email" ? (
-                        <>
-                          <Check className="w-3 h-3 text-[#57F287]" /> Copiado
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3 h-3" /> Copiar
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  <label className="block text-xs font-extrabold uppercase tracking-wider text-[#091197] mb-1.5">
+                    Correo Electrónico / Usuario Demo
+                  </label>
                   <input
                     type="email"
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
-                    className="w-full rounded-xl bg-[#1E1F22] border border-black/40 px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-[#5865F2]"
+                    className="w-full h-12 px-4 rounded-[10px] bg-white border border-[#D9D9D9] focus:border-[#03A9EC] focus:outline-none text-[#091197] font-semibold text-sm"
+                    placeholder="demo.hogar@energia360.do"
                   />
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-[#B5BAC1] mb-1.5">
-                    <span>Contraseña de Prueba</span>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyText(passwordInput, "pass")}
-                      className="text-[#5865F2] hover:underline inline-flex items-center gap-1"
-                    >
-                      {copiedField === "pass" ? (
-                        <>
-                          <Check className="w-3 h-3 text-[#57F287]" /> Copiada
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3 h-3" /> Copiar
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  <label className="block text-xs font-extrabold uppercase tracking-wider text-[#091197] mb-1.5">
+                    Contraseña de Acceso
+                  </label>
                   <input
                     type="text"
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
-                    className="w-full rounded-xl bg-[#1E1F22] border border-black/40 px-4 py-3 text-sm font-mono font-bold text-[#57F287] focus:outline-none focus:border-[#5865F2]"
+                    className="w-full h-12 px-4 rounded-[10px] bg-white border border-[#D9D9D9] focus:border-[#03A9EC] focus:outline-none text-[#091197] font-mono font-semibold text-sm"
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-3.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-extrabold text-sm shadow-lg shadow-[#5865F2]/25 transition flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <span>Iniciar Sesión con Usuario de Prueba</span>
-                  <ArrowRight className="w-4 h-4" />
+                <button type="submit" className="grupamar-cta w-full mt-2">
+                  <span>ACCEDER AL PANEL EJECUTIVO</span>
+                  <span className="grupamar-cta-arrow">
+                    <ArrowRight className="w-5 h-5" />
+                  </span>
                 </button>
               </form>
 
-              <div className="my-5 border-t border-white/10" />
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px bg-[#D9D9D9] flex-1" />
+                <span className="text-[11px] font-bold uppercase text-[#4B528A]">
+                  O CONFIGURA TU PROPIO CONTRATO
+                </span>
+                <div className="h-px bg-[#D9D9D9] flex-1" />
+              </div>
 
               <button
                 type="button"
                 onClick={onStartPersonalWorkspace}
-                className="w-full py-3 rounded-xl bg-[#2B2D31] hover:bg-[#383A40] text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full h-[52px] px-5 rounded-[12px] bg-[#091197] hover:bg-[#03A9EC] text-white text-xs font-extrabold uppercase tracking-[0.06em] transition-colors flex items-center justify-between"
               >
-                <Lock className="w-3.5 h-3.5 text-[#57F287]" />
-                <span>Crear Mi Propio EspacioDesde Cero</span>
+                <span>CREAR MI ESPACIO DESDE CERO (MI FACTURA REAL)</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+
+              <div className="mt-6 p-4 rounded-[10px] bg-white border border-[#D9D9D9] flex items-start gap-3">
+                <Lock className="w-5 h-5 text-[#03A9EC] shrink-0 mt-0.5" />
+                <p className="text-xs text-[#4B528A] leading-relaxed">
+                  <strong className="text-[#091197] uppercase">
+                    Privacidad Zero-Access:
+                  </strong>{" "}
+                  Tus facturas nunca salen en texto plano de tu dispositivo.
+                  Puedes bloquear tu sesión con contraseña maestra AES-256 en
+                  cualquier momento.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECCIÓN 7: SUPER BLOQUE DE CONTACTO / ACCESO (.contentcontact de GrupaMar) ================= */}
+      <section className="px-4 sm:px-8 pb-16 bg-white">
+        <div className="max-w-[1600px] mx-auto grupamar-contact-banner p-8 sm:p-12 lg:p-16 text-white">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-7 space-y-3">
+              <span className="inline-block text-xs font-extrabold uppercase tracking-[0.14em] bg-[#091197] text-white px-3.5 py-1.5 rounded-[6px]">
+                AUDITORÍA ENERGÉTICA INMEDIATA
+              </span>
+              <h3 className="text-3xl sm:text-5xl font-extrabold uppercase leading-[0.98] tracking-tight">
+                ¿LISTO PARA REDUCIR TU FACTURA ELÉCTRICA ESTE MES?
+              </h3>
+              <p className="text-white/90 text-base sm:text-lg max-w-2xl">
+                Entra ahora mismo al simulador interactivo con los datos
+                oficiales de la SIE y descubre exactamente qué equipos están
+                elevando tu consumo.
+              </p>
+            </div>
+
+            <div className="lg:col-span-5">
+              <button
+                onClick={() => onEnterWithTestAccount("hogar_santo_domingo")}
+                className="w-full bg-white text-[#091197] rounded-[12px] p-3 pl-6 flex items-center justify-between gap-4 shadow-xl hover:scale-[1.01] transition-transform group"
+              >
+                <span className="text-left text-sm sm:text-base font-extrabold uppercase tracking-[0.04em]">
+                  INICIAR AUDITORÍA ELÉCTRICA 360°
+                </span>
+                <span className="w-14 h-14 rounded-[10px] bg-[#091197] group-hover:bg-[#F75600] text-white flex items-center justify-center shrink-0 transition-colors">
+                  <ArrowRight className="w-6 h-6" />
+                </span>
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ================= FOOTER ESTILO DISCORD ================= */}
-      <footer className="bg-[#1E1F22] border-t border-white/10 py-10 px-4 sm:px-8">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Energia360Logo size={34} showTagline variant="dark" />
-          <p className="text-xs text-[#949BA4] text-center sm:text-right">
-            ENERGIA360 República Dominicana · Cálculos con tarifas SIE y
-            privacidad Zero-Access AES-256-GCM.
+      {/* ================= FOOTER CORPORATIVO (#091197) ================= */}
+      <footer className="bg-[#091197] text-white py-12 px-4 sm:px-8 mt-auto">
+        <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-8 border-b border-white/15">
+          <Energia360Logo size={40} showTagline variant="dark" />
+
+          <div className="flex flex-wrap gap-6 text-xs font-bold uppercase tracking-[0.08em] text-white/80">
+            <a href="#soluciones" className="hover:text-[#03A9EC] transition">
+              Soluciones
+            </a>
+            <a href="#simulador-sie" className="hover:text-[#03A9EC] transition">
+              Umbral 701 kWh
+            </a>
+            <a href="#cifras" className="hover:text-[#03A9EC] transition">
+              Cifras y ROI
+            </a>
+            <a
+              href="#delegaciones-rd"
+              className="hover:text-[#03A9EC] transition"
+            >
+              EDESUR · EDENORTE · EDEESTE · CEPM
+            </a>
+            <a href="#area-clientes" className="hover:text-[#03A9EC] transition">
+              Área Clientes
+            </a>
+          </div>
+        </div>
+
+        <div className="max-w-[1600px] mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
+          <p>
+            © {new Date().getFullYear()} ENERGIA360 República Dominicana ·
+            Ingeniería Tarifaria SIE, Fotovoltaica y Respaldo Eléctrico.
+          </p>
+          <p className="text-[#03A9EC] font-semibold">
+            Arquitectura Local-First · Cifrado Web Crypto AES-256-GCM
           </p>
         </div>
       </footer>

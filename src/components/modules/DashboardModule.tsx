@@ -5,12 +5,11 @@ import {
   Activity,
   AlertTriangle,
   ArrowDownRight,
+  ArrowRight,
   ArrowUpRight,
   BatteryCharging,
   Calculator,
   FileSpreadsheet,
-  MessageSquare,
-  ShieldCheck,
   Sparkles,
   TrendingUp,
   Zap,
@@ -49,14 +48,14 @@ interface DashboardModuleProps {
   onLoadDemoMode: () => void;
 }
 
-const DISCORD_CHART_COLORS = [
-  "#5865F2",
-  "#57F287",
-  "#EB459E",
-  "#FEE75C",
-  "#00B0F4",
-  "#F0B232",
-  "#F23F43",
+const GRUPAMAR_CHART_COLORS = [
+  "#091197",
+  "#03A9EC",
+  "#F75600",
+  "#1E3A8A",
+  "#0284C7",
+  "#4B528A",
+  "#008A5E",
 ];
 
 export function DashboardModule({
@@ -186,58 +185,58 @@ export function DashboardModule({
 
   if (!hasAnyRealData) {
     return (
-      <div className="apple-card p-8 sm:p-12 text-center max-w-3xl mx-auto my-6">
-        <div className="w-16 h-16 rounded-3xl bg-[#5865F2] flex items-center justify-center mx-auto mb-5 shadow-lg shadow-[#5865F2]/30">
-          <Zap className="w-8 h-8 text-white" />
+      <div className="bg-white rounded-[12px] border border-[#D9D9D9] p-8 sm:p-12 text-center max-w-3xl mx-auto my-6">
+        <div className="w-16 h-16 rounded-[12px] bg-[#091197] flex items-center justify-center mx-auto mb-5">
+          <Zap className="w-8 h-8 text-[#03A9EC]" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-3">
-          ¡Bienvenido a tu Servidor de Energía!
+        <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-[#091197] mb-3">
+          EXPEDIENTE ENERGÉTICO LISTO PARA AUDITORÍA
         </h2>
-        <p className="text-[#B5BAC1] max-w-xl mx-auto text-base mb-8">
-          Para mostrar tus métricas en vivo con la tarifa de{" "}
-          <strong className="text-[#57F287]">
+        <p className="text-[#4B528A] max-w-xl mx-auto text-base mb-8">
+          Para activar la simulación con el pliego de{" "}
+          <strong className="text-[#091197]">
             {vault.profile.distributor} ({vault.profile.tariffCode})
           </strong>
-          , elige cómo quieres arrancar:
+          , selecciona cómo deseas iniciar:
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
           <button
             onClick={() => onNavigateTab("equipos")}
-            className="p-6 rounded-3xl bg-[#1E1F22] hover:bg-[#383A40] border border-white/10 transition cursor-pointer"
+            className="p-6 rounded-[12px] bg-[#F1F1F1] hover:bg-white border border-[#D9D9D9] hover:border-[#03A9EC] transition cursor-pointer"
           >
-            <Calculator className="w-6 h-6 text-[#5865F2] mb-3" />
-            <div className="font-extrabold text-base text-white mb-1">
-              Agregar Equipos
+            <Calculator className="w-6 h-6 text-[#03A9EC] mb-3" />
+            <div className="font-extrabold uppercase text-sm text-[#091197] mb-1">
+              INVENTARIO DE EQUIPOS
             </div>
-            <p className="text-xs text-[#B5BAC1]">
-              Selecciona tus aires, nevera y abanicos en segundos.
+            <p className="text-xs text-[#4B528A]">
+              Incorpora tus aires acondicionados, nevera y cargas críticas.
             </p>
           </button>
 
           <button
             onClick={() => onNavigateTab("facturas")}
-            className="p-6 rounded-3xl bg-[#1E1F22] hover:bg-[#383A40] border border-white/10 transition cursor-pointer"
+            className="p-6 rounded-[12px] bg-[#F1F1F1] hover:bg-white border border-[#D9D9D9] hover:border-[#03A9EC] transition cursor-pointer"
           >
-            <FileSpreadsheet className="w-6 h-6 text-[#57F287] mb-3" />
-            <div className="font-extrabold text-base text-white mb-1">
-              Subir una Factura
+            <FileSpreadsheet className="w-6 h-6 text-[#091197] mb-3" />
+            <div className="font-extrabold uppercase text-sm text-[#091197] mb-1">
+              ESCANEAR FACTURA OCR
             </div>
-            <p className="text-xs text-[#B5BAC1]">
-              Escanea tu recibo en PDF o foto localmente en tu navegador.
+            <p className="text-xs text-[#4B528A]">
+              Analiza tu recibo en PDF o fotografía localmente en tu navegador.
             </p>
           </button>
 
           <button
             onClick={onLoadDemoMode}
-            className="p-6 rounded-3xl bg-[#5865F2] hover:bg-[#4752C4] text-white transition cursor-pointer shadow-lg shadow-[#5865F2]/25"
+            className="p-6 rounded-[12px] bg-[#091197] hover:bg-[#03A9EC] text-white transition cursor-pointer"
           >
-            <Sparkles className="w-6 h-6 text-[#FEE75C] mb-3" />
-            <div className="font-extrabold text-base text-white mb-1">
-              Cargar Servidor Demo
+            <Sparkles className="w-6 h-6 text-[#03A9EC] mb-3" />
+            <div className="font-extrabold uppercase text-sm text-white mb-1">
+              CARGAR EXPEDIENTE DEMO
             </div>
-            <p className="text-xs text-white/85">
-              Explora un hogar completo con facturas e inversor precargados.
+            <p className="text-xs text-white/80">
+              Audita un caso real dominicano con facturas e inversor.
             </p>
           </button>
         </div>
@@ -256,40 +255,39 @@ export function DashboardModule({
 
   return (
     <div className="space-y-6">
-      {/* Banner Jovial Estilo Discord Nitro / Bot Callout */}
-      <div className="rounded-[24px] bg-gradient-to-r from-[#5865F2] via-[#4752C4] to-[#EB459E] p-5 sm:p-6 shadow-xl flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-black/25 backdrop-blur-md flex items-center justify-center shrink-0 -rotate-3">
-            <MessageSquare className="w-6 h-6 text-[#FEE75C]" />
-          </div>
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full bg-black/30 text-[#57F287]">
-                {vault.profile.distributor} · {activeSchedule.tariff_code}
+      {/* BANNER EJECUTIVO AZUL REAL (.csectionsolucionesinner style) */}
+      <div className="rounded-[12px] bg-[#091197] text-white p-5 sm:p-7 flex flex-wrap items-center justify-between gap-4 border border-[#091197]">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] px-2.5 py-1 rounded-[6px] bg-[#03A9EC] text-white">
+              {vault.profile.distributor} · {activeSchedule.tariff_code}
+            </span>
+            {billSimulation.lostStepSubsidy701 ? (
+              <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-[6px] bg-[#F75600] text-white inline-flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5" /> PENALIZACIÓN &ge; 701
+                KWH ACTIVA (SIN SUBSIDIO)
               </span>
-              {billSimulation.lostStepSubsidy701 && (
-                <span className="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full bg-[#F23F43] text-white inline-flex items-center gap-1">
-                  <AlertTriangle className="w-3 h-3" /> Escalón &ge; 701 kWh
-                  Activo
-                </span>
-              )}
-            </div>
-            <h1 className="text-xl sm:text-2xl font-black text-white mt-1">
-              {vault.profile.spaceName}
-            </h1>
+            ) : (
+              <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-[6px] bg-white/10 text-[#03A9EC] border border-[#03A9EC]/40">
+                SUBSIDIO ESCALONADO SIE ACTIVO
+              </span>
+            )}
           </div>
+          <h2 className="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-white mt-2">
+            {vault.profile.spaceName} — DIAGNÓSTICO DE CONSUMO Y COSTOS
+          </h2>
         </div>
 
-        {/* Controles de filtro tipo píldoras Discord */}
-        <div className="flex items-center gap-2">
-          <div className="inline-flex rounded-full bg-black/30 p-1 text-xs font-extrabold">
+        {/* Controles de periodo y unidad */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex rounded-[10px] bg-white/10 p-1 text-xs font-extrabold uppercase">
             {(["3m", "6m", "all"] as const).map((period) => (
               <button
                 key={period}
                 onClick={() => setPeriodFilter(period)}
-                className={`px-3 py-1.5 rounded-full transition cursor-pointer ${
+                className={`px-3 py-1.5 rounded-[7px] transition cursor-pointer ${
                   periodFilter === period
-                    ? "bg-white text-[#23272A]"
+                    ? "bg-white text-[#091197]"
                     : "text-white/80 hover:text-white"
                 }`}
               >
@@ -297,17 +295,17 @@ export function DashboardModule({
                   ? "3 Meses"
                   : period === "6m"
                   ? "6 Meses"
-                  : "Todo"}
+                  : "Histórico"}
               </button>
             ))}
           </div>
 
-          <div className="inline-flex rounded-full bg-black/30 p-1 text-xs font-extrabold">
+          <div className="inline-flex rounded-[10px] bg-white/10 p-1 text-xs font-extrabold uppercase">
             <button
               onClick={() => setViewUnit("kwh")}
-              className={`px-3 py-1.5 rounded-full transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-[7px] transition cursor-pointer ${
                 viewUnit === "kwh"
-                  ? "bg-[#57F287] text-[#1E1F22]"
+                  ? "bg-[#03A9EC] text-white"
                   : "text-white/80 hover:text-white"
               }`}
             >
@@ -315,9 +313,9 @@ export function DashboardModule({
             </button>
             <button
               onClick={() => setViewUnit("dop")}
-              className={`px-3 py-1.5 rounded-full transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-[7px] transition cursor-pointer ${
                 viewUnit === "dop"
-                  ? "bg-[#FEE75C] text-[#1E1F22]"
+                  ? "bg-[#03A9EC] text-white"
                   : "text-white/80 hover:text-white"
               }`}
             >
@@ -327,156 +325,179 @@ export function DashboardModule({
         </div>
       </div>
 
-      {/* 4 Tarjetas Principales con Personalidad Discord */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Consumo Mensual */}
-        <div className="apple-card p-5 hover:-translate-y-0.5">
-          <div className="flex items-center justify-between text-xs font-bold text-[#B5BAC1] mb-3">
-            <span>Consumo del Mes</span>
-            <div className="w-9 h-9 rounded-2xl bg-[#5865F2]/20 text-[#5865F2] flex items-center justify-center">
-              <Zap className="w-4 h-4" />
+      {/* 4 BLOQUES DE CIFRAS ARQUITECTÓNICOS (.citemicon style) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {/* KPI 1: Consumo Mensual */}
+        <div className="bg-white rounded-[12px] border border-[#D9D9D9] hover:border-[#03A9EC] p-6 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#4B528A]">
+              CONSUMO MENSUAL
+            </span>
+            <div className="w-10 h-10 rounded-[10px] bg-[#F1F1F1] text-[#091197] flex items-center justify-center">
+              <Zap className="w-5 h-5 text-[#03A9EC]" />
             </div>
           </div>
-          <div className="text-3xl font-black tracking-tight text-white">
-            {currentReferenceKwh.toLocaleString("es-DO")}{" "}
-            <span className="text-sm font-bold text-[#B5BAC1]">kWh</span>
-          </div>
-          <div className="mt-3 flex items-center justify-between text-xs">
-            <span className="text-[#B5BAC1]">
-              Ritmo:{" "}
-              <strong className="text-white">{dailyAverageKwh} kWh/día</strong>
-            </span>
-            {monthOverMonthVariationPct !== null && (
-              <span
-                className={`inline-flex items-center gap-0.5 font-extrabold px-2 py-0.5 rounded-full ${
-                  monthOverMonthVariationPct > 0
-                    ? "bg-[#F23F43]/20 text-[#F23F43]"
-                    : "bg-[#23A55A]/20 text-[#57F287]"
-                }`}
-              >
-                {monthOverMonthVariationPct > 0 ? (
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                ) : (
-                  <ArrowDownRight className="w-3.5 h-3.5" />
-                )}
-                {Math.abs(monthOverMonthVariationPct)}%
+          <div>
+            <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#091197] tabular-nums">
+              {currentReferenceKwh.toLocaleString("es-DO")}{" "}
+              <span className="text-sm font-bold text-[#03A9EC]">kWh</span>
+            </div>
+            <div className="mt-3 pt-3 border-t border-[#D9D9D9] flex items-center justify-between text-xs">
+              <span className="text-[#4B528A]">
+                Promedio:{" "}
+                <strong className="text-[#091197]">
+                  {dailyAverageKwh} kWh/día
+                </strong>
               </span>
-            )}
-          </div>
-        </div>
-
-        {/* Card 2: Factura Estimada */}
-        <div className="apple-card p-5 hover:-translate-y-0.5">
-          <div className="flex items-center justify-between text-xs font-bold text-[#B5BAC1] mb-3">
-            <span>Factura Mensual</span>
-            <div className="w-9 h-9 rounded-2xl bg-[#23A55A]/20 text-[#57F287] flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-3xl font-black tracking-tight text-[#57F287]">
-            RD${" "}
-            {(
-              latestInvoice?.totalAmountDop.value ||
-              billSimulation.totalEstimatedBillDop
-            ).toLocaleString("es-DO", {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })}
-          </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-[#B5BAC1]">
-            <span>
-              Promedio:{" "}
-              <strong className="text-white">
-                RD$ {billSimulation.averageRateDopPerKwh.toFixed(2)}/kWh
-              </strong>
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-[#1E1F22] text-[#FEE75C] font-bold">
-              {latestInvoice ? "Real" : "Estimado"}
-            </span>
-          </div>
-        </div>
-
-        {/* Card 3: Termómetro Subsidio 700 kWh */}
-        <div className="apple-card p-5 hover:-translate-y-0.5">
-          <div className="flex items-center justify-between text-xs font-bold text-[#B5BAC1] mb-3">
-            <span>Meta Subsidio (700 kWh)</span>
-            <div className="w-9 h-9 rounded-2xl bg-[#FEE75C]/20 text-[#FEE75C] flex items-center justify-center">
-              <Activity className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-3xl font-black tracking-tight">
-            {currentReferenceKwh >= 701 ? (
-              <span className="text-[#F23F43]">
-                +{(currentReferenceKwh - 700).toFixed(0)}{" "}
-                <span className="text-xs font-bold">kWh pasados</span>
-              </span>
-            ) : (
-              <span className="text-[#FEE75C]">
-                {(700 - currentReferenceKwh).toFixed(0)}{" "}
-                <span className="text-xs font-bold text-[#B5BAC1]">
-                  kWh de margen
+              {monthOverMonthVariationPct !== null && (
+                <span
+                  className={`inline-flex items-center gap-0.5 font-extrabold px-2 py-0.5 rounded ${
+                    monthOverMonthVariationPct > 0
+                      ? "bg-[#F75600]/15 text-[#F75600]"
+                      : "bg-[#008A5E]/15 text-[#008A5E]"
+                  }`}
+                >
+                  {monthOverMonthVariationPct > 0 ? (
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  ) : (
+                    <ArrowDownRight className="w-3.5 h-3.5" />
+                  )}
+                  {Math.abs(monthOverMonthVariationPct)}%
                 </span>
-              </span>
-            )}
-          </div>
-          <div className="mt-3 w-full bg-[#1E1F22] h-3 rounded-full overflow-hidden p-0.5">
-            <div
-              className={`h-full rounded-full transition-all ${
-                currentReferenceKwh >= 701
-                  ? "bg-[#F23F43]"
-                  : currentReferenceKwh >= 600
-                  ? "bg-[#FEE75C]"
-                  : "bg-[#57F287]"
-              }`}
-              style={{
-                width: `${Math.min(100, (currentReferenceKwh / 700) * 100)}%`,
-              }}
-            />
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Card 4: Eficiencia & Respaldo Inversor */}
-        <div className="apple-card p-5 hover:-translate-y-0.5">
-          <div className="flex items-center justify-between text-xs font-bold text-[#B5BAC1] mb-3">
-            <span>Nivel Nitro &amp; Inversor</span>
-            <div className="w-9 h-9 rounded-2xl bg-[#EB459E]/20 text-[#EB459E] flex items-center justify-center">
-              <BatteryCharging className="w-4 h-4" />
+        {/* KPI 2: Factura Mensual */}
+        <div className="bg-white rounded-[12px] border border-[#D9D9D9] hover:border-[#03A9EC] p-6 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#4B528A]">
+              FACTURA MENSUAL SIE
+            </span>
+            <div className="w-10 h-10 rounded-[10px] bg-[#F1F1F1] text-[#091197] flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-[#03A9EC]" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2.5">
-            <div className="text-3xl font-black tracking-tight text-white">
-              {efficiencyScore !== null ? `${efficiencyScore}%` : "N/D"}
+          <div>
+            <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#03A9EC] tabular-nums">
+              RD${" "}
+              {(
+                latestInvoice?.totalAmountDop.value ||
+                billSimulation.totalEstimatedBillDop
+              ).toLocaleString("es-DO", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
             </div>
-            {inverterAutonomy && (
-              <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-[#EB459E]/20 text-[#EB459E]">
-                ⚡ {inverterAutonomy.estimatedAutonomyFormatted}
+            <div className="mt-3 pt-3 border-t border-[#D9D9D9] flex items-center justify-between text-xs text-[#4B528A]">
+              <span>
+                Tarifa media:{" "}
+                <strong className="text-[#091197]">
+                  RD$ {billSimulation.averageRateDopPerKwh.toFixed(2)}/kWh
+                </strong>
               </span>
-            )}
+              <span className="px-2 py-0.5 rounded bg-[#F1F1F1] text-[#091197] font-extrabold uppercase text-[10px]">
+                {latestInvoice ? "Recibo" : "Simulado"}
+              </span>
+            </div>
           </div>
-          <div className="mt-3 text-xs text-[#B5BAC1] truncate">
-            {primaryInverter
-              ? `${primaryInverter.inverterBrand} (${primaryInverter.batteryBrand})`
-              : "Configura tu inversor en #solar-e-inversor"}
+        </div>
+
+        {/* KPI 3: Margen Subsidio 700 kWh */}
+        <div className="bg-white rounded-[12px] border border-[#D9D9D9] hover:border-[#03A9EC] p-6 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#4B528A]">
+              UMBRAL SUBSIDIO 700 KWH
+            </span>
+            <div className="w-10 h-10 rounded-[10px] bg-[#F1F1F1] text-[#091197] flex items-center justify-center">
+              <Activity className="w-5 h-5 text-[#03A9EC]" />
+            </div>
+          </div>
+          <div>
+            <div className="text-3xl font-extrabold tracking-tight">
+              {currentReferenceKwh >= 701 ? (
+                <span className="text-[#F75600]">
+                  +{(currentReferenceKwh - 700).toFixed(0)}{" "}
+                  <span className="text-xs font-extrabold uppercase">
+                    kWh excedidos
+                  </span>
+                </span>
+              ) : (
+                <span className="text-[#091197]">
+                  {(700 - currentReferenceKwh).toFixed(0)}{" "}
+                  <span className="text-xs font-bold text-[#4B528A] uppercase">
+                    kWh disponibles
+                  </span>
+                </span>
+              )}
+            </div>
+            <div className="mt-3 pt-3 border-t border-[#D9D9D9]">
+              <div className="w-full bg-[#F1F1F1] h-2.5 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${
+                    currentReferenceKwh >= 701
+                      ? "bg-[#F75600]"
+                      : currentReferenceKwh >= 600
+                      ? "bg-[#03A9EC]"
+                      : "bg-[#091197]"
+                  }`}
+                  style={{
+                    width: `${Math.min(100, (currentReferenceKwh / 700) * 100)}%`,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI 4: Índice de Eficiencia y Respaldo */}
+        <div className="bg-white rounded-[12px] border border-[#D9D9D9] hover:border-[#03A9EC] p-6 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#4B528A]">
+              EFICIENCIA &amp; RESPALDO
+            </span>
+            <div className="w-10 h-10 rounded-[10px] bg-[#F1F1F1] text-[#091197] flex items-center justify-center">
+              <BatteryCharging className="w-5 h-5 text-[#03A9EC]" />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-baseline gap-2.5">
+              <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#091197]">
+                {efficiencyScore !== null ? `${efficiencyScore}%` : "N/D"}
+              </div>
+              {inverterAutonomy && (
+                <span className="text-xs font-extrabold px-2.5 py-0.5 rounded bg-[#03A9EC]/15 text-[#091197] border border-[#03A9EC]">
+                  ⚡ {inverterAutonomy.estimatedAutonomyFormatted}
+                </span>
+              )}
+            </div>
+            <div className="mt-3 pt-3 border-t border-[#D9D9D9] text-xs text-[#4B528A] truncate">
+              {primaryInverter
+                ? `${primaryInverter.inverterBrand} · ${primaryInverter.batteryBrand}`
+                : "Configura tu banco en Solar & Inversores"}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Gráficos con Colores Discord Blurple / Neon Green / Fuchsia */}
+      {/* GRÁFICOS DE EVOLUCIÓN Y REPARTO POR CATEGORÍA */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 apple-card p-6">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+        <div className="lg:col-span-2 bg-white rounded-[12px] border border-[#D9D9D9] p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-6 pb-4 border-b border-[#D9D9D9]">
             <div>
-              <h3 className="font-black text-lg text-white">
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+                TELEMETRÍA HISTÓRICA Y ESCALONES
+              </span>
+              <h3 className="font-extrabold text-xl uppercase text-[#091197]">
                 {filteredInvoices.length > 0
-                  ? "📈 Evolución de tus Recibos Eléctricos"
-                  : "📊 Escalones Tarifarios SIE"}
+                  ? "EVOLUCIÓN DE FACTURACIÓN ELÉCTRICA"
+                  : "ESCALONES TARIFARIOS SIE"}
               </h3>
-              <p className="text-xs text-[#B5BAC1]">
-                {filteredInvoices.length > 0
-                  ? "Historial confirmado mes a mes en tu servidor"
-                  : activeSchedule.notes}
-              </p>
             </div>
+            <span className="text-xs font-semibold text-[#4B528A]">
+              {activeSchedule.notes}
+            </span>
           </div>
 
           <div className="h-72 w-full">
@@ -492,7 +513,7 @@ export function DashboardModule({
                 >
                   <defs>
                     <linearGradient
-                      id="discordGrad"
+                      id="grupamarGrad"
                       x1="0"
                       y1="0"
                       x2="0"
@@ -500,24 +521,24 @@ export function DashboardModule({
                     >
                       <stop
                         offset="5%"
-                        stopColor={viewUnit === "kwh" ? "#5865F2" : "#57F287"}
-                        stopOpacity={0.45}
+                        stopColor={viewUnit === "kwh" ? "#03A9EC" : "#091197"}
+                        stopOpacity={0.35}
                       />
                       <stop
                         offset="95%"
-                        stopColor={viewUnit === "kwh" ? "#5865F2" : "#57F287"}
+                        stopColor={viewUnit === "kwh" ? "#03A9EC" : "#091197"}
                         stopOpacity={0.0}
                       />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#3F4147" />
-                  <XAxis dataKey="periodo" stroke="#B5BAC1" fontSize={12} />
-                  <YAxis stroke="#B5BAC1" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis dataKey="periodo" stroke="#4B528A" fontSize={12} />
+                  <YAxis stroke="#4B528A" fontSize={12} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1E1F22",
-                      borderColor: "#5865F2",
-                      borderRadius: "16px",
+                      backgroundColor: "#091197",
+                      borderColor: "#03A9EC",
+                      borderRadius: "10px",
                       fontSize: "12px",
                       color: "#FFFFFF",
                     }}
@@ -526,32 +547,32 @@ export function DashboardModule({
                     type="monotone"
                     dataKey={viewUnit}
                     name={viewUnit === "kwh" ? "Consumo (kWh)" : "Total (RD$)"}
-                    stroke={viewUnit === "kwh" ? "#5865F2" : "#57F287"}
+                    stroke={viewUnit === "kwh" ? "#03A9EC" : "#091197"}
                     strokeWidth={3}
                     fillOpacity={1}
-                    fill="url(#discordGrad)"
+                    fill="url(#grupamarGrad)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={billSimulation.blocksBreakdown}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#3F4147" />
-                  <XAxis dataKey="label" stroke="#B5BAC1" fontSize={11} />
-                  <YAxis stroke="#B5BAC1" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis dataKey="label" stroke="#4B528A" fontSize={11} />
+                  <YAxis stroke="#4B528A" fontSize={12} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1E1F22",
-                      borderColor: "#5865F2",
-                      borderRadius: "16px",
+                      backgroundColor: "#091197",
+                      borderColor: "#03A9EC",
+                      borderRadius: "10px",
                       fontSize: "12px",
                       color: "#FFFFFF",
                     }}
                   />
                   <Bar
                     dataKey={viewUnit === "kwh" ? "kwhInBlock" : "subtotalDop"}
-                    fill="#5865F2"
-                    radius={[10, 10, 0, 0]}
+                    fill="#091197"
+                    radius={[8, 8, 0, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -560,14 +581,17 @@ export function DashboardModule({
         </div>
 
         {/* Distribución por Categoría */}
-        <div className="apple-card p-6 flex flex-col justify-between">
-          <div>
-            <h3 className="font-black text-lg text-white">
-              🎯 ¿Quién gasta más?
+        <div className="bg-white rounded-[12px] border border-[#D9D9D9] p-6 flex flex-col justify-between">
+          <div className="pb-4 border-b border-[#D9D9D9]">
+            <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+              DISTRIBUCIÓN DE CARGA
+            </span>
+            <h3 className="font-extrabold text-xl uppercase text-[#091197]">
+              CONSUMO POR CATEGORÍA
             </h3>
-            <p className="text-xs text-[#B5BAC1] mb-3">
-              Suma de equipos:{" "}
-              <strong className="text-[#57F287]">
+            <p className="text-xs text-[#4B528A] mt-0.5">
+              Total inventariado:{" "}
+              <strong className="text-[#091197]">
                 {totalAppliancesMonthlyKwh} kWh/mes
               </strong>
             </p>
@@ -575,7 +599,7 @@ export function DashboardModule({
 
           {categoryDistribution.length > 0 ? (
             <>
-              <div className="h-48 w-full">
+              <div className="h-48 w-full my-2">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -592,8 +616,8 @@ export function DashboardModule({
                         <Cell
                           key={entry.name}
                           fill={
-                            DISCORD_CHART_COLORS[
-                              index % DISCORD_CHART_COLORS.length
+                            GRUPAMAR_CHART_COLORS[
+                              index % GRUPAMAR_CHART_COLORS.length
                             ]
                           }
                         />
@@ -601,9 +625,9 @@ export function DashboardModule({
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "#1E1F22",
-                        borderColor: "#5865F2",
-                        borderRadius: "14px",
+                        backgroundColor: "#091197",
+                        borderColor: "#03A9EC",
+                        borderRadius: "10px",
                         fontSize: "12px",
                         color: "#FFFFFF",
                       }}
@@ -611,7 +635,7 @@ export function DashboardModule({
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="space-y-2 mt-3">
+              <div className="space-y-2 pt-3 border-t border-[#D9D9D9]">
                 {categoryDistribution.slice(0, 4).map((cat, idx) => (
                   <div
                     key={cat.name}
@@ -619,19 +643,19 @@ export function DashboardModule({
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span
-                        className="w-3 h-3 rounded-full shrink-0"
+                        className="w-3 h-3 rounded-[4px] shrink-0"
                         style={{
                           backgroundColor:
-                            DISCORD_CHART_COLORS[
-                              idx % DISCORD_CHART_COLORS.length
+                            GRUPAMAR_CHART_COLORS[
+                              idx % GRUPAMAR_CHART_COLORS.length
                             ],
                         }}
                       />
-                      <span className="truncate font-bold text-white">
+                      <span className="truncate font-bold text-[#091197] uppercase">
                         {cat.name}
                       </span>
                     </div>
-                    <span className="font-extrabold text-[#57F287]">
+                    <span className="font-extrabold text-[#03A9EC]">
                       RD$ {cat.costDop.toLocaleString("es-DO")}
                     </span>
                   </div>
@@ -639,30 +663,31 @@ export function DashboardModule({
               </div>
             </>
           ) : (
-            <div className="text-center py-10 text-xs text-[#B5BAC1]">
-              Agrega tus equipos para ver el reparto.
+            <div className="text-center py-10 text-xs text-[#4B528A]">
+              Agrega tus equipos para visualizar la distribución.
             </div>
           )}
         </div>
       </div>
 
-      {/* Equipos de Mayor Costo y Alertas tipo Mensajes de Bot Discord */}
+      {/* TOP EQUIPOS Y DICTAMEN DE AUDITORÍA SIE */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="apple-card p-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-white rounded-[12px] border border-[#D9D9D9] p-6">
+          <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#D9D9D9]">
             <div>
-              <h3 className="font-black text-lg text-white">
-                🔥 Top Equipos por Impacto en RD$
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+                IMPACTO ECONÓMICO MENSUAL
+              </span>
+              <h3 className="font-extrabold text-xl uppercase text-[#091197]">
+                EQUIPOS DE MAYOR COSTO EN RD$
               </h3>
-              <p className="text-xs text-[#B5BAC1]">
-                Tus aparatos ordenados por lo que cuestan cada mes
-              </p>
             </div>
             <button
               onClick={() => onNavigateTab("equipos")}
-              className="text-xs font-extrabold px-3 py-1.5 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white transition cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] border border-[#03A9EC] text-xs font-extrabold uppercase text-[#091197] hover:bg-[#091197] hover:text-white transition cursor-pointer"
             >
-              Ajustar horas &rarr;
+              <span>Ajustar Horas</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
@@ -677,23 +702,25 @@ export function DashboardModule({
               return (
                 <div
                   key={item.id}
-                  className="p-4 rounded-2xl bg-[#1E1F22] border border-white/5 flex items-center justify-between gap-4"
+                  className="p-4 rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] flex items-center justify-between gap-4"
                 >
                   <div>
-                    <div className="font-extrabold text-sm text-white">
+                    <div className="font-extrabold text-sm uppercase text-[#091197]">
                       {item.name}
                     </div>
-                    <div className="text-xs text-[#B5BAC1] mt-0.5">
-                      {item.dailyHours}h al día · {item.monthlyKwh} kWh/mes (
-                      {pct}%)
+                    <div className="text-xs text-[#4B528A] mt-0.5">
+                      {item.dailyHours}h/día · {item.monthlyKwh} kWh/mes ({pct}%
+                      del total)
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-black text-sm text-[#FEE75C]">
+                    <div className="font-extrabold text-base text-[#091197]">
                       RD${" "}
                       {item.estimatedMonthlyCostDop.toLocaleString("es-DO")}
                     </div>
-                    <div className="text-[11px] text-[#B5BAC1]">al mes</div>
+                    <div className="text-[10px] font-bold uppercase text-[#03A9EC]">
+                      mensual
+                    </div>
                   </div>
                 </div>
               );
@@ -701,18 +728,18 @@ export function DashboardModule({
           </div>
         </div>
 
-        {/* Alertas estilo Mensajes de Bot de Discord */}
-        <div className="apple-card p-6 flex flex-col justify-between">
+        {/* Dictamen Técnico y Alertas Preventivas */}
+        <div className="bg-white rounded-[12px] border border-[#D9D9D9] p-6 flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2 py-0.5 rounded bg-[#5865F2] text-[10px] font-black text-white">
-                BOT SIE
+            <div className="pb-4 mb-4 border-b border-[#D9D9D9]">
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+                AUDITORÍA AUTOMÁTICA SIE
               </span>
-              <h3 className="font-black text-lg text-white">
-                Avisos en Vivo del Servidor
+              <h3 className="font-extrabold text-xl uppercase text-[#091197]">
+                DICTAMEN TARIFARIO Y ALERTAS
               </h3>
             </div>
-            <p className="text-xs text-[#B5BAC1] mb-4">
+            <p className="text-xs sm:text-sm text-[#4B528A] mb-4 leading-relaxed">
               {billSimulation.explanation}
             </p>
 
@@ -721,30 +748,31 @@ export function DashboardModule({
                 {triggeredAlerts.slice(0, 3).map((al) => (
                   <div
                     key={al.id}
-                    className="p-4 rounded-2xl bg-[#1E1F22] border-l-4 border-[#FEE75C] text-xs"
+                    className="p-4 rounded-[10px] bg-[#F1F1F1] border-l-4 border-[#F75600] text-xs"
                   >
-                    <div className="flex items-center justify-between font-extrabold text-white">
+                    <div className="flex items-center justify-between font-extrabold uppercase text-[#091197]">
                       <span>{al.title}</span>
-                      <span className="px-2 py-0.5 rounded-full bg-[#FEE75C]/20 text-[#FEE75C] text-[11px]">
+                      <span className="px-2 py-0.5 rounded bg-[#F75600] text-white text-[10px]">
                         {al.metricValue}
                       </span>
                     </div>
-                    <p className="text-[#B5BAC1] mt-1">{al.message}</p>
+                    <p className="text-[#4B528A] mt-1">{al.message}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-4 rounded-2xl bg-[#23A55A]/15 border border-[#23A55A]/30 text-xs text-[#57F287] mb-4">
-                ¡Todo nítido! Tu consumo está dentro de los parámetros ideales.
+              <div className="p-4 rounded-[10px] bg-[#F1F1F1] border border-[#03A9EC] text-xs text-[#091197] font-semibold mb-4">
+                Parámetros dentro de rango óptimo. No se detectan desviaciones
+                críticas de escalón.
               </div>
             )}
           </div>
 
-          <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-            <span className="text-xs font-bold text-[#B5BAC1]">
-              Total calculado con pliego {activeSchedule.distributor_code}:
+          <div className="pt-4 border-t border-[#D9D9D9] flex items-center justify-between">
+            <span className="text-xs font-extrabold uppercase text-[#4B528A]">
+              LIQUIDACIÓN ESTIMADA ({activeSchedule.distributor_code}):
             </span>
-            <span className="text-xl font-black text-[#57F287]">
+            <span className="text-2xl font-extrabold text-[#091197]">
               RD${" "}
               {billSimulation.totalEstimatedBillDop.toLocaleString("es-DO", {
                 minimumFractionDigits: 2,

@@ -80,39 +80,39 @@ export function OnboardingModal({
     <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
       <form
         onSubmit={handleFinish}
-        className="w-full max-w-xl rounded-3xl bg-[#313338] border border-white/10 p-6 sm:p-8 shadow-2xl space-y-5 text-white"
+        className="w-full max-w-xl rounded-[12px] bg-white border border-[#D9D9D9] p-6 sm:p-8 shadow-2xl space-y-5 text-white"
       >
         <div className="flex items-center justify-between">
-          <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-[#5865F2] text-white">
+          <span className="inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full bg-[#091197] text-white">
             <ShieldCheck className="w-3.5 h-3.5" /> Crear Mi Servidor
           </span>
           <button
             type="button"
             onClick={onStartDemoInstead}
-            className="text-xs font-extrabold text-[#FEE75C] hover:underline inline-flex items-center gap-1 cursor-pointer"
+            className="text-xs font-extrabold text-[#F75600] hover:underline inline-flex items-center gap-1 cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5" /> O usar Servidor de Prueba
           </button>
         </div>
 
-        <h2 className="text-2xl font-black tracking-tight text-white">
+        <h2 className="text-2xl font-extrabold uppercase tracking-tight text-[#091197]">
           Personaliza tu hogar o negocio
         </h2>
 
         <div>
-          <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
+          <label className="block text-xs font-bold text-[#4B528A] mb-1">
             Nombre de tu servidor energético
           </label>
           <input
             type="text"
             value={spaceName}
             onChange={(e) => setSpaceName(e.target.value)}
-            className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5865F2]"
+            className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-4 py-3 text-sm font-semibold text-[#091197] focus:outline-none focus:border-[#091197]"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-[#B5BAC1] mb-1.5">
+          <label className="block text-xs font-bold text-[#4B528A] mb-1.5">
             Tipo de propiedad
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
@@ -132,10 +132,10 @@ export function OnboardingModal({
                   key={item.id}
                   type="button"
                   onClick={() => setPropertyType(item.id)}
-                  className={`p-3 rounded-2xl border flex flex-col items-center gap-1.5 transition cursor-pointer ${
+                  className={`p-3 rounded-[10px] border flex flex-col items-center gap-1.5 transition cursor-pointer ${
                     active
-                      ? "border-[#5865F2] bg-[#5865F2] text-white font-extrabold"
-                      : "border-white/10 bg-[#1E1F22] text-[#B5BAC1] hover:text-white"
+                      ? "border-[#091197] bg-[#091197] text-white font-extrabold"
+                      : "border-[#D9D9D9] bg-[#F1F1F1] text-[#4B528A] hover:text-white"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -148,7 +148,7 @@ export function OnboardingModal({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
+            <label className="block text-xs font-bold text-[#4B528A] mb-1">
               Distribuidora Eléctrica
             </label>
             <select
@@ -156,7 +156,7 @@ export function OnboardingModal({
               onChange={(e) =>
                 setDistributor(e.target.value as DistributorCode)
               }
-              className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-3.5 py-2.5 text-xs font-bold text-white"
+              className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3.5 py-2.5 text-xs font-bold text-[#091197]"
             >
               <option value="EDESUR">EDESUR</option>
               <option value="EDENORTE">EDENORTE</option>
@@ -165,13 +165,13 @@ export function OnboardingModal({
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
+            <label className="block text-xs font-bold text-[#4B528A] mb-1">
               Provincia
             </label>
             <select
               value={province}
               onChange={(e) => setProvince(e.target.value)}
-              className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-3.5 py-2.5 text-xs text-white"
+              className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3.5 py-2.5 text-xs font-semibold text-[#091197]"
             >
               {Object.keys(RD_PROVINCES_SOLAR_HSP).map((p) => (
                 <option key={p} value={p}>
@@ -183,7 +183,7 @@ export function OnboardingModal({
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-[#B5BAC1] mb-1">
+          <label className="block text-xs font-bold text-[#4B528A] mb-1">
             Contraseña Maestra Local Opcional (mín. 8 caracteres)
           </label>
           <input
@@ -191,16 +191,16 @@ export function OnboardingModal({
             value={passphrase}
             onChange={(e) => setPassphrase(e.target.value)}
             placeholder="Dejar en blanco si prefieres configurarla más tarde"
-            className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 px-4 py-2.5 text-xs text-white"
+            className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-4 py-2.5 text-xs font-semibold text-[#091197]"
           />
         </div>
 
-        <label className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-[#1E1F22] border border-white/5 cursor-pointer text-xs text-white">
+        <label className="flex items-center gap-2.5 p-3.5 rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] cursor-pointer text-xs font-semibold text-[#091197]">
           <input
             type="checkbox"
             checked={loadStarterAppliances}
             onChange={(e) => setLoadStarterAppliances(e.target.checked)}
-            className="rounded accent-[#5865F2]"
+            className="rounded accent-[#091197]"
           />
           <span>
             Incluir 4 equipos básicos de ejemplo (Nevera, Aire, Abanico y Luces
@@ -211,7 +211,7 @@ export function OnboardingModal({
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-3.5 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-extrabold text-sm inline-flex items-center justify-center gap-2 transition cursor-pointer"
+          className="w-full py-3.5 rounded-full bg-[#091197] hover:bg-[#03A9EC] text-white font-extrabold text-sm inline-flex items-center justify-center gap-2 transition cursor-pointer"
         >
           <CheckCircle2 className="w-4 h-4" />
           <span>{submitting ? "Preparando..." : "Crear Mi Servidor Ahora"}</span>

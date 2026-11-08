@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import {
   AlertCircle,
+  ArrowRight,
   CheckCircle2,
   FileCheck2,
   Sparkles,
@@ -34,19 +35,19 @@ const PROVENANCE_LABELS: Record<
 > = {
   confirmado_usuario: {
     label: "Confirmado",
-    badgeClass: "bg-[#23A55A]/25 text-[#57F287]",
+    badgeClass: "bg-[#008A5E]/15 text-[#008A5E] border border-[#008A5E]/30",
   },
   extraido_automatico: {
-    label: "Extraído",
-    badgeClass: "bg-[#5865F2]/25 text-[#99AAB5]",
+    label: "Extraído OCR",
+    badgeClass: "bg-[#03A9EC]/15 text-[#091197] border border-[#03A9EC]",
   },
   estimado: {
     label: "Estimado",
-    badgeClass: "bg-[#FEE75C]/20 text-[#FEE75C]",
+    badgeClass: "bg-[#F75600]/15 text-[#F75600] border border-[#F75600]/30",
   },
   no_disponible: {
     label: "Opcional",
-    badgeClass: "bg-white/10 text-[#B5BAC1]",
+    badgeClass: "bg-[#F1F1F1] text-[#4B528A] border border-[#D9D9D9]",
   },
 };
 
@@ -182,43 +183,46 @@ export function InvoiceAnalyzerModule({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-[#091197] text-white p-6 rounded-[12px]">
         <div>
-          <span className="text-xs font-extrabold uppercase tracking-wider text-[#57F287]">
-            Escáner Local · Privacidad Zero-Access
+          <span className="text-xs font-extrabold uppercase tracking-[0.12em] text-[#03A9EC]">
+            PROCESAMIENTO ÓPTICO LOCAL · PRIVACIDAD ZERO-ACCESS
           </span>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            Analizador de Recibos Eléctricos
+          <h2 className="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-white mt-1">
+            AUDITORÍA DE RECIBOS ELÉCTRICOS (OCR + PLIEGO SIE)
           </h2>
         </div>
         <button
           onClick={handleStartManualReview}
-          className="px-5 py-2.5 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs sm:text-sm font-extrabold shadow-lg transition cursor-pointer"
+          className="px-5 py-3 rounded-[10px] bg-[#03A9EC] hover:bg-white text-white hover:text-[#091197] text-xs font-extrabold uppercase tracking-wider transition cursor-pointer"
         >
           + Registrar Factura Manualmente
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="apple-card p-6 sm:p-8">
-          <h3 className="font-black text-lg text-white mb-1">
-            📄 Subir Factura en PDF o Foto
+        <div className="bg-white rounded-[12px] border border-[#D9D9D9] p-6 sm:p-8">
+          <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+            OPCIÓN 01 · ARCHIVO DIGITAL
+          </span>
+          <h3 className="font-extrabold text-xl uppercase text-[#091197] mt-0.5 mb-1">
+            SUBIR FACTURA EN PDF O FOTOGRAFÍA
           </h3>
-          <p className="text-xs text-[#B5BAC1] mb-5">
+          <p className="text-xs text-[#4B528A] mb-5">
             Compatible con recibos de EDESUR, EDENORTE, EDEESTE y CEPM (PDF, JPG
-            o PNG). Se procesa en tu dispositivo sin subir el archivo a ningún
-            servidor.
+            o PNG). El documento se analiza en tu dispositivo sin enviarse a
+            servidores externos.
           </p>
 
-          <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#5865F2]/60 hover:border-[#57F287] rounded-3xl p-8 cursor-pointer bg-[#1E1F22] hover:bg-[#1E1F22]/80 transition">
-            <div className="w-12 h-12 rounded-2xl bg-[#5865F2] text-white flex items-center justify-center mb-3 shadow-md">
-              <UploadCloud className="w-6 h-6" />
+          <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#03A9EC] hover:border-[#091197] rounded-[12px] p-8 cursor-pointer bg-[#F1F1F1] hover:bg-[#03A9EC]/10 transition">
+            <div className="w-12 h-12 rounded-[10px] bg-[#091197] text-white flex items-center justify-center mb-3">
+              <UploadCloud className="w-6 h-6 text-[#03A9EC]" />
             </div>
-            <span className="font-extrabold text-sm text-white">
-              Haz clic para soltar tu factura (PDF o Imagen)
+            <span className="font-extrabold text-sm uppercase text-[#091197]">
+              SELECCIONAR FACTURA (PDF O IMAGEN)
             </span>
-            <span className="text-xs text-[#B5BAC1] mt-1">
-              Lectura óptica local mediante WebWorker
+            <span className="text-xs text-[#4B528A] mt-1">
+              Reconocimiento óptico de NIC, kWh facturados y cargos SIE
             </span>
             <input
               type="file"
@@ -229,14 +233,14 @@ export function InvoiceAnalyzerModule({
           </label>
 
           {processingStage && (
-            <div className="mt-4 p-4 rounded-2xl bg-[#1E1F22] border border-[#5865F2]/40">
-              <div className="flex items-center justify-between text-xs font-extrabold text-[#57F287] mb-2">
+            <div className="mt-4 p-4 rounded-[10px] bg-[#F1F1F1] border border-[#03A9EC]">
+              <div className="flex items-center justify-between text-xs font-extrabold uppercase text-[#091197] mb-2">
                 <span>{processingStage}</span>
-                <span>{processingPct}%</span>
+                <span className="text-[#03A9EC]">{processingPct}%</span>
               </div>
-              <div className="w-full h-2.5 bg-[#2B2D31] rounded-full overflow-hidden">
+              <div className="w-full h-2.5 bg-white rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#5865F2] transition-all duration-300"
+                  className="h-full bg-[#091197] transition-all duration-300"
                   style={{ width: `${processingPct}%` }}
                 />
               </div>
@@ -244,19 +248,24 @@ export function InvoiceAnalyzerModule({
           )}
 
           {errorMessage && (
-            <div className="mt-4 p-4 rounded-2xl bg-[#F23F43]/15 border border-[#F23F43]/40 text-xs text-[#F23F43] flex items-center gap-2">
+            <div className="mt-4 p-4 rounded-[10px] bg-[#F75600]/10 border border-[#F75600] text-xs font-bold text-[#F75600] flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
         </div>
 
-        <div className="apple-card p-6 sm:p-8 flex flex-col justify-between">
+        <div className="bg-white rounded-[12px] border border-[#D9D9D9] p-6 sm:p-8 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h3 className="font-black text-lg text-white">
-                💬 Pegar Texto de Factura por Correo
-              </h3>
+              <div>
+                <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+                  OPCIÓN 02 · TEXTO DE FACTURA DIGITAL
+                </span>
+                <h3 className="font-extrabold text-xl uppercase text-[#091197] mt-0.5">
+                  PEGAR TEXTO DE RECIBO POR CORREO
+                </h3>
+              </div>
               <button
                 type="button"
                 onClick={() =>
@@ -264,54 +273,59 @@ export function InvoiceAnalyzerModule({
                     "EDESUR DOMINICANA S.A. NIC: 8492014 Tarifa: BTS-1 Periodo Facturado: 30 dias Consumo Facturado: 615 kWh Total a Pagar: RD$ 6,129.10"
                   )
                 }
-                className="text-xs font-extrabold text-[#FEE75C] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                className="text-xs font-extrabold uppercase text-[#03A9EC] hover:text-[#091197] inline-flex items-center gap-1 cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" /> Cargar ejemplo EDESUR
               </button>
             </div>
-            <p className="text-xs text-[#B5BAC1] mb-4">
-              Copia y pega el texto del correo de tu distribuidora para extraer
-              los valores al instante.
+            <p className="text-xs text-[#4B528A] mb-4">
+              Copia y pega el contenido del correo electrónico de tu
+              distribuidora para extraer automáticamente los valores.
             </p>
             <textarea
               rows={4}
               value={rawSampleInput}
               onChange={(e) => setRawSampleInput(e.target.value)}
               placeholder="Ej: EDENORTE NIC 5541023 Tarifa BTS-1 Consumo Facturado: 520 kWh Total a Pagar: RD$ 5,180.00..."
-              className="w-full rounded-2xl bg-[#1E1F22] border border-white/10 p-4 text-xs text-white focus:outline-none focus:border-[#5865F2]"
+              className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] p-4 text-xs text-[#091197] font-medium focus:outline-none focus:border-[#03A9EC]"
             />
           </div>
           <button
             type="button"
             onClick={handleAnalyzePastedText}
-            className="mt-4 w-full py-3 rounded-2xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-extrabold text-xs sm:text-sm transition cursor-pointer"
+            className="grupamar-cta w-full mt-4"
           >
-            Extraer Datos y Revisar
+            <span>EXTRAER DATOS Y AUDITAR RECIBO</span>
+            <span className="grupamar-cta-arrow">
+              <ArrowRight className="w-4 h-4" />
+            </span>
           </button>
         </div>
       </div>
 
       {/* Revisión Manual */}
       {draftInvoice && (
-        <div className="apple-card p-6 sm:p-8 border-2 border-[#57F287]">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-5 pb-4 border-b border-white/10">
+        <div className="bg-white rounded-[12px] p-6 sm:p-8 border-2 border-[#03A9EC] shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-5 pb-4 border-b border-[#D9D9D9]">
             <div className="flex items-center gap-2.5">
-              <FileCheck2 className="w-5 h-5 text-[#57F287]" />
-              <h3 className="font-black text-lg text-white">
-                Verifica los datos de tu factura antes de guardar
+              <FileCheck2 className="w-5 h-5 text-[#03A9EC]" />
+              <h3 className="font-extrabold text-lg uppercase text-[#091197]">
+                VERIFICACIÓN TÉCNICA ANTES DE INCORPORAR AL EXPEDIENTE
               </h3>
             </div>
-            <span className="text-xs text-[#B5BAC1]">
-              Puedes corregir cualquier campo manualmente
+            <span className="text-xs font-semibold text-[#4B528A]">
+              Puedes ajustar cualquier campo antes de confirmar
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <label className="font-bold text-white">Distribuidora</label>
+                <label className="font-extrabold uppercase text-[#091197]">
+                  Distribuidora
+                </label>
                 <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                     PROVENANCE_LABELS[draftInvoice.distributor.status]
                       .badgeClass
                   }`}
@@ -327,7 +341,7 @@ export function InvoiceAnalyzerModule({
                     e.target.value as DistributorCode
                   )
                 }
-                className="w-full rounded-xl bg-[#1E1F22] border border-white/10 px-3 py-2.5 text-xs font-bold text-white"
+                className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3 py-2.5 text-xs font-extrabold text-[#091197]"
               >
                 <option value="EDESUR">EDESUR</option>
                 <option value="EDENORTE">EDENORTE</option>
@@ -338,9 +352,11 @@ export function InvoiceAnalyzerModule({
 
             <div>
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <label className="font-bold text-white">Tarifa</label>
+                <label className="font-extrabold uppercase text-[#091197]">
+                  Tarifa SIE
+                </label>
                 <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                     PROVENANCE_LABELS[draftInvoice.tariffCode.status].badgeClass
                   }`}
                 >
@@ -350,7 +366,7 @@ export function InvoiceAnalyzerModule({
               <select
                 value={draftInvoice.tariffCode.value}
                 onChange={(e) => updateDraftField("tariffCode", e.target.value)}
-                className="w-full rounded-xl bg-[#1E1F22] border border-white/10 px-3 py-2.5 text-xs font-bold text-white"
+                className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3 py-2.5 text-xs font-extrabold text-[#091197]"
               >
                 <option value="BTS-1">BTS-1 (Residencial)</option>
                 <option value="BTS-2">BTS-2 (Comercial)</option>
@@ -360,9 +376,11 @@ export function InvoiceAnalyzerModule({
 
             <div>
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <label className="font-bold text-white">Consumo (kWh)</label>
+                <label className="font-extrabold uppercase text-[#091197]">
+                  Consumo (kWh)
+                </label>
                 <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                     PROVENANCE_LABELS[draftInvoice.billedKwh.status].badgeClass
                   }`}
                 >
@@ -377,17 +395,17 @@ export function InvoiceAnalyzerModule({
                 onChange={(e) =>
                   updateDraftField("billedKwh", parseFloat(e.target.value) || 0)
                 }
-                className="w-full rounded-xl bg-[#1E1F22] border border-white/10 px-3 py-2.5 text-xs font-black text-white"
+                className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3 py-2.5 text-xs font-extrabold text-[#091197]"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <label className="font-bold text-white">
+                <label className="font-extrabold uppercase text-[#091197]">
                   Total Facturado (RD$)
                 </label>
                 <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                     PROVENANCE_LABELS[draftInvoice.totalAmountDop.status]
                       .badgeClass
                   }`}
@@ -406,12 +424,12 @@ export function InvoiceAnalyzerModule({
                     parseFloat(e.target.value) || 0
                   )
                 }
-                className="w-full rounded-xl bg-[#1E1F22] border border-white/10 px-3 py-2.5 text-xs font-black text-[#57F287]"
+                className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3 py-2.5 text-xs font-extrabold text-[#03A9EC]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-white mb-1.5">
+              <label className="block text-xs font-extrabold uppercase text-[#091197] mb-1.5">
                 Fecha Cierre Factura
               </label>
               <input
@@ -420,12 +438,12 @@ export function InvoiceAnalyzerModule({
                 onChange={(e) =>
                   updateDraftField("billingPeriodEnd", e.target.value)
                 }
-                className="w-full rounded-xl bg-[#1E1F22] border border-white/10 px-3 py-2.5 text-xs text-white"
+                className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3 py-2.5 text-xs font-semibold text-[#091197]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-white mb-1.5">
+              <label className="block text-xs font-extrabold uppercase text-[#091197] mb-1.5">
                 Días Facturados
               </label>
               <input
@@ -439,7 +457,7 @@ export function InvoiceAnalyzerModule({
                     parseInt(e.target.value, 10) || 30
                   )
                 }
-                className="w-full rounded-xl bg-[#1E1F22] border border-white/10 px-3 py-2.5 text-xs text-white"
+                className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3 py-2.5 text-xs font-semibold text-[#091197]"
               />
             </div>
 
@@ -447,17 +465,17 @@ export function InvoiceAnalyzerModule({
               <button
                 type="button"
                 onClick={() => setDraftInvoice(null)}
-                className="px-5 py-2.5 rounded-full bg-[#1E1F22] text-xs font-bold text-[#B5BAC1] hover:text-white transition"
+                className="px-5 py-2.5 rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] text-xs font-extrabold uppercase text-[#4B528A] hover:text-[#091197] transition"
               >
                 Cancelar
               </button>
               <button
                 type="button"
                 onClick={handleConfirmAndSave}
-                className="px-6 py-2.5 rounded-full bg-[#23A55A] hover:bg-[#1E8E4C] text-white font-extrabold text-xs inline-flex items-center gap-1.5 shadow-lg transition cursor-pointer"
+                className="px-6 py-2.5 rounded-[10px] bg-[#091197] hover:bg-[#03A9EC] text-white font-extrabold uppercase text-xs inline-flex items-center gap-1.5 transition cursor-pointer"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                Confirmar y Guardar Factura
+                Confirmar y Guardar Recibo
               </button>
             </div>
           </div>
@@ -465,29 +483,31 @@ export function InvoiceAnalyzerModule({
       )}
 
       {/* Historial de Facturas */}
-      <div className="apple-card p-6 sm:p-8">
-        <h3 className="font-black text-lg text-white mb-1">
-          🗂️ Historial de Facturas ({sortedInvoices.length})
-        </h3>
-        <p className="text-xs text-[#B5BAC1] mb-5">
-          Tus recibos registrados con cálculo de costo promedio por kWh
-        </p>
+      <div className="bg-white rounded-[12px] border border-[#D9D9D9] p-6 sm:p-8">
+        <div className="pb-4 mb-5 border-b border-[#D9D9D9]">
+          <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
+            REGISTRO HISTÓRICO AUDITADO
+          </span>
+          <h3 className="font-extrabold text-xl uppercase text-[#091197]">
+            HISTORIAL DE FACTURAS ({sortedInvoices.length})
+          </h3>
+        </div>
 
         {sortedInvoices.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
-                <tr className="border-b border-white/10 text-[#B5BAC1] text-xs">
-                  <th className="py-3 pr-4">Fecha</th>
-                  <th className="py-3 px-3">Distribuidora</th>
+                <tr className="border-b border-[#D9D9D9] text-[#4B528A] text-xs uppercase font-extrabold">
+                  <th className="py-3 pr-4">Fecha Cierre</th>
+                  <th className="py-3 px-3">Concesión / Tarifa</th>
                   <th className="py-3 px-3">Consumo</th>
                   <th className="py-3 px-3">Promedio Diario</th>
-                  <th className="py-3 px-3">Total Pagado</th>
-                  <th className="py-3 px-3">Precio / kWh</th>
-                  <th className="py-3 pl-3 text-right">Eliminar</th>
+                  <th className="py-3 px-3">Total Facturado</th>
+                  <th className="py-3 px-3">Tarifa Media / kWh</th>
+                  <th className="py-3 pl-3 text-right">Acción</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-[#D9D9D9]">
                 {sortedInvoices.map((inv) => {
                   const avgKwhRate =
                     inv.billedKwh.value > 0
@@ -499,34 +519,34 @@ export function InvoiceAnalyzerModule({
                       : inv.billedKwh.value / 30;
 
                   return (
-                    <tr key={inv.id} className="hover:bg-[#1E1F22]/60">
-                      <td className="py-3.5 pr-4 font-bold text-white">
+                    <tr key={inv.id} className="hover:bg-[#F1F1F1]/70">
+                      <td className="py-3.5 pr-4 font-extrabold text-[#091197]">
                         {inv.billingPeriodEnd.value}
                       </td>
                       <td className="py-3.5 px-3">
-                        <span className="px-2.5 py-1 rounded-full bg-[#1E1F22] text-xs font-extrabold text-[#57F287]">
+                        <span className="px-2.5 py-1 rounded-[6px] bg-[#091197] text-white text-xs font-extrabold uppercase">
                           {inv.distributor.value} · {inv.tariffCode.value}
                         </span>
                       </td>
-                      <td className="py-3.5 px-3 font-black text-white">
+                      <td className="py-3.5 px-3 font-extrabold text-[#091197]">
                         {inv.billedKwh.value.toLocaleString("es-DO")} kWh
                       </td>
-                      <td className="py-3.5 px-3 text-[#B5BAC1]">
+                      <td className="py-3.5 px-3 text-[#4B528A] font-semibold">
                         {dailyKwh.toFixed(1)} kWh/día
                       </td>
-                      <td className="py-3.5 px-3 font-black text-[#FEE75C]">
+                      <td className="py-3.5 px-3 font-extrabold text-[#03A9EC]">
                         RD${" "}
                         {inv.totalAmountDop.value.toLocaleString("es-DO", {
                           minimumFractionDigits: 2,
                         })}
                       </td>
-                      <td className="py-3.5 px-3 text-[#B5BAC1]">
+                      <td className="py-3.5 px-3 text-[#091197] font-semibold">
                         RD$ {avgKwhRate.toFixed(2)}/kWh
                       </td>
                       <td className="py-3.5 pl-3 text-right">
                         <button
                           onClick={() => onDeleteInvoice(inv.id)}
-                          className="p-2 rounded-full text-[#B5BAC1] hover:text-[#F23F43] hover:bg-[#F23F43]/15 transition cursor-pointer"
+                          className="p-2 rounded-[8px] text-[#4B528A] hover:text-[#F75600] hover:bg-[#F75600]/10 transition cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -538,8 +558,8 @@ export function InvoiceAnalyzerModule({
             </table>
           </div>
         ) : (
-          <div className="text-center py-10 text-sm text-[#B5BAC1]">
-            Aún no has registrado facturas.
+          <div className="text-center py-10 text-sm text-[#4B528A]">
+            Aún no se han incorporado facturas a este expediente.
           </div>
         )}
       </div>
