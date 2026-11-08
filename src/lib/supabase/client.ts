@@ -17,14 +17,20 @@ import { EncryptedEnvelope } from "@/lib/crypto/vault-crypto";
 import { INITIAL_SIE_TARIFF_SCHEDULES } from "@/lib/data/rd-energy-catalog";
 import { DistributorCode, PropertyType, TariffSchedule } from "@/types/energia360";
 
+const DEFAULT_SUPABASE_URL = "https://esqbscqrtkxxqkuvgcmw.supabase.co";
+const DEFAULT_SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_I9WVAg_CBOCzv_fpdsnSkA_J4W6Goq_";
+
 let supabaseInstance: SupabaseClient | null = null;
 
 export function getSupabaseConfigurationStatus(): {
   isConfigured: boolean;
   url: string;
 } {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const anonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    DEFAULT_SUPABASE_PUBLISHABLE_KEY;
   const isConfigured =
     Boolean(url && anonKey) &&
     !url.includes("tu-proyecto.supabase.co") &&
@@ -35,7 +41,9 @@ export function getSupabaseConfigurationStatus(): {
 
 export function getSupabaseClient(): SupabaseClient | null {
   const { isConfigured, url } = getSupabaseConfigurationStatus();
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  const anonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    DEFAULT_SUPABASE_PUBLISHABLE_KEY;
   if (!isConfigured) return null;
 
   if (!supabaseInstance) {
