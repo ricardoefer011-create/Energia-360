@@ -1139,36 +1139,36 @@ export interface TestUserAccountMetadata {
 export const TEST_USER_ACCOUNTS: TestUserAccountMetadata[] = [
   {
     id: "hogar_santo_domingo",
-    title: "Hogar Familia Rodríguez (Santo Domingo)",
-    subtitle: "EDESUR · Tarifa BTS-1",
-    distributor: "EDESUR",
+    title: "Residencia Familiar (Zona Metropolitana)",
+    subtitle: "Prestadora Zona Sur · Pliego Residencial Escalonado",
+    distributor: "ZONA SUR",
     email: "demo.hogar@energia360.do",
     password: "DemoRD2026!",
     highlightMetric: "682 kWh/mes · RD$ 7,121",
     summary:
-      "Residencia en Naco con 2 aires acondicionados, nevera, bomba de agua e inversor Trace de 3.6 kW (4 baterías Trojan). Ideal para probar el termómetro del subsidio de 700 kWh.",
+      "Unidad residencial con 2 climatizadores, refrigeración, bombeo hidráulico e inversor de 3.6 kW (4 baterías). Ideal para auditar datos energéticos cerca del umbral de 700 kWh.",
   },
   {
     id: "apartamento_santiago",
-    title: "Apartamento Moderno (Santiago)",
-    subtitle: "EDENORTE · Tarifa BTS-1",
-    distributor: "EDENORTE",
+    title: "Apartamento Ejecutivo (Zona Norte)",
+    subtitle: "Prestadora Zona Norte · Pliego Residencial",
+    distributor: "ZONA NORTE",
     email: "demo.santiago@energia360.do",
     password: "DemoRD2026!",
     highlightMetric: "332 kWh/mes · RD$ 2,613",
     summary:
-      "Apartamento eficiente en el Cibao con equipos Inverter, consumo controlado dentro de los primeros bloques subsidiados y respaldo de inversor.",
+      "Unidad eficiente en región norte con climatización Inverter SEER 20, curva de carga controlada en los primeros tramos tarifarios y respaldo autónomo.",
   },
   {
     id: "negocio_punta_cana",
-    title: "Cafetería & Deli El Coral (Punta Cana)",
-    subtitle: "EDEESTE / CEPM · Tarifa Comercial BTS-2",
-    distributor: "CEPM",
+    title: "Unidad Comercial & Gastronómica (Zona Este)",
+    subtitle: "Prestadora Zona Este · Pliego Comercial Continuo",
+    distributor: "ZONA ESTE",
     email: "demo.negocio@energia360.do",
     password: "DemoRD2026!",
     highlightMetric: "1,185 kWh/mes · RD$ 16,248",
     summary:
-      "Pequeño negocio con exhibidores refrigerados verticales, freezer horizontal, aire comercial de 24,000 BTU e inversor híbrido Deye de 8 kW con litio.",
+      "Operación comercial con cámaras de frío verticales, climatización de 24,000 BTU e inversor híbrido de 8 kW con almacenamiento LiFePO4.",
   },
 ];
 

@@ -103,7 +103,7 @@ export function InvoiceAnalyzerModule({
   function handleAnalyzePastedText() {
     if (!rawSampleInput.trim()) {
       setErrorMessage(
-        "Pega el texto de tu factura o presiona 'Cargar ejemplo EDESUR'."
+        "Pega el texto de tu factura o presiona 'Cargar ejemplo de datos'."
       );
       return;
     }
@@ -189,7 +189,7 @@ export function InvoiceAnalyzerModule({
             PROCESAMIENTO ÓPTICO LOCAL · PRIVACIDAD ZERO-ACCESS
           </span>
           <h2 className="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-white mt-1">
-            AUDITORÍA DE RECIBOS ELÉCTRICOS (OCR + PLIEGO SIE)
+            AUDITORÍA ÓPTICA DE DATOS DE CONSUMO
           </h2>
         </div>
         <button
@@ -206,10 +206,10 @@ export function InvoiceAnalyzerModule({
             OPCIÓN 01 · ARCHIVO DIGITAL
           </span>
           <h3 className="font-extrabold text-xl uppercase text-[#091197] mt-0.5 mb-1">
-            SUBIR FACTURA EN PDF O FOTOGRAFÍA
+            SUBIR REPORTE DE CONSUMO (PDF O IMAGEN)
           </h3>
           <p className="text-xs text-[#4B528A] mb-5">
-            Compatible con recibos de EDESUR, EDENORTE, EDEESTE y CEPM (PDF, JPG
+            Compatible con estados de cuenta de todas las prestadoras de servicio (PDF, JPG
             o PNG). El documento se analiza en tu dispositivo sin enviarse a
             servidores externos.
           </p>
@@ -219,7 +219,7 @@ export function InvoiceAnalyzerModule({
               <UploadCloud className="w-6 h-6 text-[#03A9EC]" />
             </div>
             <span className="font-extrabold text-sm uppercase text-[#091197]">
-              SELECCIONAR FACTURA (PDF O IMAGEN)
+              SELECCIONAR DOCUMENTO DE CONSUMO (PDF O IMAGEN)
             </span>
             <span className="text-xs text-[#4B528A] mt-1">
               Reconocimiento óptico de NIC, kWh facturados y cargos SIE
@@ -275,7 +275,7 @@ export function InvoiceAnalyzerModule({
                 }
                 className="text-xs font-extrabold uppercase text-[#03A9EC] hover:text-[#091197] inline-flex items-center gap-1 cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5" /> Cargar ejemplo EDESUR
+                <Sparkles className="w-3.5 h-3.5" /> Cargar ejemplo de datos
               </button>
             </div>
             <p className="text-xs text-[#4B528A] mb-4">
@@ -343,10 +343,10 @@ export function InvoiceAnalyzerModule({
                 }
                 className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3 py-2.5 text-xs font-extrabold text-[#091197]"
               >
-                <option value="EDESUR">EDESUR</option>
-                <option value="EDENORTE">EDENORTE</option>
-                <option value="EDEESTE">EDEESTE</option>
-                <option value="CEPM">CEPM</option>
+                <option value="EDESUR">Prestadora Zona Metropolitana / Sur</option>
+                <option value="EDENORTE">Prestadora Zona Norte / Cibao</option>
+                <option value="EDEESTE">Prestadora Zona Oriental</option>
+                <option value="CEPM">Concesión Turística Este</option>
               </select>
             </div>
 
@@ -489,7 +489,7 @@ export function InvoiceAnalyzerModule({
             REGISTRO HISTÓRICO AUDITADO
           </span>
           <h3 className="font-extrabold text-xl uppercase text-[#091197]">
-            HISTORIAL DE FACTURAS ({sortedInvoices.length})
+            HISTORIAL DE REGISTROS DE CONSUMO ({sortedInvoices.length})
           </h3>
         </div>
 

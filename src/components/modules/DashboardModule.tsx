@@ -373,7 +373,7 @@ export function DashboardModule({
         <div className="bg-white rounded-[12px] border border-[#D9D9D9] hover:border-[#03A9EC] p-6 transition-all flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <span className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#4B528A]">
-              FACTURA MENSUAL SIE
+              LIQUIDACIÓN MENSUAL ESTIMADA
             </span>
             <div className="w-10 h-10 rounded-[10px] bg-[#F1F1F1] text-[#091197] flex items-center justify-center">
               <TrendingUp className="w-5 h-5 text-[#03A9EC]" />
@@ -491,7 +491,7 @@ export function DashboardModule({
               </span>
               <h3 className="font-extrabold text-xl uppercase text-[#091197]">
                 {filteredInvoices.length > 0
-                  ? "EVOLUCIÓN DE FACTURACIÓN ELÉCTRICA"
+                  ? "EVOLUCIÓN DE DATOS ENERGÉTICOS"
                   : "ESCALONES TARIFARIOS SIE"}
               </h3>
             </div>

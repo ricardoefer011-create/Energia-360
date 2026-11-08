@@ -158,9 +158,9 @@ export function OnboardingModal({
               }
               className="w-full rounded-[10px] bg-[#F1F1F1] border border-[#D9D9D9] px-3.5 py-2.5 text-xs font-bold text-[#091197]"
             >
-              <option value="EDESUR">EDESUR</option>
-              <option value="EDENORTE">EDENORTE</option>
-              <option value="EDEESTE">EDEESTE</option>
+              <option value="EDESUR">Prestadora Zona Metropolitana / Sur</option>
+              <option value="EDENORTE">Prestadora Zona Norte / Cibao</option>
+              <option value="EDEESTE">Prestadora Zona Oriental</option>
               <option value="CEPM">CEPM (Punta Cana / Bávaro)</option>
             </select>
           </div>

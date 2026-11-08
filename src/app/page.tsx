@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Sliders,
   Sun,
+  UserCheck,
 } from "lucide-react";
 import {
   Energia360DiamondPin,
@@ -26,7 +27,18 @@ import { ApplianceCalculatorModule } from "@/components/modules/ApplianceCalcula
 import { IntelligenceAndSavingsModule } from "@/components/modules/IntelligenceAndSavingsModule";
 import { SolarAndInverterModule } from "@/components/modules/SolarAndInverterModule";
 import { TariffsAndAdminModule } from "@/components/modules/TariffsAndAdminModule";
+import { SuperAdminGovernanceModule } from "@/components/modules/SuperAdminGovernanceModule";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
+import {
+  AccountApprovalStatus,
+  deleteAccountBySuperAdmin,
+  INITIAL_PLATFORM_ACCOUNTS,
+  loadPlatformAccounts,
+  PlatformUserAccount,
+  PlatformUserRole,
+  savePlatformAccounts,
+  updateAccountStatusBySuperAdmin,
+} from "@/lib/auth/platform-accounts";
 import {
   AlertConfig,
   DistributorCode,
@@ -61,6 +73,7 @@ import {
 import { fetchPublicTariffSchedules } from "@/lib/supabase/client";
 
 type NavigationTab =
+  | "super_admin"
   | "dashboard"
   | "facturas"
   | "equipos"
@@ -73,6 +86,13 @@ type NavigationTab =
 export default function Energia360PlatformPage() {
   const [viewMode, setViewMode] = useState<"landing" | "app">("landing");
   const [activeTab, setActiveTab] = useState<NavigationTab>("dashboard");
+
+  // Estado de cuentas de plataforma y sesión autenticada
+  const [platformAccounts, setPlatformAccounts] = useState<
+    PlatformUserAccount[]
+  >(INITIAL_PLATFORM_ACCOUNTS);
+  const [currentAccount, setCurrentAccount] =
+    useState<PlatformUserAccount | null>(null);
 
   const [realVault, setRealVault] = useState<LocalVaultPayload>(() =>
     createEmptyVaultPayload()
@@ -98,6 +118,8 @@ export default function Energia360PlatformPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    setPlatformAccounts(loadPlatformAccounts());
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
@@ -125,10 +147,11 @@ export default function Energia360PlatformPage() {
     setStatusToast(msg);
     setTimeout(() => {
       setStatusToast((prev) => (prev === msg ? null : prev));
-    }, 4000);
+    }, 4200);
   }
 
   function handleEnterWithTestAccount(preset: TestAccountPresetId) {
+    setPlatformAccounts(loadPlatformAccounts());
     setActiveTestPreset(preset);
     setDemoVault(createTestUserProfileVault(preset));
     setIsDemoMode(true);
@@ -137,9 +160,39 @@ export default function Energia360PlatformPage() {
     notify("Expediente técnico cargado en el Área de Clientes.");
   }
 
+  function handleEnterAuthenticatedUser(account: PlatformUserAccount) {
+    setPlatformAccounts(loadPlatformAccounts());
+    setCurrentAccount(account);
+    setActiveTestPreset(account.linkedPresetId);
+    setDemoVault(createTestUserProfileVault(account.linkedPresetId));
+    setIsDemoMode(true);
+    setViewMode("app");
+
+    if (account.role === "super_admin") {
+      setActiveTab("super_admin");
+      notify(
+        "Sesión iniciada como SUPER ADMIN · Consola de Gobernanza activa."
+      );
+    } else {
+      setActiveTab("dashboard");
+      notify(`Bienvenido, ${account.fullName}.`);
+    }
+  }
+
+  function handleSwitchToSuperAdminMode() {
+    const all = loadPlatformAccounts();
+    setPlatformAccounts(all);
+    const adminAcc =
+      all.find((a) => a.role === "super_admin") || INITIAL_PLATFORM_ACCOUNTS[0];
+    setCurrentAccount(adminAcc);
+    setActiveTab("super_admin");
+    notify("Modo Super Administrador activado.");
+  }
+
   function handleStartPersonalWorkspace() {
     setIsDemoMode(false);
     setViewMode("app");
+    setActiveTab("dashboard");
     if (!realVault.profile.onboardingCompleted) {
       setShowOnboarding(true);
     }
@@ -336,6 +389,7 @@ export default function Energia360PlatformPage() {
       <>
         <AppleLandingAndAuth
           onEnterWithTestAccount={handleEnterWithTestAccount}
+          onEnterAuthenticatedUser={handleEnterAuthenticatedUser}
           onStartPersonalWorkspace={handleStartPersonalWorkspace}
           hasExistingEncryptedVault={hasExistingVault}
           onOpenVaultUnlock={() => setShowUnlockModal(true)}
@@ -388,6 +442,10 @@ export default function Energia360PlatformPage() {
     );
   }
 
+  const pendingAccountsCount = platformAccounts.filter(
+    (a) => a.status === "pending"
+  ).length;
+
   const navigationModules: Array<{
     id: NavigationTab;
     code: string;
@@ -397,17 +455,28 @@ export default function Energia360PlatformPage() {
     icon: React.ComponentType<{ className?: string }>;
   }> = [
     {
+      id: "super_admin",
+      code: "00",
+      label: "SUPER ADMIN · GOBERNANZA",
+      description: "Aprobación de cuentas creadas, roles y control global",
+      badge:
+        pendingAccountsCount > 0
+          ? `${pendingAccountsCount} PEND.`
+          : "ADMIN",
+      icon: ShieldCheck,
+    },
+    {
       id: "dashboard",
       code: "01",
       label: "PANEL EJECUTIVO",
-      description: "Métricas de consumo, subsidio 701 kWh y desglose en RD$",
+      description: "Métricas de demanda, umbral 701 kWh y costos en RD$",
       icon: LayoutDashboard,
     },
     {
       id: "facturas",
       code: "02",
-      label: "AUDITORÍA FACTURAS",
-      description: "Escáner OCR y validación de tramos tarifarios SIE",
+      label: "AUDITORÍA DE DATOS",
+      description: "Escáner OCR y validación de tramos de suministro",
       badge: "OCR",
       icon: FileSpreadsheet,
     },
@@ -415,7 +484,7 @@ export default function Energia360PlatformPage() {
       id: "equipos",
       code: "03",
       label: "INVENTARIO EQUIPOS",
-      description: "Costo marginal por aire acondicionado, nevera y cargas",
+      description: "Costo marginal por climatización, frío y cargas",
       icon: Calculator,
     },
     {
@@ -430,14 +499,14 @@ export default function Energia360PlatformPage() {
       id: "solar_inversores",
       code: "05",
       label: "SOLAR & INVERSORES",
-      description: "Dimensionamiento fotovoltaico HSP y autonomía de baterías",
+      description: "Dimensionamiento fotovoltaico HSP y autonomía de litio",
       icon: Sun,
     },
     {
       id: "tarifas",
       code: "06",
-      label: "PLIEGOS SIE RD",
-      description: "Tarifas vigentes de EDESUR, EDENORTE, EDEESTE y CEPM",
+      label: "PLIEGOS DE SERVICIO",
+      description: "Escalones tarifarios por zona de prestación eléctrica",
       icon: Sliders,
     },
     {
@@ -457,7 +526,7 @@ export default function Energia360PlatformPage() {
   ];
 
   const currentModule =
-    navigationModules.find((m) => m.id === activeTab) || navigationModules[0];
+    navigationModules.find((m) => m.id === activeTab) || navigationModules[1];
 
   return (
     <div className="min-h-screen bg-[#F1F1F1] text-[#091197] flex flex-col">
@@ -490,43 +559,62 @@ export default function Energia360PlatformPage() {
             <Energia360Logo size={36} showTagline={false} variant="light" />
           </div>
 
-          {/* Centro: Selector de Expedientes / Perfiles de Prueba */}
+          {/* Centro: Selector de Expedientes + Acceso Rápido Super Admin */}
           <div className="flex flex-wrap items-center gap-1.5 bg-[#F1F1F1] p-1.5 rounded-[10px] border border-[#D9D9D9]">
-            <span className="hidden xl:inline text-[10px] font-extrabold uppercase tracking-wider text-[#4B528A] px-2.5">
-              EXPEDIENTE ACTIVO:
-            </span>
+            <button
+              onClick={handleSwitchToSuperAdminMode}
+              className={`px-3 py-1.5 rounded-[8px] text-xs font-extrabold uppercase tracking-wider inline-flex items-center gap-1.5 transition-all cursor-pointer ${
+                activeTab === "super_admin"
+                  ? "bg-[#F75600] text-white shadow-xs"
+                  : "bg-white text-[#091197] border border-[#F75600] hover:bg-[#F75600] hover:text-white"
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Super Admin</span>
+              {pendingAccountsCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded bg-[#091197] text-white text-[10px]">
+                  {pendingAccountsCount}
+                </span>
+              )}
+            </button>
 
             <button
               onClick={() => handleEnterWithTestAccount("hogar_santo_domingo")}
               className={`px-3 py-1.5 rounded-[8px] text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-                isDemoMode && activeTestPreset === "hogar_santo_domingo"
+                activeTab !== "super_admin" &&
+                isDemoMode &&
+                activeTestPreset === "hogar_santo_domingo"
                   ? "bg-[#091197] text-white shadow-xs"
                   : "text-[#091197] hover:bg-white"
               }`}
             >
-              Hogar SD · EDESUR
+              Zona Sur
             </button>
 
             <button
               onClick={() => handleEnterWithTestAccount("apartamento_santiago")}
               className={`px-3 py-1.5 rounded-[8px] text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-                isDemoMode && activeTestPreset === "apartamento_santiago"
+                activeTab !== "super_admin" &&
+                isDemoMode &&
+                activeTestPreset === "apartamento_santiago"
                   ? "bg-[#091197] text-white shadow-xs"
                   : "text-[#091197] hover:bg-white"
               }`}
             >
-              Santiago · EDENORTE
+              Zona Norte
             </button>
 
             <button
               onClick={() => handleEnterWithTestAccount("negocio_punta_cana")}
               className={`px-3 py-1.5 rounded-[8px] text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-                isDemoMode && activeTestPreset === "negocio_punta_cana"
+                activeTab !== "super_admin" &&
+                isDemoMode &&
+                activeTestPreset === "negocio_punta_cana"
                   ? "bg-[#091197] text-white shadow-xs"
                   : "text-[#091197] hover:bg-white"
               }`}
             >
-              Punta Cana · CEPM
+              Zona Este
             </button>
 
             <button
@@ -538,19 +626,23 @@ export default function Energia360PlatformPage() {
               }`}
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Mi Contrato</span>
+              <span>Mi Suministro</span>
             </button>
           </div>
 
-          {/* Derecha: Estado de Concesión y Tarifa */}
+          {/* Derecha: Usuario Autenticado */}
           <div className="hidden lg:flex items-center gap-3">
             <div className="text-right">
-              <div className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC]">
-                {activeVault.profile.distributor} ·{" "}
-                {activeSchedule.tariff_code}
+              <div className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-[#03A9EC] flex items-center justify-end gap-1">
+                <UserCheck className="w-3 h-3" />
+                {currentAccount?.role === "super_admin"
+                  ? "ROL: SUPER ADMIN"
+                  : `PLIEGO ${activeSchedule.tariff_code}`}
               </div>
               <div className="text-xs font-extrabold uppercase text-[#091197] truncate max-w-[210px]">
-                {activeVault.profile.spaceName}
+                {currentAccount
+                  ? currentAccount.fullName
+                  : activeVault.profile.spaceName}
               </div>
             </div>
             <Energia360DiamondPin active />
@@ -562,10 +654,10 @@ export default function Energia360PlatformPage() {
       <div className="max-w-[1640px] w-full mx-auto px-3 sm:px-6 py-4 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* BARRA LATERAL ARQUITECTÓNICA DE MÓDULOS (3 columnas en Desktop) */}
         <aside className="lg:col-span-3 lg:sticky lg:top-[104px] space-y-4">
-          {/* Tarjeta Azul Real del Contrato Activo (.csectionsolucionesinner style) */}
+          {/* Tarjeta Azul Real del Expediente Activo */}
           <div className="rounded-[12px] bg-[#091197] text-white p-5 border border-[#091197] relative overflow-hidden">
             <div className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#03A9EC] mb-1">
-              CONTRATO AUDITADO EN TIEMPO REAL
+              UNIDAD BAJO AUDITORÍA EN TIEMPO REAL
             </div>
             <h2 className="text-lg font-extrabold uppercase leading-tight truncate">
               {activeVault.profile.spaceName}
@@ -573,14 +665,14 @@ export default function Energia360PlatformPage() {
             <p className="text-xs text-white/75 mt-1">
               {activeVault.profile.province} · Pliego{" "}
               <strong className="text-[#03A9EC]">
-                {activeVault.profile.distributor} ({activeSchedule.tariff_code})
+                {activeSchedule.tariff_code}
               </strong>
             </p>
 
             <div className="mt-4 pt-3 border-t border-white/15 grid grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="text-[10px] uppercase text-white/60 block font-bold">
-                  CONSUMO BASE
+                  VOLUMEN BASE
                 </span>
                 <span className="text-base font-extrabold text-white">
                   {referenceKwhForSolar} kWh
@@ -588,7 +680,7 @@ export default function Energia360PlatformPage() {
               </div>
               <div>
                 <span className="text-[10px] uppercase text-white/60 block font-bold">
-                  FACTURA EST.
+                  LIQUIDACIÓN EST.
                 </span>
                 <span className="text-base font-extrabold text-[#03A9EC]">
                   RD$ {Math.round(referenceBillForSolar).toLocaleString("es-DO")}
@@ -600,7 +692,7 @@ export default function Energia360PlatformPage() {
           {/* Menú de Módulos de Ingeniería */}
           <nav className="bg-white rounded-[12px] border border-[#D9D9D9] p-2.5 space-y-1">
             <div className="px-3 py-2 text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#4B528A] border-b border-[#D9D9D9] mb-1.5">
-              MÓDULOS DE GESTIÓN ELÉCTRICA
+              MÓDULOS DE INGENIERÍA &amp; GOBERNANZA
             </div>
             {navigationModules.map((mod) => {
               const Icon = mod.icon;
@@ -620,6 +712,8 @@ export default function Energia360PlatformPage() {
                       className={`w-8 h-8 rounded-[8px] flex items-center justify-center text-xs font-extrabold shrink-0 transition-colors ${
                         isActive
                           ? "bg-[#03A9EC] text-white"
+                          : mod.id === "super_admin"
+                          ? "bg-[#F75600]/15 text-[#F75600]"
                           : "bg-[#F1F1F1] text-[#091197] group-hover:bg-[#03A9EC]/20"
                       }`}
                     >
@@ -642,7 +736,7 @@ export default function Energia360PlatformPage() {
                   {mod.badge && (
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase shrink-0 ${
-                        isActive
+                        isActive || mod.id === "super_admin"
                           ? "bg-[#F75600] text-white"
                           : "bg-[#03A9EC]/15 text-[#091197]"
                       }`}
@@ -663,12 +757,15 @@ export default function Energia360PlatformPage() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-extrabold uppercase tracking-[0.12em] text-[#03A9EC]">
-                  MÓDULO {currentModule.code} · {activeVault.profile.distributor}
+                  MÓDULO {currentModule.code} · PLIEGO {activeSchedule.tariff_code}
                 </span>
-                {isDemoMode && (
-                  <span className="px-2 py-0.5 rounded bg-[#F1F1F1] border border-[#D9D9D9] text-[10px] font-extrabold uppercase text-[#091197]">
-                    EXPEDIENTE DEMO INTERACTIVO
-                  </span>
+                {pendingAccountsCount > 0 && activeTab !== "super_admin" && (
+                  <button
+                    onClick={() => setActiveTab("super_admin")}
+                    className="px-2.5 py-0.5 rounded bg-[#F75600] text-white text-[10px] font-extrabold uppercase cursor-pointer"
+                  >
+                    {pendingAccountsCount} Solicitudes Pendientes de Super Admin →
+                  </button>
                 )}
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-[#091197] mt-1">
@@ -679,20 +776,93 @@ export default function Energia360PlatformPage() {
               </p>
             </div>
 
-            {activeTab !== "facturas" && (
+            {activeTab !== "super_admin" && (
               <button
-                onClick={() => setActiveTab("facturas")}
+                onClick={handleSwitchToSuperAdminMode}
                 className="inline-flex items-center gap-3 h-[46px] pl-4 pr-1.5 rounded-[10px] border border-[#03A9EC] bg-white hover:bg-[#091197] text-[#091197] hover:text-white text-xs font-extrabold uppercase tracking-wider transition-all shrink-0 self-start sm:self-center group cursor-pointer"
               >
-                <span>Auditar Recibo OCR</span>
+                <span>Gobernanza Super Admin</span>
                 <span className="w-[34px] h-[34px] rounded-[8px] bg-[#091197] group-hover:bg-[#03A9EC] text-white flex items-center justify-center transition-colors">
-                  <ArrowRight className="w-4 h-4" />
+                  <ShieldCheck className="w-4 h-4" />
                 </span>
               </button>
             )}
           </div>
 
-          {/* Renderizado del Módulo Activo */}
+          {/* Renderizado del Módulo Super Admin */}
+          {activeTab === "super_admin" && (
+            <SuperAdminGovernanceModule
+              accounts={platformAccounts}
+              currentAccount={currentAccount}
+              onApproveOrChangeStatus={(
+                accountId: string,
+                newStatus: AccountApprovalStatus,
+                newRole?: PlatformUserRole
+              ) => {
+                const next = updateAccountStatusBySuperAdmin(
+                  accountId,
+                  newStatus,
+                  newRole
+                );
+                setPlatformAccounts(next);
+                notify(
+                  newStatus === "approved"
+                    ? "Cuenta APROBADA por Super Admin. El usuario ya puede iniciar sesión."
+                    : "Acceso de la cuenta suspendido/rechazado."
+                );
+              }}
+              onDeleteAccount={(accountId: string) => {
+                const next = deleteAccountBySuperAdmin(accountId);
+                setPlatformAccounts(next);
+                notify("Registro eliminado del directorio.");
+              }}
+              onCreatePreApprovedUser={(input) => {
+                let linkedPresetId: TestAccountPresetId = "hogar_santo_domingo";
+                if (input.serviceZone === "Prestadora Zona Norte / Cibao") {
+                  linkedPresetId = "apartamento_santiago";
+                } else if (input.supplyType !== "Residencial") {
+                  linkedPresetId = "negocio_punta_cana";
+                }
+
+                const newPreApproved: PlatformUserAccount = {
+                  id: `usr-${Date.now()}`,
+                  fullName: input.fullName.trim(),
+                  organizationOrUnit: input.organizationOrUnit.trim(),
+                  email: input.email.trim().toLowerCase(),
+                  password: input.password,
+                  phone: input.phone,
+                  serviceZone: input.serviceZone,
+                  supplyType: input.supplyType,
+                  estimatedMonthlyKwh: input.estimatedMonthlyKwh,
+                  role:
+                    input.supplyType === "Residencial"
+                      ? "client_residential"
+                      : "client_enterprise",
+                  status: "approved",
+                  linkedPresetId,
+                  createdAt: new Date().toISOString(),
+                  approvedAt: new Date().toISOString(),
+                  approvedBy: "admin@energia360.do",
+                  notes: "Cuenta creada y pre-aprobada directamente por el Super Admin.",
+                };
+
+                const next = [newPreApproved, ...platformAccounts];
+                savePlatformAccounts(next);
+                setPlatformAccounts(next);
+                notify(
+                  `Cuenta de "${newPreApproved.fullName}" creada y aprobada.`
+                );
+              }}
+              onInspectUserPreset={(presetId, userName) => {
+                setActiveTestPreset(presetId);
+                setDemoVault(createTestUserProfileVault(presetId));
+                setIsDemoMode(true);
+                setActiveTab("dashboard");
+                notify(`Inspeccionando datos energéticos de ${userName}.`);
+              }}
+            />
+          )}
+
           {activeTab === "dashboard" && (
             <DashboardModule
               vault={activeVault}
@@ -716,14 +886,14 @@ export default function Energia360PlatformPage() {
                   ...prev,
                   invoices: [...prev.invoices, inv],
                 }));
-                notify("Factura auditada y añadida al expediente.");
+                notify("Registro de consumo auditado y añadido al expediente.");
               }}
               onDeleteInvoice={(id: string) => {
                 updateCurrentVault((prev) => ({
                   ...prev,
                   invoices: prev.invoices.filter((i) => i.id !== id),
                 }));
-                notify("Factura eliminada del expediente.");
+                notify("Registro eliminado del expediente.");
               }}
             />
           )}
@@ -825,7 +995,7 @@ export default function Energia360PlatformPage() {
                     customRateDopPerKwh: customRate,
                   },
                 }));
-                notify(`Pliego actualizado a ${distributor} (${tariffCode}).`);
+                notify(`Pliego actualizado a ${tariffCode}.`);
               }}
               onUpdateTariffScheduleRate={(
                 scheduleId: string,
